@@ -235,12 +235,17 @@ app.delete('/friends/:username', auth, (req, res, next) => {
 });
 
 app.post('/chats', auth, (req, res, next) => {
-  let data = {participants: req.body.participants.push(req.auth.id), messages: []};
+  let array = []
+  array.push(String(req.auth.id));
+  for (let elem of req.body.participants) {
+    array.push(String(elem));
+  }
+  let data = {participants: array, messages: []};
   let c = chat.newChat(data);
   c.save().then((c) => {
     return res.status(200).json(c);
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err.errmsg});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
 
