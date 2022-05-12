@@ -5,7 +5,9 @@ import passport = require('passport');
 import passportHTTP = require('passport-http');
 import jsonwebtoken = require('jsonwebtoken');
 import { expressjwt } from 'express-jwt';
-import * as user from './models/User'
+import http = require('http');
+import { Server } from 'socket.io';
+import * as user from './models/User';
 
 declare global {
   namespace Express {
@@ -16,6 +18,7 @@ declare global {
         surname: string,
         mail: string,
         role: string,
+        friends_list: string[],
         id: string
       }
     }
@@ -24,8 +27,9 @@ declare global {
 
 const result = require('dotenv').config()
 const app = express();
-const port = 3000;
+const port = 8000;
 const auth = expressjwt({secret: process.env.JWT_SECRET, algorithms: ["HS256"]});
+let ios = undefined;
 
 app.use(bodyparser.json());
 
@@ -36,13 +40,20 @@ app.use((req, res, next) => {
   next();
 })
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get('/', (req, res, next) => {
+  return res.status(200).json({api_version: "1.0", endpoints: ["/users", "/login"]});
+});
+
+app.get('/users', auth, (req, res, next) => {
+  user.getModel().findOne({username: req.query.username}, {digest: 0, salt: 0}).then((user) => {
+    return res.status(200).json(user);
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+  });
 });
 
 app.post('/users', (req, res, next) => {
   let u = user.newUser(req.body);
-  console.log(req.body);
   if (!req.body.password) {
     return next({statusCode: 404, error: true, errormessage: "Password field missing"});
   }
@@ -51,8 +62,56 @@ app.post('/users', (req, res, next) => {
     return res.status(200).json({error: false, errormessage: "", id: data._id});
   }).catch((err) => {
     return next({statusCode: 404, error: true, errormessage: "DB error: "+ err.errmsg});
-  })
+  });
 });
+
+app.post('/friends/request', auth, (req, res, next) => {
+  if (req.body.action === 'send') {
+    user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friend_requests: req.user.id}}).then((u) => {
+      ios.emit("newfriendrequest" + req.body.username, req.user.id);
+      return res.status(200).json(u);
+    }).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+    });
+  }
+  if (req.body.action === 'accept') {
+    user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friends_list: req.user.id}}).then((u) => {
+      ios.emit("friendrequestaccepted" + req.body.username, req.user.id);
+      user.getModel().findOneAndUpdate({username: req.user.username}, {$push: {friends_list: u._id}, $pull: {friend_requests: u._id}}).then((u) => {
+        return res.status(200).json(u);
+      }).catch((err) => {
+        return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+      });
+    }).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+    });
+  }
+  if (req.body.action === 'reject') {
+    user.getModel().findOne({username: req.body.username}).then((u) => {
+      user.getModel().findOneAndUpdate({username: req.user.username}, {$pull: {friend_requests: u._id}}).then((u) => {
+        return res.status(200).json(u);
+      }).catch((err) => {
+        return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+      });
+    }).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+    });
+  }
+  return next({statusCode: 404, error: true, errormessage: "Bad Request"});
+});
+
+app.delete('/friends/:username', auth, (req, res, next) => {
+  user.getModel().findOneAndUpdate({username: req.params.username}, {$pull: {friends_list: req.user.id}}).then((u) => {
+    ios.emit("deletedfriend" + req.params.username, req.user.id);
+    user.getModel().findOneAndUpdate({username: req.user.username}, {$pull: {friends_list: u._id}}).then((u) => {
+      return res.status(200).json(u);
+    }).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+    });
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+  });
+})
 
 passport.use(new passportHTTP.BasicStrategy(
   function(username, password, done) {
@@ -95,7 +154,15 @@ app.use((req, res, next) => {
 });
 
 mongoose.connect(process.env.DATABASE_URL).then(() => {
-  app.listen(port, () => {
-    return console.log(`Express is listening at http://localhost:${port}`);
+  let server = http.createServer(app);
+  ios = new Server(server);
+  ios.on("connection", (client) => {
+    console.log("Socket.io client connected");
+  });
+  ios.on("connect_error", (err) => {
+    console.log(err.message);
+  });
+  server.listen(port, () => {
+    console.log(`Express is listening at http://localhost:${port}`);
   });
 });

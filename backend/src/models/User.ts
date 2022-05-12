@@ -9,6 +9,8 @@ export interface User extends mongoose.Document {
     username: string,
     mail: string,
     role: string,
+    friends_list: mongoose.Schema.Types.ObjectId[],
+    friend_requests: mongoose.Schema.Types.ObjectId[],
     salt: string,
     digest: string,
     setPassword: (pwd:string)=>void,
@@ -40,6 +42,14 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    friends_list: {
+        type: [mongoose.Types.ObjectId],
+        required: false
+    },
+    friend_requests: {
+        type: [mongoose.Types.ObjectId],
+        required: false
+    },
     salt: {
         type: String,
         required: false
@@ -48,7 +58,7 @@ const userSchema = new Schema({
         type: String,
         required: false
     }
-})
+});
 
 userSchema.methods.setPassword = function(pwd:string) {
     this.salt = crypto.randomBytes(16).toString('hex');
