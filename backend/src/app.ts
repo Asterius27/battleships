@@ -8,6 +8,8 @@ import { expressjwt } from 'express-jwt';
 import http = require('http');
 import { Server } from 'socket.io';
 import * as user from './models/User';
+import * as message from './models/Message';
+import * as chat from './models/Chat';
 
 declare global {
   namespace Express {
@@ -55,9 +57,9 @@ app.get('/', (req, res, next) => {
   return res.status(200).json({api_version: "1.0", endpoints: ["/users", "/login"]});
 });
 
-app.get('/users', auth, (req, res, next) => {
-  user.getModel().findOne({username: req.query.username}, {digest: 0, salt: 0}).then((user) => {
-    return res.status(200).json(user);
+app.get('/users/:username', auth, (req, res, next) => {
+  user.getModel().findOne({username: req.params.username}, {digest: 0, salt: 0}).then((u) => {
+    return res.status(200).json(u);
   }).catch((err) => {
     return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
   });
@@ -130,7 +132,64 @@ app.delete('/friends/:username', auth, (req, res, next) => {
   }).catch((err) => {
     return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
   });
-})
+});
+
+app.post('/chats', auth, (req, res, next) => {
+  let data = {participants: req.body.participants.push(req.auth.id), messages: []};
+  let c = chat.newChat(data);
+  c.save().then((c) => {
+    return res.status(200).json(c);
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err.errmsg});
+  });
+});
+
+app.post('/chats/:chatid/participants', auth, (req, res, next) => {
+  chat.getModel().findOneAndUpdate({_id: req.params.chatid}, {$push: {participants: req.auth.id}}).then((c) => {
+    return res.status(200).json(c);
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+  });
+});
+
+app.get('/chats/:chatid', auth, (req, res, next) => {
+  chat.getModel().findOne({_id: req.params.chatid}).then((c) => {
+    return res.status(200).json(c);
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+  });
+});
+
+app.get('/chats/:participantid', auth, (req, res, next) => {
+  chat.getModel().find({participants: req.params.participantid}).then((cs) => {
+    return res.status(200).json(cs);
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+  });
+});
+
+app.post('/messages', auth, (req, res, next) => {
+  let data = {owner: req.auth.id, content: req.body.message};
+  let m = message.newMessage(data);
+  m.save().then((m) => {
+    chat.getModel().findOneAndUpdate({_id: req.body.chat}, {$push: {messages: m.id}}).then((c) => {
+      ios.emit("newmessage" + c.id, m.id);
+      return res.status(200).json(c);
+    }).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+    });
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err.errmsg});
+  });
+});
+
+app.get('/messages/:messageid', auth, (req, res, next) => {
+  message.getModel().findOne({_id: req.params.messageid}).then((m) => {
+    return res.status(200).json(m);
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+  });
+});
 
 passport.use(new passportHTTP.BasicStrategy(
   function(username, password, done) {
