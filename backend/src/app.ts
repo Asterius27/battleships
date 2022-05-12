@@ -22,6 +22,7 @@ declare global {
         role: string,
         friends_list: string[],
         friend_requests: string[],
+        temporary: boolean,
         id: string
       },
       user: {
@@ -32,6 +33,7 @@ declare global {
         role: string,
         friends_list: string[],
         friend_requests: string[],
+        temporary: boolean,
         id: string
       }
     }
@@ -61,12 +63,23 @@ app.get('/users/:username', auth, (req, res, next) => {
   user.getModel().findOne({username: req.params.username}, {digest: 0, salt: 0}).then((u) => {
     return res.status(200).json(u);
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
 
 app.post('/users', (req, res, next) => {
-  let u = user.newUser(req.body);
+  let data = {
+    name: req.body.name,
+    surname: req.body.surname,
+    username: req.body.username,
+    mail: req.body.mail,
+    role: "UTENTE",
+    friends_list: [],
+    friend_requests: [],
+    temporary: false,
+    password: req.body.password
+  };
+  let u = user.newUser(data);
   if (!req.body.password) {
     return next({statusCode: 404, error: true, errormessage: "Password field missing"});
   }
@@ -74,8 +87,92 @@ app.post('/users', (req, res, next) => {
   u.save().then((data) => {
     return res.status(200).json({error: false, errormessage: "", id: data._id});
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err.errmsg});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err.errmsg});
   });
+});
+
+app.post('/users/moderator', auth, (req, res, next) => {
+  if (req.auth.role === 'MODERATOR') {
+    let data = {
+      name: req.body.name,
+      surname: req.body.surname,
+      username: req.body.username,
+      mail: req.body.mail,
+      role: "MODERATOR",
+      friends_list: [],
+      friend_requests: [],
+      temporary: true,
+      password: req.body.password
+    };
+    let u = user.newUser(data);
+    if (!req.body.password) {
+      return next({statusCode: 404, error: true, errormessage: "Password field missing"});
+    }
+    u.setPassword(req.body.password);
+    u.save().then((data) => {
+      return res.status(200).json({error: false, errormessage: "", id: data._id});
+    }).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err.errmsg});
+    });
+  } else {
+    return next({statusCode: 404, error: true, errormessage: "Unauthorized"});
+  }
+});
+
+app.patch('/users/:username', auth, (req, res, next) => {
+  user.getModel().findOneAndUpdate({username: req.params.username}, {
+    name: req.body.name,
+    surname: req.body.surname,
+    username: req.body.username,
+    mail: req.body.mail,
+    temporary: false
+  }, {new: true}).then((u) => {
+    u.setPassword(req.body.password);
+    u.save().then((data) => {
+      return res.status(200).json({error: false, errormessage: "", id: data._id});
+    }).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+  });
+});
+
+app.delete('/users/:username', auth, async (req, res, next) => {
+  if (req.auth.role === 'MODERATOR') {
+    let deleted_user_id = undefined;
+    let deleted_messages_ids = [];
+    await user.getModel().findOne({username: req.params.username}).then((u) => {
+      deleted_user_id = u._id;
+    }).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+    await user.getModel().deleteOne({username: req.params.username}).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+    await user.getModel().updateMany({friends_list: deleted_user_id}, {$pull: {friends_list: deleted_user_id}}).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+    await user.getModel().updateMany({friend_requests: deleted_user_id}, {$pull: {friend_requests: deleted_user_id}}).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+    await message.getModel().find({owner: deleted_user_id}).then((ms) => {
+      for (let m of ms) {
+        deleted_messages_ids.push(m._id);
+      }
+    }).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+    await message.getModel().deleteMany({owner: deleted_user_id}).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+    await chat.getModel().updateMany({participants: deleted_user_id}, {$pull: {participants: deleted_user_id}, $pullAll: {messages: deleted_messages_ids}}).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+    return res.status(200).json({error: false, errormessage: "", id: deleted_user_id});
+  } else {
+    return next({statusCode: 404, error: true, errormessage: "Unauthorized"});
+  }
 });
 
 app.post('/friends/request', auth, (req, res, next) => {
@@ -86,7 +183,7 @@ app.post('/friends/request', auth, (req, res, next) => {
           ios.emit("newfriendrequest" + req.body.username, req.auth.id);
           return res.status(200).json(u);
         }).catch((err) => {
-          return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+          return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });
       } else {
         return next({statusCode: 404, error: true, errormessage: "user already in friends list or already sent the request"});
@@ -99,10 +196,10 @@ app.post('/friends/request', auth, (req, res, next) => {
       user.getModel().findOneAndUpdate({username: req.auth.username}, {$push: {friends_list: u._id}, $pull: {friend_requests: u._id}}).then((u) => {
         return res.status(200).json(u);
       }).catch((err) => {
-        return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
       });
     }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
   }
   if (req.body.action === 'reject') {
@@ -110,10 +207,10 @@ app.post('/friends/request', auth, (req, res, next) => {
       user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {friend_requests: u._id}}).then((u) => {
         return res.status(200).json(u);
       }).catch((err) => {
-        return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
       });
     }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
   }
   if (req.body.action !== 'send' && req.body.action !== 'accept' && req.body.action !== 'reject') {
@@ -127,10 +224,10 @@ app.delete('/friends/:username', auth, (req, res, next) => {
     user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {friends_list: u._id}}).then((u) => {
       return res.status(200).json(u);
     }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
 
@@ -140,7 +237,7 @@ app.post('/chats', auth, (req, res, next) => {
   c.save().then((c) => {
     return res.status(200).json(c);
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err.errmsg});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err.errmsg});
   });
 });
 
@@ -148,7 +245,7 @@ app.post('/chats/:chatid/participants', auth, (req, res, next) => {
   chat.getModel().findOneAndUpdate({_id: req.params.chatid}, {$push: {participants: req.auth.id}}).then((c) => {
     return res.status(200).json(c);
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
 
@@ -156,7 +253,7 @@ app.get('/chats/:chatid', auth, (req, res, next) => {
   chat.getModel().findOne({_id: req.params.chatid}).then((c) => {
     return res.status(200).json(c);
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
 
@@ -164,7 +261,7 @@ app.get('/chats/:participantid', auth, (req, res, next) => {
   chat.getModel().find({participants: req.params.participantid}).then((cs) => {
     return res.status(200).json(cs);
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
 
@@ -176,10 +273,10 @@ app.post('/messages', auth, (req, res, next) => {
       ios.emit("newmessage" + c.id, m.id);
       return res.status(200).json(c);
     }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err.errmsg});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err.errmsg});
   });
 });
 
@@ -187,7 +284,7 @@ app.get('/messages/:messageid', auth, (req, res, next) => {
   message.getModel().findOne({_id: req.params.messageid}).then((m) => {
     return res.status(200).json(m);
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: "+ err});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
 
@@ -219,7 +316,7 @@ app.get('/login', passport.authenticate('basic', {session: false}), (req, res, n
     id: req.user.id
   };
   let token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, {expiresIn: '5h'});
-  return res.status(200).json({error: false, errormessage: "", token: token_signed});
+  return res.status(200).json({error: false, errormessage: "", token: token_signed, temporary: req.user.temporary});
 })
 
 app.use(function(err, req, res, next) {

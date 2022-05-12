@@ -11,6 +11,7 @@ export interface User extends mongoose.Document {
     role: string,
     friends_list: mongoose.Schema.Types.ObjectId[],
     friend_requests: mongoose.Schema.Types.ObjectId[],
+    temporary: boolean,
     salt: string,
     digest: string,
     setPassword: (pwd:string)=>void,
@@ -48,6 +49,10 @@ const userSchema = new Schema({
     },
     friend_requests: {
         type: [mongoose.Types.ObjectId],
+        required: false
+    },
+    temporary: {
+        type: Boolean,
         required: false
     },
     salt: {
