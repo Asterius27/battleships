@@ -120,6 +120,9 @@ app.post('/users/moderator', auth, (req, res, next) => {
 });
 
 app.patch('/users/:username', auth, (req, res, next) => {
+  if (!req.body.password) {
+    return next({statusCode: 404, error: true, errormessage: "Password field missing"});
+  }
   user.getModel().findOneAndUpdate({username: req.params.username}, {
     name: req.body.name,
     surname: req.body.surname,
