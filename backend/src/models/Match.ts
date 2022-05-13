@@ -214,6 +214,18 @@ matchSchema.methods.setStartingPlayer = function() {
     }
 }
 
+// TODO remove
+let printGrid = function(grid:string[][]) {
+    console.log(" ");
+    for (let i = 0; i < grid.length; i++) {
+        let s = "";
+        for (let j = 0; j < grid[i].length; j++) {
+            s = s + grid[i][j] + " ";
+        }
+        console.log(s);
+    }
+}
+
 let boatFits = function(x:number, y:number, l:number, grid:string[][], d:string) : boolean {
     if (d === 'v') {
         for (let i = 0; i < l; i++) {
@@ -258,7 +270,13 @@ export function createRandomGrid() : string[][] {
     for (let i = 0; i < availableCoords.length; i++) {
         availableCoords[i] = i;
     }
-    for (let i = 0; i < boats.length; i++) {
+    let i = 0;
+    let j = 0;
+    while (i < boats.length) {
+        if (j > 150) {
+            return null;
+        }
+        j = j + 1;
         let rnd = Math.floor(Math.random() * 2);
         if (rnd === 0) {
             let coord = 0;
@@ -266,7 +284,7 @@ export function createRandomGrid() : string[][] {
                 coord = availableCoords[Math.floor(Math.random() * availableCoords.length)];
             }
             let x = coord % 10;
-            let y = coord / 10;
+            let y = Math.trunc(coord / 10);
             if (boatFits(x, y, boats[i], grid, 'v')) {
                 if (y < grid.length - 1) {
                     grid[y + 1][x] = 'f'
@@ -281,11 +299,10 @@ export function createRandomGrid() : string[][] {
                     }
                 }
                 if ((y - (boats[i] - 1)) > 0) {
-                    grid[y - 1][x] = 'f';
+                    grid[y - boats[i]][x] = 'f';
                 }
                 availableCoords = regenerateAvailableCoords(grid);
-            } else {
-                rnd = 1;
+                i = i + 1;
             }
         }
         if (rnd === 1) {
@@ -294,7 +311,7 @@ export function createRandomGrid() : string[][] {
                 coord = availableCoords[Math.floor(Math.random() * availableCoords.length)];
             }
             let x = coord % 10;
-            let y = coord / 10;
+            let y = Math.trunc(coord / 10);
             if (boatFits(x, y, boats[i], grid, 'h')) {
                 if (x < grid.length - 1) {
                     grid[y][x + 1] = 'f'
@@ -309,9 +326,17 @@ export function createRandomGrid() : string[][] {
                     }
                 }
                 if ((x - (boats[i] - 1)) > 0) {
-                    grid[y][x - 1] = 'f';
+                    grid[y][x - boats[i]] = 'f';
                 }
                 availableCoords = regenerateAvailableCoords(grid);
+                i = i + 1;
+            }
+        }
+    }
+    for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[i].length; j++) {
+            if (grid[i][j] === 'f') {
+                grid[i][j] = 's';
             }
         }
     }

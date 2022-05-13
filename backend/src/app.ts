@@ -308,9 +308,17 @@ app.get('/messages/:messageid', auth, (req, res, next) => {
   });
 });
 
+app.post('/matches', auth, (req, res, next) => {
+  
+})
+
 app.get('/matches/randomgrid', auth, (req, res, next) => {
+  let grid = null;
+  while (!grid) {
+    grid = match.createRandomGrid()
+  }
   let data = {
-    grid: match.createRandomGrid()
+    grid: grid
   };
   return res.status(200).json(data);
 })
