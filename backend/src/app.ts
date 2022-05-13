@@ -319,6 +319,7 @@ app.post('/matches', auth, (req, res, next) => {
   let m = match.newMatch(data);
   m.setStartingPlayer();
   m.save().then((m) => {
+    ios.emit("newmatch", m._id, m.playerTwo);
     return res.status(200).json({error: false, errormessage: "", id: m._id});
   }).catch((err) => {
     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -358,8 +359,32 @@ app.post('/matches/:matchid/grid', auth, (req, res, next) => {
 });
 
 app.post('/matches/:matchid/move', auth, (req, res, next) => {
-  // TODO player makes a move so it gets saved in the database and other player gets notified
-})
+  match.getModel().findOne({_id: req.params.matchid}).then((m) => {
+    if (req.auth.id === String(m.playerOne) || req.auth.id === String(m.playerTwo)) {
+      if ((req.auth.id === String(m.startingPlayer)) && ((m.moves.length % 2) === 0)) {
+        m.update({$push: {moves: req.body.move}}).then((mat) => {
+          ios.emit(mat._id, req.auth.id + " made his move");
+          return res.status(200).json(mat);
+        }).catch((err) => {
+          return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+        });
+      }
+      if ((req.auth.id !== String(m.startingPlayer)) && ((m.moves.length % 2) !== 0)) {
+        m.update({$push: {moves: req.body.move}}).then((mat) => {
+          ios.emit(mat._id, req.auth.id + " made his move");
+          return res.status(200).json(mat);
+        }).catch((err) => {
+          return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+        });
+      }
+      return next({statusCode: 404, error: true, errormessage: "It's not your turn"});
+    } else {
+      return next({statusCode: 404, error: true, errormessage: "You are not a player"});
+    }
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+  });
+});
 
 app.get('/matches/randomgrid', auth, (req, res, next) => {
   let grid = null;
