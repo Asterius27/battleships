@@ -158,7 +158,13 @@ let checkVisited = function(i:number, j:number, grid:string[][], d:string) : num
 }
 
 export function isValidGrid(grid:string[][]) : boolean {
-    let temp = [...grid];
+    let temp = new Array(grid.length);
+    for (let i = 0; i < temp.length; i++) {
+        temp[i] = new Array(grid[i].length);
+        for (let j = 0; j < temp[i].length; j++) {
+            temp[i][j] = grid[i][j];
+        }
+    }
     let boats = [2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5];
     if(temp.length === 10) {
         for (let i = 0; i < temp.length; i++) {

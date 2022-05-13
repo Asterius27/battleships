@@ -329,10 +329,10 @@ app.post('/matches', auth, (req, res, next) => {
 app.post('/matches/:matchid/grid', auth, (req, res, next) => {
   match.getModel().findOne({_id: req.params.matchid}).then((m) => {
     if (req.auth.id === String(m.playerOne)) {
-      if (match.isValidGrid(req.body.gridOne)) {
-        m.update({gridOne: req.body.gridOne}).then((mat) => {
-          ios.emit(mat._id, "player one submitted his grid");
-          return res.status(200).json(mat);
+      if (match.isValidGrid(req.body.grid)) {
+        match.getModel().updateOne({gridOne: req.body.grid}).then(() => {
+          ios.emit(m._id, "player one submitted his grid");
+          return res.status(200).json(m);
         }).catch((err) => {
           return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });
@@ -341,10 +341,10 @@ app.post('/matches/:matchid/grid', auth, (req, res, next) => {
       }
     }
     if (req.auth.id === String(m.playerTwo)) {
-      if (match.isValidGrid(req.body.gridTwo)) {
-        m.update({gridTwo: req.body.gridTwo}).then((mat) => {
-          ios.emit(mat._id, "player two submitted his grid");
-          return res.status(200).json(mat);
+      if (match.isValidGrid(req.body.grid)) {
+        match.getModel().updateOne({gridTwo: req.body.grid}).then(() => {
+          ios.emit(m._id, "player two submitted his grid");
+          return res.status(200).json(m);
         }).catch((err) => {
           return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });
@@ -352,7 +352,9 @@ app.post('/matches/:matchid/grid', auth, (req, res, next) => {
         return next({statusCode: 404, error: true, errormessage: "Grid is not valid"});
       }
     }
-    return next({statusCode: 404, error: true, errormessage: "You are not a player"});
+    if (req.auth.id !== String(m.playerTwo) && req.auth.id !== String(m.playerOne)) {
+      return next({statusCode: 404, error: true, errormessage: "You are not a player"});
+    }
   }).catch((err) => {
     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
@@ -362,22 +364,24 @@ app.post('/matches/:matchid/move', auth, (req, res, next) => {
   match.getModel().findOne({_id: req.params.matchid}).then((m) => {
     if (req.auth.id === String(m.playerOne) || req.auth.id === String(m.playerTwo)) {
       if ((req.auth.id === String(m.startingPlayer)) && ((m.moves.length % 2) === 0)) {
-        m.update({$push: {moves: req.body.move}}).then((mat) => {
-          ios.emit(mat._id, req.auth.id + " made his move");
-          return res.status(200).json(mat);
+        match.getModel().updateOne({$push: {moves: req.body.move}}).then(() => {
+          ios.emit(m._id, req.auth.id + " made his move");
+          return res.status(200).json(m);
         }).catch((err) => {
           return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });
       }
       if ((req.auth.id !== String(m.startingPlayer)) && ((m.moves.length % 2) !== 0)) {
-        m.update({$push: {moves: req.body.move}}).then((mat) => {
-          ios.emit(mat._id, req.auth.id + " made his move");
-          return res.status(200).json(mat);
+        match.getModel().updateOne({$push: {moves: req.body.move}}).then(() => {
+          ios.emit(m._id, req.auth.id + " made his move");
+          return res.status(200).json(m);
         }).catch((err) => {
           return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });
       }
-      return next({statusCode: 404, error: true, errormessage: "It's not your turn"});
+      if (!((req.auth.id !== String(m.startingPlayer)) && ((m.moves.length % 2) !== 0)) && !((req.auth.id === String(m.startingPlayer)) && ((m.moves.length % 2) === 0))) {
+        return next({statusCode: 404, error: true, errormessage: "It's not your turn"});
+      }
     } else {
       return next({statusCode: 404, error: true, errormessage: "You are not a player"});
     }
