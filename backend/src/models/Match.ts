@@ -10,9 +10,7 @@ export interface Match extends mongoose.Document {
     startingPlayer: mongoose.Schema.Types.ObjectId,
     moves: string[],
     createdAt: mongoose.Schema.Types.Date,
-    isValidGrid: (grid:string[][])=>boolean,
-    setStartingPlayer: ()=>void,
-    createRandomGrid: ()=>string[][]
+    setStartingPlayer: ()=>void
 }
 
 const matchSchema = new Schema({
@@ -44,6 +42,18 @@ const matchSchema = new Schema({
     timestamps: true
 });
 
+// TODO remove
+let printGrid = function(grid:string[][]) {
+    console.log(" ");
+    for (let i = 0; i < grid.length; i++) {
+        let s = "";
+        for (let j = 0; j < grid[i].length; j++) {
+            s = s + grid[i][j] + " ";
+        }
+        console.log(s);
+    }
+}
+
 let checkBoat = function(i:number, j:number, grid:string[][], d:string) : number {
     let boat = 0;
     if (d === 'n') {
@@ -59,7 +69,7 @@ let checkBoat = function(i:number, j:number, grid:string[][], d:string) : number
         return boat;
     }
     if (d === 's') {
-        while (i < grid.length) {
+        while (i < grid.length - 1) {
             i = i + 1;
             if (grid[i][j] === 'b') {
                 grid[i][j] = 'v';
@@ -83,7 +93,7 @@ let checkBoat = function(i:number, j:number, grid:string[][], d:string) : number
         return boat;
     }
     if (d === 'e') {
-        while (j < grid.length) {
+        while (j < grid.length - 1) {
             j = j + 1;
             if (grid[i][j] === 'b') {
                 grid[i][j] = 'v';
@@ -110,7 +120,7 @@ let checkVisited = function(i:number, j:number, grid:string[][], d:string) : num
         return 1;
     }
     if (d === 's') {
-        if (i < grid.length) {
+        if (i < grid.length - 1) {
             i = i + 1;
             if (grid[i][j] === 'b') {
                 return 0;
@@ -134,7 +144,7 @@ let checkVisited = function(i:number, j:number, grid:string[][], d:string) : num
         return 1;
     }
     if (d === 'e') {
-        if (j < grid.length) {
+        if (j < grid.length - 1) {
             j = j + 1;
             if (grid[i][j] === 'b') {
                 return 0;
@@ -147,7 +157,7 @@ let checkVisited = function(i:number, j:number, grid:string[][], d:string) : num
     }
 }
 
-matchSchema.methods.isValidGrid = function(grid:string[][]) : boolean {
+export function isValidGrid(grid:string[][]) : boolean {
     let temp = [...grid];
     let boats = [2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5];
     if(temp.length === 10) {
@@ -170,10 +180,10 @@ matchSchema.methods.isValidGrid = function(grid:string[][]) : boolean {
                         return false;
                     }
                     if (north !== 0 || south !== 0) {
-                        boat = north + south;
+                        boat = boat + north + south;
                     }
                     if (west !== 0 || east !== 0) {
-                        boat = west + east;
+                        boat = boat + west + east;
                     }
                     for (let h = 0; h < boats.length; h++) {
                         if (boats[h] === boat && !flag) {
@@ -211,18 +221,6 @@ matchSchema.methods.setStartingPlayer = function() {
         this.startingPlayer = this.playerOne;
     } else {
         this.startingPlayer = this.playerTwo;
-    }
-}
-
-// TODO remove
-let printGrid = function(grid:string[][]) {
-    console.log(" ");
-    for (let i = 0; i < grid.length; i++) {
-        let s = "";
-        for (let j = 0; j < grid[i].length; j++) {
-            s = s + grid[i][j] + " ";
-        }
-        console.log(s);
     }
 }
 

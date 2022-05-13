@@ -96,7 +96,7 @@ app.post('/users', (req, res, next) => {
   u.save().then((data) => {
     return res.status(200).json({error: false, errormessage: "", id: data._id});
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err.errmsg});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
 
@@ -296,7 +296,7 @@ app.post('/messages', auth, (req, res, next) => {
       return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
   }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err.errmsg});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
 
@@ -309,7 +309,56 @@ app.get('/messages/:messageid', auth, (req, res, next) => {
 });
 
 app.post('/matches', auth, (req, res, next) => {
-  
+  let data = {
+    playerOne: req.auth.id,
+    playerTwo: req.body.opponent,
+    gridOne: [[]],
+    gridTwo: [[]],
+    moves: []
+  }
+  let m = match.newMatch(data);
+  m.setStartingPlayer();
+  m.save().then((m) => {
+    return res.status(200).json({error: false, errormessage: "", id: m._id});
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+  });
+});
+
+app.post('/matches/:matchid/grid', auth, (req, res, next) => {
+  match.getModel().findOne({_id: req.params.matchid}).then((m) => {
+    if (req.auth.id === String(m.playerOne)) {
+      if (match.isValidGrid(req.body.gridOne)) {
+        m.update({gridOne: req.body.gridOne}).then((mat) => {
+          ios.emit(mat._id, "player one submitted his grid");
+          return res.status(200).json(mat);
+        }).catch((err) => {
+          return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+        });
+      } else {
+        return next({statusCode: 404, error: true, errormessage: "Grid is not valid"});
+      }
+    }
+    if (req.auth.id === String(m.playerTwo)) {
+      if (match.isValidGrid(req.body.gridTwo)) {
+        m.update({gridTwo: req.body.gridTwo}).then((mat) => {
+          ios.emit(mat._id, "player two submitted his grid");
+          return res.status(200).json(mat);
+        }).catch((err) => {
+          return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+        });
+      } else {
+        return next({statusCode: 404, error: true, errormessage: "Grid is not valid"});
+      }
+    }
+    return next({statusCode: 404, error: true, errormessage: "You are not a player"});
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+  });
+});
+
+app.post('/matches/:matchid/move', auth, (req, res, next) => {
+  // TODO player makes a move so it gets saved in the database and other player gets notified
 })
 
 app.get('/matches/randomgrid', auth, (req, res, next) => {
@@ -321,7 +370,7 @@ app.get('/matches/randomgrid', auth, (req, res, next) => {
     grid: grid
   };
   return res.status(200).json(data);
-})
+});
 
 passport.use(new passportHTTP.BasicStrategy(
   function(username, password, done) {
