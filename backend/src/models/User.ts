@@ -17,7 +17,7 @@ export interface User extends mongoose.Document {
     setPassword: (pwd:string)=>void,
     validatePassword: (pwd:string)=>boolean,
     hasModeratorRole: ()=>boolean,
-    setModeratorRole: ()=>void,
+    setModeratorRole: ()=>void
 }
 
 const userSchema = new Schema({
@@ -89,7 +89,7 @@ userSchema.methods.hasModeratorRole = function() : boolean {
 }
 
 userSchema.methods.setModeratorRole = function() {
-    this.role = 'MODERATOR'
+    this.role = 'MODERATOR';
 }
 
 export function getSchema() {return userSchema;}

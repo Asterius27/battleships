@@ -10,6 +10,7 @@ import { Server } from 'socket.io';
 import * as user from './models/User';
 import * as message from './models/Message';
 import * as chat from './models/Chat';
+import * as match from './models/Match';
 
 declare global {
   namespace Express {
@@ -66,6 +67,14 @@ app.get('/users/:username', auth, (req, res, next) => {
     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
+
+app.get('/users/:userid', auth, (req, res, next) => {
+  user.getModel().findOne({_id: req.params.userid}, {digest: 0, salt: 0}).then((u) => {
+    return res.status(200).json(u);
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+  });
+})
 
 app.post('/users', (req, res, next) => {
   let data = {
@@ -243,6 +252,9 @@ app.post('/chats', auth, (req, res, next) => {
   let data = {participants: array, messages: []};
   let c = chat.newChat(data);
   c.save().then((c) => {
+    for (let p of array) {
+      ios.emit("newchat" + p, c._id);
+    }
     return res.status(200).json(c);
   }).catch((err) => {
     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -295,6 +307,13 @@ app.get('/messages/:messageid', auth, (req, res, next) => {
     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
+
+app.get('/matches/randomgrid', auth, (req, res, next) => {
+  let data = {
+    grid: match.createRandomGrid()
+  };
+  return res.status(200).json(data);
+})
 
 passport.use(new passportHTTP.BasicStrategy(
   function(username, password, done) {
