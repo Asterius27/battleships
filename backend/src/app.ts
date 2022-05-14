@@ -42,7 +42,7 @@ const result = require('dotenv').config()
 const app = express();
 const port = 8000;
 const auth = expressjwt({secret: process.env.JWT_SECRET, algorithms: ["HS256"]});
-export let ios = undefined; // TODO check if this works
+export let ios = undefined;
 
 app.use(bodyparser.json());
 
