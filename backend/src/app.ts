@@ -121,7 +121,7 @@ app.post('/users/moderator', auth, (req, res, next) => {
     u.save().then((data) => {
       return res.status(200).json({error: false, errormessage: "", id: data._id});
     }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err.errmsg});
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
   } else {
     return next({statusCode: 404, error: true, errormessage: "Unauthorized"});
@@ -390,7 +390,15 @@ app.post('/matches/:matchid/move', auth, (req, res, next) => {
   });
 });
 
-app.get('/matches/randomgrid', auth, (req, res, next) => {
+app.get('/matches/:matchid', auth, (req, res, next) => {
+  match.getModel().findById(req.params.matchid).then((m) => {
+    return res.status(200).json(m);
+  }).catch((err) => {
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+  });
+});
+
+app.get('/grid', auth, (req, res, next) => {
   let grid = null;
   while (!grid) {
     grid = match.createRandomGrid()
