@@ -45,7 +45,7 @@ const result = require('dotenv').config()
 const app = express();
 const port = 8000;
 const auth = expressjwt({secret: process.env.JWT_SECRET, algorithms: ["HS256"]});
-let ios = undefined;
+export let ios = undefined; // TODO check if this works
 
 app.use(bodyparser.json());
 
@@ -60,230 +60,9 @@ app.get('/', (req, res, next) => {
   return res.status(200).json({api_version: "1.0", endpoints: ["/users", "/login"]});
 });
 
-app.get('/users/:username', auth, (req, res, next) => {
-  user.getModel().findOne({username: req.params.username}, {digest: 0, salt: 0}).then((u) => {
-    return res.status(200).json(u);
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.get('/users/:userid', auth, (req, res, next) => {
-  user.getModel().findOne({_id: req.params.userid}, {digest: 0, salt: 0}).then((u) => {
-    return res.status(200).json(u);
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-})
-
-app.post('/users', (req, res, next) => {
-  let data = {
-    name: req.body.name,
-    surname: req.body.surname,
-    username: req.body.username,
-    mail: req.body.mail,
-    role: "UTENTE",
-    friends_list: [],
-    friend_requests: [],
-    temporary: false,
-    password: req.body.password
-  };
-  let u = user.newUser(data);
-  if (!req.body.password) {
-    return next({statusCode: 404, error: true, errormessage: "Password field missing"});
-  }
-  u.setPassword(req.body.password);
-  u.save().then((data) => {
-    return res.status(200).json({error: false, errormessage: "", id: data._id});
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.post('/users/moderator', auth, (req, res, next) => {
-  if (req.auth.role === 'MODERATOR') {
-    let data = {
-      name: req.body.name,
-      surname: req.body.surname,
-      username: req.body.username,
-      mail: req.body.mail,
-      role: "MODERATOR",
-      friends_list: [],
-      friend_requests: [],
-      temporary: true,
-      password: req.body.password
-    };
-    let u = user.newUser(data);
-    if (!req.body.password) {
-      return next({statusCode: 404, error: true, errormessage: "Password field missing"});
-    }
-    u.setPassword(req.body.password);
-    u.save().then((data) => {
-      return res.status(200).json({error: false, errormessage: "", id: data._id});
-    }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-  } else {
-    return next({statusCode: 404, error: true, errormessage: "Unauthorized"});
-  }
-});
-
-app.patch('/users/:username', auth, (req, res, next) => {
-  if (!req.body.password) {
-    return next({statusCode: 404, error: true, errormessage: "Password field missing"});
-  }
-  user.getModel().findOneAndUpdate({username: req.params.username}, {
-    name: req.body.name,
-    surname: req.body.surname,
-    username: req.body.username,
-    mail: req.body.mail,
-    temporary: false
-  }, {new: true}).then((u) => {
-    u.setPassword(req.body.password);
-    u.save().then((data) => {
-      return res.status(200).json({error: false, errormessage: "", id: data._id});
-    }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.delete('/users/:username', auth, async (req, res, next) => {
-  if (req.auth.role === 'MODERATOR') {
-    let deleted_user_id = undefined;
-    let deleted_messages_ids = [];
-    await user.getModel().findOne({username: req.params.username}).then((u) => {
-      deleted_user_id = u._id;
-    }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-    await user.getModel().deleteOne({username: req.params.username}).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-    await user.getModel().updateMany({friends_list: deleted_user_id}, {$pull: {friends_list: deleted_user_id}}).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-    await user.getModel().updateMany({friend_requests: deleted_user_id}, {$pull: {friend_requests: deleted_user_id}}).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-    await message.getModel().find({owner: deleted_user_id}).then((ms) => {
-      for (let m of ms) {
-        deleted_messages_ids.push(m._id);
-      }
-    }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-    await message.getModel().deleteMany({owner: deleted_user_id}).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-    await chat.getModel().updateMany({participants: deleted_user_id}, {$pull: {participants: deleted_user_id}, $pullAll: {messages: deleted_messages_ids}}).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-    return res.status(200).json({error: false, errormessage: "", id: deleted_user_id});
-  } else {
-    return next({statusCode: 404, error: true, errormessage: "Unauthorized"});
-  }
-});
-
-app.post('/friends/request', auth, (req, res, next) => {
-  if (req.body.action === 'send') {
-    user.getModel().findOne({$and: [{username: req.body.username}, {$or: [{friend_requests: req.auth.id}, {friends_list: req.auth.id}]}]}).then((u) => {
-      if (!u) {
-        user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friend_requests: req.auth.id}}).then((u) => {
-          ios.emit("newfriendrequest" + req.body.username, req.auth.id);
-          return res.status(200).json(u);
-        }).catch((err) => {
-          return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-      } else {
-        return next({statusCode: 404, error: true, errormessage: "user already in friends list or already sent the request"});
-      }
-    });
-  }
-  if (req.body.action === 'accept') {
-    user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friends_list: req.auth.id}}).then((u) => {
-      ios.emit("friendrequestaccepted" + req.body.username, req.auth.id);
-      user.getModel().findOneAndUpdate({username: req.auth.username}, {$push: {friends_list: u._id}, $pull: {friend_requests: u._id}}).then((u) => {
-        return res.status(200).json(u);
-      }).catch((err) => {
-        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-      });
-    }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-  }
-  if (req.body.action === 'reject') {
-    user.getModel().findOne({username: req.body.username}).then((u) => {
-      user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {friend_requests: u._id}}).then((u) => {
-        return res.status(200).json(u);
-      }).catch((err) => {
-        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-      });
-    }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-  }
-  if (req.body.action !== 'send' && req.body.action !== 'accept' && req.body.action !== 'reject') {
-    return next({statusCode: 404, error: true, errormessage: "Bad Request"});
-  }
-});
-
-app.delete('/friends/:username', auth, (req, res, next) => {
-  user.getModel().findOneAndUpdate({username: req.params.username}, {$pull: {friends_list: req.auth.id}}).then((u) => {
-    ios.emit("deletedfriend" + req.params.username, req.auth.id);
-    user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {friends_list: u._id}}).then((u) => {
-      return res.status(200).json(u);
-    }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.post('/chats', auth, (req, res, next) => {
-  let array = []
-  array.push(String(req.auth.id));
-  for (let elem of req.body.participants) {
-    array.push(String(elem));
-  }
-  let data = {participants: array, messages: []};
-  let c = chat.newChat(data);
-  c.save().then((c) => {
-    for (let p of array) {
-      ios.emit("newchat" + p, c._id);
-    }
-    return res.status(200).json(c);
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.post('/chats/:chatid/participants', auth, (req, res, next) => {
-  chat.getModel().findOneAndUpdate({_id: req.params.chatid}, {$push: {participants: req.auth.id}}).then((c) => {
-    return res.status(200).json(c);
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.get('/chats/:chatid', auth, (req, res, next) => {
-  chat.getModel().findOne({_id: req.params.chatid}).then((c) => {
-    return res.status(200).json(c);
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.get('/chats/:participantid', auth, (req, res, next) => {
-  chat.getModel().find({participants: req.params.participantid}).then((cs) => {
-    return res.status(200).json(cs);
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
+app.use('/users', auth, require('./routes/users'));
+app.use('/friends', auth, require('./routes/friends'));
+app.use('/chats', auth, require('./routes/chats'));
 
 app.post('/messages', auth, (req, res, next) => {
   let data = {owner: req.auth.id, content: req.body.message};
@@ -407,6 +186,30 @@ app.get('/grid', auth, (req, res, next) => {
     grid: grid
   };
   return res.status(200).json(data);
+});
+
+app.post('/signup', (req, res, next) => {
+  let data = {
+      name: req.body.name,
+      surname: req.body.surname,
+      username: req.body.username,
+      mail: req.body.mail,
+      role: "UTENTE",
+      friends_list: [],
+      friend_requests: [],
+      temporary: false,
+      password: req.body.password
+  };
+  let u = user.newUser(data);
+  if (!req.body.password) {
+      return next({statusCode: 404, error: true, errormessage: "Password field missing"});
+  }
+  u.setPassword(req.body.password);
+  u.save().then((data) => {
+      return res.status(200).json({error: false, errormessage: "", id: data._id});
+  }).catch((err) => {
+      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+  });
 });
 
 passport.use(new passportHTTP.BasicStrategy(
