@@ -9,8 +9,13 @@ export interface Match extends mongoose.Document {
     gridTwo: string[][],
     startingPlayer: mongoose.Schema.Types.ObjectId,
     moves: string[],
+    result: string,
     createdAt: mongoose.Schema.Types.Date,
-    setStartingPlayer: ()=>void
+    setStartingPlayer: ()=>void,
+    isMatchFinished: ()=>boolean,
+    updateGrid: (move:string, player:boolean)=>void,
+    validateMove: (move:string, player:boolean)=>boolean,
+    updateMoves: (move:string)=>void
 }
 
 const matchSchema = new Schema({
@@ -37,10 +42,136 @@ const matchSchema = new Schema({
     moves: {
         type: [String],
         required: false
+    },
+    result: {
+        type: String,
+        required: false
     }
 }, {
     timestamps: true
 });
+
+matchSchema.methods.setStartingPlayer = function() {
+    let rnd = Math.floor(Math.random() * 2);
+    if (rnd === 0) {
+        this.startingPlayer = this.playerOne;
+    } else {
+        this.startingPlayer = this.playerTwo;
+    }
+}
+
+let parseMove = function(move:string) : {i:number, j:number} {
+    let i = parseInt(move.charAt(1)) - 1;
+    let j = 0;
+    switch (move.charAt(0)) {
+        case 'A':
+            j = 0;
+            break;
+        case 'B':
+            j = 1;
+            break;
+        case 'C':
+            j = 2;
+            break;
+        case 'D':
+            j = 3;
+            break;
+        case 'E':
+            j = 4;
+            break;
+        case 'F':
+            j = 5;
+            break;
+        case 'G':
+            j = 6;
+            break;
+        case 'H':
+            j = 7;
+            break;
+        case 'I':
+            j = 8;
+            break;
+        case 'J':
+            j = 9;
+            break;
+        default:
+            console.log("parse move error");
+    }
+    return {i, j};
+}
+
+matchSchema.methods.validateMove = function(move:string, player:boolean) : boolean {
+    let {i, j} = parseMove(move);
+    if (player) {
+        if (this.gridOne[i][j] === 'h' || this.gridOne[i][j] === 'm') {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        if (this.gridTwo[i][j] === 'h' || this.gridTwo[i][j] === 'm') {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+matchSchema.methods.updateGrid = function(move:string, player:boolean) {
+    let {i, j} = parseMove(move);
+    if (player) {
+        if (this.gridOne[i][j] === 'b') {
+            this.gridOne[i][j] = 'h';
+        }
+        if (this.gridOne[i][j] === 's') {
+            this.gridOne[i][j] = 'm';
+        }
+    } else {
+        if (this.gridTwo[i][j] === 'b') {
+            this.gridTwo[i][j] = 'h';
+        }
+        if (this.gridTwo[i][j] === 's') {
+            this.gridTwo[i][j] = 'm';
+        }
+    }
+}
+
+matchSchema.methods.updateMoves = function(move:string) {
+    this.moves.push(move);
+}
+
+matchSchema.methods.isMatchFinished = function() : boolean {
+    let playerOneWon = true;
+    let playerTwoWon = true;
+    for (let i = 0; i < this.gridOne.length; i++) {
+        for (let j = 0; j < this.gridOne[i].length; i++) {
+            if (this.gridOne[i][j] === 'b') {
+                playerTwoWon = false;
+            }
+        }
+    }
+    for (let i = 0; i < this.gridTwo.length; i++) {
+        for (let j = 0; j < this.gridTwo[i].length; i++) {
+            if (this.gridTwo[i][j] === 'b') {
+                playerOneWon = false;
+            }
+        }
+    }
+    if (!playerOneWon && !playerTwoWon) {
+        return false;
+    }
+    if (playerOneWon && !playerTwoWon) {
+        this.result = "1-0";
+        return true;
+    }
+    if (!playerOneWon && playerTwoWon) {
+        this.result = "0-1";
+        return true;
+    }
+    if (playerOneWon && playerTwoWon) {
+        return null;
+    }
+}
 
 // TODO remove
 let printGrid = function(grid:string[][]) {
@@ -221,15 +352,6 @@ export function isValidGrid(grid:string[][]) : boolean {
     }
 }
 
-matchSchema.methods.setStartingPlayer = function() {
-    let rnd = Math.floor(Math.random() * 2);
-    if (rnd === 0) {
-        this.startingPlayer = this.playerOne;
-    } else {
-        this.startingPlayer = this.playerTwo;
-    }
-}
-
 let boatFits = function(x:number, y:number, l:number, grid:string[][], d:string) : boolean {
     if (d === 'v') {
         for (let i = 0; i < l; i++) {
@@ -345,6 +467,16 @@ export function createRandomGrid() : string[][] {
         }
     }
     return grid;
+}
+
+export function isMove(move:string) : boolean {
+    if (parseInt(move.charAt(1)) > 10 || parseInt(move.charAt(1)) < 1) {
+        return false;
+    }
+    if (!("ABCDEFGHIJ".includes(move.charAt(0)))) {
+        return false;
+    }
+    return true;
 }
 
 export function getSchema() {return matchSchema;}

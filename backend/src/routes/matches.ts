@@ -9,7 +9,8 @@ router.post('/', (req, res, next) => {
         playerTwo: req.body.opponent,
         gridOne: [[]],
         gridTwo: [[]],
-        moves: []
+        moves: [],
+        result: "0-0"
     }
     let m = match.newMatch(data);
     m.setStartingPlayer();
@@ -56,33 +57,68 @@ router.post('/:matchid/grid', (req, res, next) => {
 });
 
 router.post('/:matchid/move', (req, res, next) => {
-    match.getModel().findOne({_id: req.params.matchid}).then((m) => {
-        if (req.auth.id === String(m.playerOne) || req.auth.id === String(m.playerTwo)) {
-            if ((req.auth.id === String(m.startingPlayer)) && ((m.moves.length % 2) === 0)) {
-                match.getModel().updateOne({$push: {moves: req.body.move}}).then(() => {
-                    ios.emit(m._id, req.auth.id + " made his move");
-                    return res.status(200).json(m);
-                }).catch((err) => {
-                    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-                });
+    if (match.isMove(req.body.move)) {
+        match.getModel().findOne({_id: req.params.matchid}).then((m) => {
+            if (req.auth.id === String(m.playerOne) || req.auth.id === String(m.playerTwo)) {
+                if (((req.auth.id === String(m.startingPlayer)) && ((m.moves.length % 2) === 0)) || ((req.auth.id !== String(m.startingPlayer)) && ((m.moves.length % 2) !== 0))) {
+                    if (req.auth.id === String(m.playerOne)) {
+                        if (m.validateMove(req.body.move, true)) {
+                            m.updateGrid(req.body.move, true);
+                            m.updateMoves(req.body.move);
+                            if (m.isMatchFinished()) {
+                                m.save().then((data) => {
+                                    ios.emit(m._id, "match is finished", m.result);
+                                    return res.status(200).json(data);
+                                }).catch((err) => {
+                                    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+                                });
+                            } else {
+                                m.save().then((data) => {
+                                    ios.emit(m._id, req.auth.id + " made his move");
+                                    return res.status(200).json(data);
+                                }).catch((err) => {
+                                    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+                                });
+                            }
+                        } else {
+                            return next({statusCode: 404, error: true, errormessage: "Invalid move"});
+                        }
+                    }
+                    if (req.auth.id === String(m.playerTwo)) {
+                        if (m.validateMove(req.body.move, false)) {
+                            m.updateGrid(req.body.move, false);
+                            m.updateMoves(req.body.move);
+                            if (m.isMatchFinished()) {
+                                m.save().then((data) => {
+                                    ios.emit(m._id, "match is finished", m.result);
+                                    return res.status(200).json(data);
+                                }).catch((err) => {
+                                    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+                                });
+                            } else {
+                                m.save().then((data) => {
+                                    ios.emit(m._id, req.auth.id + " made his move");
+                                    return res.status(200).json(data);
+                                }).catch((err) => {
+                                    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+                                });
+                            }
+                        } else {
+                            return next({statusCode: 404, error: true, errormessage: "Invalid move"});
+                        }
+                    }
+                } else {
+                    return next({statusCode: 404, error: true, errormessage: "It's not your turn"});
+                }
+            } else {
+                return next({statusCode: 404, error: true, errormessage: "You are not a player"});
             }
-            if ((req.auth.id !== String(m.startingPlayer)) && ((m.moves.length % 2) !== 0)) {
-                match.getModel().updateOne({$push: {moves: req.body.move}}).then(() => {
-                    ios.emit(m._id, req.auth.id + " made his move");
-                    return res.status(200).json(m);
-                }).catch((err) => {
-                    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-                });
-            }
-            if (!((req.auth.id !== String(m.startingPlayer)) && ((m.moves.length % 2) !== 0)) && !((req.auth.id === String(m.startingPlayer)) && ((m.moves.length % 2) === 0))) {
-                return next({statusCode: 404, error: true, errormessage: "It's not your turn"});
-            }
-        } else {
-            return next({statusCode: 404, error: true, errormessage: "You are not a player"});
-        }
-    }).catch((err) => {
-        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
+        }).catch((err) => {
+            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+        });
+    } else {
+        return next({statusCode: 404, error: true, errormessage: "Invalid move format"});
+    }
 });
 
 router.get('/id/:matchid', (req, res, next) => {
