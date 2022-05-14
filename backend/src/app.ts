@@ -8,9 +8,6 @@ import { expressjwt } from 'express-jwt';
 import http = require('http');
 import { Server } from 'socket.io';
 import * as user from './models/User';
-import * as message from './models/Message';
-import * as chat from './models/Chat';
-import * as match from './models/Match';
 
 declare global {
   namespace Express {
@@ -54,7 +51,7 @@ app.use((req, res, next) => {
   console.log("New request for: " + req.url );
   console.log("Method: " + req.method);
   next();
-})
+});
 
 app.get('/', (req, res, next) => {
   return res.status(200).json({api_version: "1.0", endpoints: ["/users", "/login"]});
@@ -63,152 +60,30 @@ app.get('/', (req, res, next) => {
 app.use('/users', auth, require('./routes/users'));
 app.use('/friends', auth, require('./routes/friends'));
 app.use('/chats', auth, require('./routes/chats'));
-
-app.post('/messages', auth, (req, res, next) => {
-  let data = {owner: req.auth.id, content: req.body.message};
-  let m = message.newMessage(data);
-  m.save().then((m) => {
-    chat.getModel().findOneAndUpdate({_id: req.body.chat}, {$push: {messages: m.id}}).then((c) => {
-      ios.emit("newmessage" + c.id, m.id);
-      return res.status(200).json(c);
-    }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.get('/messages/:messageid', auth, (req, res, next) => {
-  message.getModel().findOne({_id: req.params.messageid}).then((m) => {
-    return res.status(200).json(m);
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.post('/matches', auth, (req, res, next) => {
-  let data = {
-    playerOne: req.auth.id,
-    playerTwo: req.body.opponent,
-    gridOne: [[]],
-    gridTwo: [[]],
-    moves: []
-  }
-  let m = match.newMatch(data);
-  m.setStartingPlayer();
-  m.save().then((m) => {
-    ios.emit("newmatch", m._id, m.playerTwo);
-    return res.status(200).json({error: false, errormessage: "", id: m._id});
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.post('/matches/:matchid/grid', auth, (req, res, next) => {
-  match.getModel().findOne({_id: req.params.matchid}).then((m) => {
-    if (req.auth.id === String(m.playerOne)) {
-      if (match.isValidGrid(req.body.grid)) {
-        match.getModel().updateOne({gridOne: req.body.grid}).then(() => {
-          ios.emit(m._id, "player one submitted his grid");
-          return res.status(200).json(m);
-        }).catch((err) => {
-          return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-      } else {
-        return next({statusCode: 404, error: true, errormessage: "Grid is not valid"});
-      }
-    }
-    if (req.auth.id === String(m.playerTwo)) {
-      if (match.isValidGrid(req.body.grid)) {
-        match.getModel().updateOne({gridTwo: req.body.grid}).then(() => {
-          ios.emit(m._id, "player two submitted his grid");
-          return res.status(200).json(m);
-        }).catch((err) => {
-          return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-      } else {
-        return next({statusCode: 404, error: true, errormessage: "Grid is not valid"});
-      }
-    }
-    if (req.auth.id !== String(m.playerTwo) && req.auth.id !== String(m.playerOne)) {
-      return next({statusCode: 404, error: true, errormessage: "You are not a player"});
-    }
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.post('/matches/:matchid/move', auth, (req, res, next) => {
-  match.getModel().findOne({_id: req.params.matchid}).then((m) => {
-    if (req.auth.id === String(m.playerOne) || req.auth.id === String(m.playerTwo)) {
-      if ((req.auth.id === String(m.startingPlayer)) && ((m.moves.length % 2) === 0)) {
-        match.getModel().updateOne({$push: {moves: req.body.move}}).then(() => {
-          ios.emit(m._id, req.auth.id + " made his move");
-          return res.status(200).json(m);
-        }).catch((err) => {
-          return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-      }
-      if ((req.auth.id !== String(m.startingPlayer)) && ((m.moves.length % 2) !== 0)) {
-        match.getModel().updateOne({$push: {moves: req.body.move}}).then(() => {
-          ios.emit(m._id, req.auth.id + " made his move");
-          return res.status(200).json(m);
-        }).catch((err) => {
-          return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-      }
-      if (!((req.auth.id !== String(m.startingPlayer)) && ((m.moves.length % 2) !== 0)) && !((req.auth.id === String(m.startingPlayer)) && ((m.moves.length % 2) === 0))) {
-        return next({statusCode: 404, error: true, errormessage: "It's not your turn"});
-      }
-    } else {
-      return next({statusCode: 404, error: true, errormessage: "You are not a player"});
-    }
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.get('/matches/:matchid', auth, (req, res, next) => {
-  match.getModel().findById(req.params.matchid).then((m) => {
-    return res.status(200).json(m);
-  }).catch((err) => {
-    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-  });
-});
-
-app.get('/grid', auth, (req, res, next) => {
-  let grid = null;
-  while (!grid) {
-    grid = match.createRandomGrid()
-  }
-  let data = {
-    grid: grid
-  };
-  return res.status(200).json(data);
-});
+app.use('/messages', auth, require('./routes/messages'));
+app.use('/matches', auth, require('./routes/matches'));
 
 app.post('/signup', (req, res, next) => {
   let data = {
-      name: req.body.name,
-      surname: req.body.surname,
-      username: req.body.username,
-      mail: req.body.mail,
-      role: "UTENTE",
-      friends_list: [],
-      friend_requests: [],
-      temporary: false,
-      password: req.body.password
+    name: req.body.name,
+    surname: req.body.surname,
+    username: req.body.username,
+    mail: req.body.mail,
+    role: "UTENTE",
+    friends_list: [],
+    friend_requests: [],
+    temporary: false,
+    password: req.body.password
   };
   let u = user.newUser(data);
   if (!req.body.password) {
-      return next({statusCode: 404, error: true, errormessage: "Password field missing"});
+    return next({statusCode: 404, error: true, errormessage: "Password field missing"});
   }
   u.setPassword(req.body.password);
   u.save().then((data) => {
-      return res.status(200).json({error: false, errormessage: "", id: data._id});
+    return res.status(200).json({error: false, errormessage: "", id: data._id});
   }).catch((err) => {
-      return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
   });
 });
 
@@ -241,7 +116,7 @@ app.get('/login', passport.authenticate('basic', {session: false}), (req, res, n
   };
   let token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, {expiresIn: '5h'});
   return res.status(200).json({error: false, errormessage: "", token: token_signed, temporary: req.user.temporary});
-})
+});
 
 app.use(function(err, req, res, next) {
   console.log("Request error: " + JSON.stringify(err));

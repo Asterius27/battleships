@@ -20,7 +20,7 @@ router.post('/', (req, res, next) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
 });
-  
+
 router.post('/:chatid/participants', (req, res, next) => {
     chat.getModel().findOneAndUpdate({_id: req.params.chatid}, {$push: {participants: req.auth.id}}).then((c) => {
         return res.status(200).json(c);
@@ -28,16 +28,16 @@ router.post('/:chatid/participants', (req, res, next) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
 });
-  
-router.get('/:chatid', (req, res, next) => {
+
+router.get('/chat/:chatid', (req, res, next) => {
     chat.getModel().findOne({_id: req.params.chatid}).then((c) => {
         return res.status(200).json(c);
     }).catch((err) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
 });
-  
-router.get('/:participantid', (req, res, next) => {
+
+router.get('/participant/:participantid', (req, res, next) => {
     chat.getModel().find({participants: req.params.participantid}).then((cs) => {
         return res.status(200).json(cs);
     }).catch((err) => {

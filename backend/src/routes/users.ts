@@ -11,7 +11,7 @@ router.get('/username/:username', (req, res, next) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
 });
-  
+
 router.get('/id/:userid', (req, res, next) => {
     user.getModel().findOne({_id: req.params.userid}, {digest: 0, salt: 0}).then((u) => {
         return res.status(200).json(u);
@@ -19,7 +19,7 @@ router.get('/id/:userid', (req, res, next) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
 });
-  
+
 router.post('/moderator', (req, res, next) => {
     if (req.auth.role === 'MODERATOR') {
         let data = {
@@ -47,7 +47,7 @@ router.post('/moderator', (req, res, next) => {
         return next({statusCode: 404, error: true, errormessage: "Unauthorized"});
     }
 });
-  
+
 router.patch('/:username', (req, res, next) => {
     if (!req.body.password) {
         return next({statusCode: 404, error: true, errormessage: "Password field missing"});
@@ -69,7 +69,7 @@ router.patch('/:username', (req, res, next) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
 });
-  
+
 router.delete('/:username', async (req, res, next) => {
     if (req.auth.role === 'MODERATOR') {
         let deleted_user_id = undefined;

@@ -45,7 +45,7 @@ router.post('/request', (req, res, next) => {
         return next({statusCode: 404, error: true, errormessage: "Bad Request"});
     }
 });
-  
+
 router.delete('/:username', (req, res, next) => {
     user.getModel().findOneAndUpdate({username: req.params.username}, {$pull: {friends_list: req.auth.id}}).then((u) => {
         ios.emit("deletedfriend" + req.params.username, req.auth.id);
