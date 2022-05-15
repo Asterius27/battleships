@@ -20,6 +20,7 @@ declare global {
         role: string,
         friends_list: string[],
         friend_requests: string[],
+        match_invites: string[],
         temporary: boolean,
         id: string
       },
@@ -31,6 +32,7 @@ declare global {
         role: string,
         friends_list: string[],
         friend_requests: string[],
+        match_invites: string[],
         temporary: boolean,
         id: string
       }
@@ -73,6 +75,7 @@ app.post('/signup', (req, res, next) => {
     role: "UTENTE",
     friends_list: [],
     friend_requests: [],
+    match_invites: [],
     temporary: false,
     password: req.body.password
   };
@@ -132,10 +135,10 @@ mongoose.connect(process.env.DATABASE_URL).then(() => {
   let server = http.createServer(app);
   ios = new Server(server);
   ios.on("connection", (client) => {
-    console.log("Socket.io client connected");
+    console.log("Socket.io client connected" + client);
   });
   ios.on("connect_error", (err) => {
-    console.log(err.message);
+    console.log(err);
   });
   server.listen(port, () => {
     console.log(`Express is listening at http://localhost:${port}`);

@@ -2,6 +2,7 @@ import express = require('express');
 import * as user from '../models/User';
 import * as message from '../models/Message';
 import * as chat from '../models/Chat';
+import * as match from '../models/Match';
 const router = express.Router();
 
 router.get('/username/:username', (req, res, next) => {
@@ -30,6 +31,7 @@ router.post('/moderator', (req, res, next) => {
             role: "MODERATOR",
             friends_list: [],
             friend_requests: [],
+            match_invites: [],
             temporary: true,
             password: req.body.password
         };
@@ -99,6 +101,12 @@ router.delete('/:username', async (req, res, next) => {
             return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });
         await chat.getModel().updateMany({participants: deleted_user_id}, {$pull: {participants: deleted_user_id}, $pullAll: {messages: deleted_messages_ids}}).catch((err) => {
+            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+        });
+        await match.getModel().deleteMany({$or: [{playerOne: deleted_user_id}, {playerTwo: deleted_user_id}]}).catch((err) => {
+            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+        });
+        await user.getModel().updateMany({match_invites: deleted_user_id}, {$pull: {match_invites: deleted_user_id}}).catch((err) => {
             return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });
         return res.status(200).json({error: false, errormessage: "", id: deleted_user_id});

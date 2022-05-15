@@ -129,6 +129,14 @@ router.get('/id/:matchid', (req, res, next) => {
     });
 });
 
+router.get('/mymatches', (req, res, next) => {
+    match.getModel().find({$or: [{playerOne: req.auth.id}, {playerTwo: req.auth.id}]}).then((ms) => {
+        return res.status(200).json(ms);
+    }).catch((err) => {
+        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+});
+
 router.get('/grid', (req, res, next) => {
     let grid = null;
     while (!grid) {

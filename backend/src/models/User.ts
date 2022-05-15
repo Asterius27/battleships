@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import crypto = require('crypto');
 const { Schema } = mongoose;
 
+// TODO add player stats (wins, losses, ecc.)
+
 export interface User extends mongoose.Document {
     readonly _id: mongoose.Schema.Types.ObjectId,
     name: string,
@@ -11,6 +13,7 @@ export interface User extends mongoose.Document {
     role: string,
     friends_list: mongoose.Schema.Types.ObjectId[],
     friend_requests: mongoose.Schema.Types.ObjectId[],
+    match_invites: mongoose.Schema.Types.ObjectId[],
     temporary: boolean,
     salt: string,
     digest: string,
@@ -48,6 +51,10 @@ const userSchema = new Schema({
         required: false
     },
     friend_requests: {
+        type: [mongoose.Types.ObjectId],
+        required: false
+    },
+    match_invites: {
         type: [mongoose.Types.ObjectId],
         required: false
     },
