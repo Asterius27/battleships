@@ -140,4 +140,12 @@ router.get('/grid', (req, res, next) => {
     return res.status(200).json(data);
 });
 
+router.get('/ongoing', (req, res, next) => {
+    match.getModel().find({result: "0-0"}).then((ms) => {
+        return res.status(200).json(ms);
+    }).catch((err) => {
+        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+})
+
 module.exports = router;
