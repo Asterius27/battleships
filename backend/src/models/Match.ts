@@ -117,9 +117,145 @@ matchSchema.methods.validateMove = function(move:string, player:boolean) : boole
     }
 }
 
-let checkDestroyedBoat = function(i:number, j:number, player:boolean) {
-    if (player) {
-        
+let checkBoat = function(i:number, j:number, grid:string[][], d:string, c:string, s:string) : number {
+    let boat = 0;
+    if (d === 'n') {
+        while (i > 0) {
+            i = i - 1;
+            if (grid[i][j] === c) {
+                grid[i][j] = s;
+                boat = boat + 1;
+            } else {
+                break;
+            }
+        }
+        return boat;
+    }
+    if (d === 's') {
+        while (i < grid.length - 1) {
+            i = i + 1;
+            if (grid[i][j] === c) {
+                grid[i][j] = s;
+                boat = boat + 1;
+            } else {
+                break;
+            }
+        }
+        return boat;
+    }
+    if (d === 'w') {
+        while (j > 0) {
+            j = j - 1;
+            if (grid[i][j] === c) {
+                grid[i][j] = s;
+                boat = boat + 1;
+            } else {
+                break;
+            }
+        }
+        return boat;
+    }
+    if (d === 'e') {
+        while (j < grid.length - 1) {
+            j = j + 1;
+            if (grid[i][j] === c) {
+                grid[i][j] = s;
+                boat = boat + 1;
+            } else {
+                break;
+            }
+        }
+        return boat;
+    }
+}
+
+let checkDestroyedBoat = function(i:number, j:number, grid:string[][]) {
+    if (i > 0 && i < grid.length - 1 && j > 0 && j < grid.length - 1) {
+        if (grid[i - 1][j] !== 'b' && grid[i + 1][j] !== 'b' && grid[i][j - 1] !== 'b' && grid[i][j + 1] !== 'b') {
+            grid[i][j] = 'd';
+            checkBoat(i, j, grid, 'n', 'h', 'd');
+            checkBoat(i, j, grid, 's', 'h', 'd');
+            checkBoat(i, j, grid, 'e', 'h', 'd');
+            checkBoat(i, j, grid, 'w', 'h', 'd');
+        }
+    }
+    if (i === 0) {
+        if (j === 0) {
+            if (grid[i + 1][j] !== 'b' && grid[i][j + 1] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'n', 'h', 'd');
+                checkBoat(i, j, grid, 's', 'h', 'd');
+                checkBoat(i, j, grid, 'e', 'h', 'd');
+                checkBoat(i, j, grid, 'w', 'h', 'd');
+            }
+        }
+        if (j === grid.length - 1) {
+            if (grid[i + 1][j] !== 'b' && grid[i][j - 1] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'n', 'h', 'd');
+                checkBoat(i, j, grid, 's', 'h', 'd');
+                checkBoat(i, j, grid, 'e', 'h', 'd');
+                checkBoat(i, j, grid, 'w', 'h', 'd');
+            }
+        }
+        if (j > 0 && j < grid.length - 1) {
+            if (grid[i + 1][j] !== 'b' && grid[i][j - 1] !== 'b' && grid[i][j + 1] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'n', 'h', 'd');
+                checkBoat(i, j, grid, 's', 'h', 'd');
+                checkBoat(i, j, grid, 'e', 'h', 'd');
+                checkBoat(i, j, grid, 'w', 'h', 'd');
+            }
+        }
+    }
+    if (i === grid.length - 1) {
+        if (j === 0) {
+            if (grid[i - 1][j] !== 'b' && grid[i][j + 1] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'n', 'h', 'd');
+                checkBoat(i, j, grid, 's', 'h', 'd');
+                checkBoat(i, j, grid, 'e', 'h', 'd');
+                checkBoat(i, j, grid, 'w', 'h', 'd');
+            }
+        }
+        if (j === grid.length - 1) {
+            if (grid[i - 1][j] !== 'b' && grid[i][j - 1] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'n', 'h', 'd');
+                checkBoat(i, j, grid, 's', 'h', 'd');
+                checkBoat(i, j, grid, 'e', 'h', 'd');
+                checkBoat(i, j, grid, 'w', 'h', 'd');
+            }
+        }
+        if (j > 0 && j < grid.length - 1) {
+            if (grid[i + 1][j] !== 'b' && grid[i][j - 1] !== 'b' && grid[i][j + 1] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'n', 'h', 'd');
+                checkBoat(i, j, grid, 's', 'h', 'd');
+                checkBoat(i, j, grid, 'e', 'h', 'd');
+                checkBoat(i, j, grid, 'w', 'h', 'd');
+            }
+        }
+    }
+    if (i > 0 && i < grid.length - 1) {
+        if (j === 0) {
+            if (grid[i - 1][j] !== 'b' && grid[i + 1][j] !== 'b' && grid[i][j + 1] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'n', 'h', 'd');
+                checkBoat(i, j, grid, 's', 'h', 'd');
+                checkBoat(i, j, grid, 'e', 'h', 'd');
+                checkBoat(i, j, grid, 'w', 'h', 'd');
+            }
+        }
+        if (j === grid.length - 1) {
+            if (grid[i - 1][j] !== 'b' && grid[i + 1][j] !== 'b' && grid[i][j - 1] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'n', 'h', 'd');
+                checkBoat(i, j, grid, 's', 'h', 'd');
+                checkBoat(i, j, grid, 'e', 'h', 'd');
+                checkBoat(i, j, grid, 'w', 'h', 'd');
+            }
+        }
     }
 }
 
@@ -128,7 +264,7 @@ matchSchema.methods.updateGrid = function(move:string, player:boolean) {
     if (player) {
         if (this.gridOne[i][j] === 'b') {
             this.gridOne[i][j] = 'h';
-            checkDestroyedBoat(i, j, player);
+            checkDestroyedBoat(i, j, this.gridOne);
         }
         if (this.gridOne[i][j] === 's') {
             this.gridOne[i][j] = 'm';
@@ -136,7 +272,7 @@ matchSchema.methods.updateGrid = function(move:string, player:boolean) {
     } else {
         if (this.gridTwo[i][j] === 'b') {
             this.gridTwo[i][j] = 'h';
-            checkDestroyedBoat(i, j, player);
+            checkDestroyedBoat(i, j, this.gridTwo);
         }
         if (this.gridTwo[i][j] === 's') {
             this.gridTwo[i][j] = 'm';
@@ -190,58 +326,6 @@ let printGrid = function(grid:string[][]) {
             s = s + grid[i][j] + " ";
         }
         console.log(s);
-    }
-}
-
-let checkBoat = function(i:number, j:number, grid:string[][], d:string) : number {
-    let boat = 0;
-    if (d === 'n') {
-        while (i > 0) {
-            i = i - 1;
-            if (grid[i][j] === 'b') {
-                grid[i][j] = 'v';
-                boat = boat + 1;
-            } else {
-                break;
-            }
-        }
-        return boat;
-    }
-    if (d === 's') {
-        while (i < grid.length - 1) {
-            i = i + 1;
-            if (grid[i][j] === 'b') {
-                grid[i][j] = 'v';
-                boat = boat + 1;
-            } else {
-                break;
-            }
-        }
-        return boat;
-    }
-    if (d === 'w') {
-        while (j > 0) {
-            j = j - 1;
-            if (grid[i][j] === 'b') {
-                grid[i][j] = 'v';
-                boat = boat + 1;
-            } else {
-                break;
-            }
-        }
-        return boat;
-    }
-    if (d === 'e') {
-        while (j < grid.length - 1) {
-            j = j + 1;
-            if (grid[i][j] === 'b') {
-                grid[i][j] = 'v';
-                boat = boat + 1;
-            } else {
-                break;
-            }
-        }
-        return boat;
     }
 }
 
@@ -317,10 +401,10 @@ export function isValidGrid(grid:string[][]) : boolean {
                     temp[i][j] = 'c';
                     let boat = 1;
                     let flag = false;
-                    let north = checkBoat(i, j, temp, 'n');
-                    let south = checkBoat(i, j, temp, 's');
-                    let east = checkBoat(i, j, temp, 'e');
-                    let west = checkBoat(i, j, temp, 'w');
+                    let north = checkBoat(i, j, temp, 'n', 'b', 'v');
+                    let south = checkBoat(i, j, temp, 's', 'b', 'v');
+                    let east = checkBoat(i, j, temp, 'e', 'b', 'v');
+                    let west = checkBoat(i, j, temp, 'w', 'b', 'v');
                     if ((north !== 0 || south !== 0) && (east !== 0 || west !== 0)) {
                         return false;
                     }
