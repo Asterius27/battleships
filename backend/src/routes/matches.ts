@@ -11,7 +11,7 @@ router.post('/', (req, res, next) => {
         gridTwo: [[]],
         moves: [],
         result: "0-0"
-    }
+    };
     let m = match.newMatch(data);
     m.setStartingPlayer();
     m.save().then((m) => {
