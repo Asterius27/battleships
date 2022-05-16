@@ -5,7 +5,7 @@ import * as message from '../models/Message';
 const router = express.Router();
 
 router.post('/', (req, res, next) => {
-    let data = {owner: req.auth.id, content: req.body.message};
+    let data = {owner: req.auth.id, content: req.body.content};
     let m = message.newMessage(data);
     m.save().then((m) => {
         chat.getModel().findOneAndUpdate({_id: req.body.chat}, {$push: {messages: m.id}}).then((c) => {
