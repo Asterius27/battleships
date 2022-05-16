@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { UserHttpService } from '../user-http.service';
 
 @Component({
   selector: 'app-login',
@@ -9,21 +10,22 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
 
   public errmessage = undefined;
-  constructor(private router: Router) {}
+  constructor(private us: UserHttpService, private router: Router) {}
 
   ngOnInit(): void {}
 
-  login( mail: string, password: string, remember: boolean ) {
-    /*
-    this.us.login(mail, password, remember).subscribe((d) => {
-      console.log('Login granted: ' + JSON.stringify(d));
-      console.log('User service token: ' + this.us.get_token());
-      this.errmessage = undefined;
-      this.router.navigate(['/messages']);
-    }, (err) => {
-      console.log('Login error: ' + JSON.stringify(err) );
-      this.errmessage = err.message;
+  login(username: string, password: string, remember: boolean) {
+    this.us.login(username, password, remember).subscribe({
+      next: (d) => {
+        console.log('Login granted: ' + JSON.stringify(d));
+        console.log('User service token: ' + this.us.get_token());
+        this.errmessage = undefined;
+        // this.router.navigate(['/']);
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+      }
     });
-    */
   }
 }

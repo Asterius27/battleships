@@ -4,6 +4,7 @@ import mongoose = require('mongoose');
 import passport = require('passport');
 import passportHTTP = require('passport-http');
 import jsonwebtoken = require('jsonwebtoken');
+import cors = require('cors');
 import { expressjwt } from 'express-jwt';
 import http = require('http');
 import { Server } from 'socket.io';
@@ -46,6 +47,7 @@ const port = 8000;
 const auth = expressjwt({secret: process.env.JWT_SECRET, algorithms: ["HS256"]});
 export let ios = undefined;
 
+app.use(cors());
 app.use(bodyparser.json());
 
 app.use((req, res, next) => {

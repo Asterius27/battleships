@@ -1,16 +1,20 @@
 <div class="container" style="width: 400px; margin-top: 20px;" >
-    <div class="form-signin text-center loginform ">
+    <div class="form-signin loginform ">
         <i class="fas fa-envelope loginlogo"></i>
 
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+        <h1 class="h3 mb-3 text-center font-weight-normal">Sign in</h1>
 
-        <label for="inputEmail" class="sr-only">Email address</label>
-        <input type="email" #mailtxt id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+        <div class="text-left">
+            <label for="inputUsername" class="sr-only">Username</label>
+            <input type="text" #usernametxt id="inputUsername" class="form-control" placeholder="Username" required autofocus>
+        </div>
         
-        <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" #passwdtxt id="inputPassword" class="form-control" placeholder="Password" required>
+        <div class="text-left" style="padding-top: 5%; padding-bottom: 5%">
+            <label for="inputPassword" class="sr-only">Password</label>
+            <input type="password" #passwdtxt id="inputPassword" class="form-control" placeholder="Password" required>
+        </div>
         
-        <div class="checkbox mb-3">
+        <div class="checkbox text-center mb-3">
             <label>
                 <input type="checkbox" #checkr value="remember-me"> Remember me
             </label>
@@ -20,7 +24,10 @@
             Login error: {{errmessage}}
         </div>
         
-        <button class="btn btn-lg btn-primary btn-block" (click)="login( mailtxt.value, passwdtxt.value, checkr.checked );" >Sign in</button>
-        <p><a routerLink="/signup">Sign-up new user</a></p>
+        <div class="text-center">
+            <button class="btn btn-lg btn-primary btn-block" (click)="login(usernametxt.value, passwdtxt.value, checkr.checked);">Sign in</button>
+        </div>
+
+        <p class="text-center" style="padding-top: 5%">New user? <a routerLink="/signup">Sign-up</a></p>
     </div>
 </div>
