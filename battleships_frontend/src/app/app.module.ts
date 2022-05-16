@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { UserHttpService } from './user-http.service';
 import { SignupComponent } from './signup/signup.component';
+import { SocketioService } from './socketio.service';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { SignupComponent } from './signup/signup.component';
     FormsModule
   ],
   providers: [
-    {provide: UserHttpService, useClass: UserHttpService}
+    {provide: UserHttpService, useClass: UserHttpService},
+    {provide: SocketioService, useClass: SocketioService}
   ],
   bootstrap: [AppComponent]
 })
