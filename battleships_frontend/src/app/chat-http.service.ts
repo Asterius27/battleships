@@ -4,6 +4,7 @@ import { UserHttpService } from './user-http.service';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 
 interface Chat {
+  id: string,
   participants: string[],
   messages: string[]
 }

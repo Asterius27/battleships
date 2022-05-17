@@ -4,6 +4,7 @@ import { UserHttpService } from './user-http.service';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 
 interface Message {
+  id: string,
   owner: string,
   content: string,
   createdAt: Date
