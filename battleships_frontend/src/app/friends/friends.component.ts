@@ -10,6 +10,7 @@ import { User, UsersHttpService } from '../users-http.service';
 export class FriendsComponent implements OnInit {
 
   public errmessage = undefined;
+  public notification = "";
   public friends:User[] = [];
   public friend_requests:User[] = [];
   public tabs = true;
@@ -64,6 +65,70 @@ export class FriendsComponent implements OnInit {
         this.errmessage = err.message;
       }
     });
+  }
+
+  add_friend(username:string) {
+    let body = {
+      username: username,
+      action: "send"
+    }
+    this.uss.post_friend(body).subscribe({
+      next: (d) => {
+        console.log('Friend added');
+        this.notification = "Friend Added";
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+      }
+    });
+  }
+
+  accept_friend(username:string) {
+    let body = {
+      username: username,
+      action: "accept"
+    }
+    this.uss.post_friend(body).subscribe({
+      next: (d) => {
+        console.log('Friend accepted');
+        this.notification = "Friend Accepted";
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+      }
+    });
+  }
+
+  reject_friend(username:string) {
+    let body = {
+      username: username,
+      action: "reject"
+    }
+    this.uss.post_friend(body).subscribe({
+      next: (d) => {
+        console.log('Friend rejected');
+        this.notification = "Friend Rejected";
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+      }
+    });
+  }
+
+  delete_friend(username:string) {
+    this.uss.delete_friend(username).subscribe({
+      next: (d) => {
+        console.log('Friend deleted');
+        this.notification = "Friend Deleted";
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+      }
+    })
   }
 
   setTabs(value:boolean) {

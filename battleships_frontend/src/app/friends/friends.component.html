@@ -1,31 +1,44 @@
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link active" aria-current="page" (click)="setTabs(true);">Friends List</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" (click)="setTabs(false);">Friend Requests</a>
-    </li>
-</ul>
+<div style="padding-top: 2%">
+    <ul class="nav">
+        <li class="nav-item" style="padding-right: 2%">
+            <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(true);">Friends List</button>
+        </li>
+        <li class="nav-item" style="padding-right: 2%">
+            <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(false);">Friend Requests</button>
+        </li>
+        <li class="nav-item ms-auto">
+            <form class="form-inline">
+                <div class="input-group">
+                    <input class="form-control" #usernametxt type="text" placeholder="Username">
+                    <button class="btn btn-outline-success" (click)="add_friend(usernametxt.value);">Add Friend</button>
+                </div>
+            </form>
+        </li>
+    </ul>
+</div>
 
-<div class="panel panel-primary" id="friends_list" [hidden]="!tabs">
+<div class="panel panel-primary" id="friends_list" [hidden]="!tabs" style="padding-top: 2%">
     <div class="panel-heading"><h3 class="panel-title">Friends List</h3>
     </div>
     <div class="panel-body">
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let friend of friends">
                 {{ friend.username }}
+                <button class="btn btn-outline-danger" style="float: right;" (click)="delete_friend(friend.username);">Delete Friend</button>
             </li>
         </ul>
     </div>
 </div>
 
-<div class="panel panel-primary" id="friend_requests" [hidden]="tabs">
+<div class="panel panel-primary" id="friend_requests" [hidden]="tabs" style="padding-top: 2%">
     <div class="panel-heading"><h3 class="panel-title">Friend Requests</h3>
     </div>
     <div class="panel-body">
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let friend of friend_requests">
                 {{ friend.username }}
+                <button class="btn btn-outline-danger" style="float: right;" (click)="reject_friend(friend.username);">Reject Friend</button>
+                <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="accept_friend(friend.username);">Accept Friend</button>
             </li>
         </ul>
     </div>
