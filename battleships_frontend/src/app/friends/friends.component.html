@@ -1,1 +1,32 @@
-<p>friends works!</p>
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" (click)="setTabs(true);">Friends List</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" (click)="setTabs(false);">Friend Requests</a>
+    </li>
+</ul>
+
+<div class="panel panel-primary" id="friends_list" [hidden]="!tabs">
+    <div class="panel-heading"><h3 class="panel-title">Friends List</h3>
+    </div>
+    <div class="panel-body">
+        <ul class="list-group">
+            <li class="list-group-item" *ngFor="let friend of friends">
+                {{ friend.username }}
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="panel panel-primary" id="friend_requests" [hidden]="tabs">
+    <div class="panel-heading"><h3 class="panel-title">Friend Requests</h3>
+    </div>
+    <div class="panel-body">
+        <ul class="list-group">
+            <li class="list-group-item" *ngFor="let friend of friend_requests">
+                {{ friend.username }}
+            </li>
+        </ul>
+    </div>
+</div>

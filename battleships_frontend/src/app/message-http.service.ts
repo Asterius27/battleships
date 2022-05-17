@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { UserHttpService } from './user-http.service';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 
-interface Message {
+export interface Message {
   id: string,
   owner: string,
   content: string,
