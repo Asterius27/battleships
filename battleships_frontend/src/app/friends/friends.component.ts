@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserHttpService } from '../user-http.service';
 import { User, UsersHttpService } from '../users-http.service';
+import { Router } from '@angular/router';
+import { SocketioService } from '../socketio.service';
 
 @Component({
   selector: 'app-friends',
@@ -14,14 +16,24 @@ export class FriendsComponent implements OnInit {
   public friends:User[] = [];
   public friend_requests:User[] = [];
   public tabs = true;
-  constructor(private us: UserHttpService, private uss: UsersHttpService) {}
+  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService) {}
 
   ngOnInit(): void {
     this.load_friends_list();
     this.load_friend_requests();
+    this.sio.connect("newfriendrequest" + this.us.get_username()).subscribe((d) => {
+      this.load_friend_requests();
+    });
+    this.sio.connect("friendrequestaccepted" + this.us.get_username()).subscribe((d) => {
+      this.load_friends_list();
+    });
+    this.sio.connect("deletedfriend" + this.us.get_username()).subscribe((d) => {
+      this.load_friends_list();
+    });
   }
 
   load_friends_list() {
+    this.friends = [];
     this.uss.get_user_id(this.us.get_id()).subscribe({
       next: (d) => {
         for (let i = 0; i < d.friends_list.length; i++) {
@@ -32,6 +44,7 @@ export class FriendsComponent implements OnInit {
             error: (err) => {
               console.log('Login error: ' + JSON.stringify(err));
               this.errmessage = err.message;
+              this.logout();
             }
           });
         }
@@ -40,11 +53,13 @@ export class FriendsComponent implements OnInit {
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
         this.errmessage = err.message;
+        this.logout();
       }
     });
   }
 
   load_friend_requests() {
+    this.friend_requests = [];
     this.uss.get_user_id(this.us.get_id()).subscribe({
       next: (d) => {
         for (let i = 0; i < d.friend_requests.length; i++) {
@@ -55,6 +70,7 @@ export class FriendsComponent implements OnInit {
             error: (err) => {
               console.log('Login error: ' + JSON.stringify(err));
               this.errmessage = err.message;
+              this.logout();
             }
           });
         }
@@ -63,6 +79,7 @@ export class FriendsComponent implements OnInit {
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
         this.errmessage = err.message;
+        this.logout();
       }
     });
   }
@@ -80,6 +97,7 @@ export class FriendsComponent implements OnInit {
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
         this.errmessage = err.message;
+        this.logout();
       }
     });
   }
@@ -93,10 +111,13 @@ export class FriendsComponent implements OnInit {
       next: (d) => {
         console.log('Friend accepted');
         this.notification = "Friend Accepted";
+        this.load_friend_requests();
+        this.load_friends_list();
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
         this.errmessage = err.message;
+        this.logout();
       }
     });
   }
@@ -110,10 +131,12 @@ export class FriendsComponent implements OnInit {
       next: (d) => {
         console.log('Friend rejected');
         this.notification = "Friend Rejected";
+        this.load_friend_requests();
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
         this.errmessage = err.message;
+        this.logout();
       }
     });
   }
@@ -123,15 +146,22 @@ export class FriendsComponent implements OnInit {
       next: (d) => {
         console.log('Friend deleted');
         this.notification = "Friend Deleted";
+        this.load_friends_list();
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
         this.errmessage = err.message;
+        this.logout();
       }
     })
   }
 
   setTabs(value:boolean) {
     this.tabs = value;
+  }
+
+  logout() {
+    this.us.logout();
+    this.router.navigate(['/login']);
   }
 }

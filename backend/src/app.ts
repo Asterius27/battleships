@@ -135,7 +135,9 @@ app.use((req, res, next) => {
 
 mongoose.connect(process.env.DATABASE_URL).then(() => {
   let server = http.createServer(app);
-  ios = new Server(server);
+  ios = new Server(server, {cors: {
+    origin: "http://localhost:4200"
+  }});
   ios.on("connection", (client) => {
     console.log("Socket.io client connected" + client);
   });
