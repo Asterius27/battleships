@@ -15,6 +15,7 @@ import { ChatHttpService } from './chat-http.service';
 import { MessageHttpService } from './message-http.service';
 import { UsersHttpService } from './users-http.service';
 import { MatchHttpService } from './match-http.service';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { MatchHttpService } from './match-http.service';
     LoginComponent,
     SignupComponent,
     ChatComponent,
-    MessageEditorComponent
+    MessageEditorComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
