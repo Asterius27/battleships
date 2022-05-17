@@ -13,6 +13,8 @@ import { ChatComponent } from './chat/chat.component';
 import { MessageEditorComponent } from './message-editor/message-editor.component';
 import { ChatHttpService } from './chat-http.service';
 import { MessageHttpService } from './message-http.service';
+import { UsersHttpService } from './users-http.service';
+import { MatchHttpService } from './match-http.service';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,9 @@ import { MessageHttpService } from './message-http.service';
     {provide: UserHttpService, useClass: UserHttpService},
     {provide: SocketioService, useClass: SocketioService},
     {provide: ChatHttpService, useClass: ChatHttpService},
-    {provide: MessageHttpService, useClass: MessageHttpService}
+    {provide: MessageHttpService, useClass: MessageHttpService},
+    {provide: UsersHttpService, useClass: UsersHttpService},
+    {provide: MatchHttpService, useClass: MatchHttpService}
   ],
   bootstrap: [AppComponent]
 })

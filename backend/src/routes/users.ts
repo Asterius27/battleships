@@ -51,25 +51,29 @@ router.post('/moderator', (req, res, next) => {
 });
 
 router.patch('/:username', (req, res, next) => {
-    if (!req.body.password) {
-        return next({statusCode: 404, error: true, errormessage: "Password field missing"});
-    }
-    user.getModel().findOneAndUpdate({username: req.params.username}, {
-        name: req.body.name,
-        surname: req.body.surname,
-        username: req.body.username,
-        mail: req.body.mail,
-        temporary: false
-    }, {new: true}).then((u) => {
-        u.setPassword(req.body.password);
-        u.save().then((data) => {
-            return res.status(200).json({error: false, errormessage: "", id: data._id});
+    if (req.auth.username === req.params.username) {
+        if (!req.body.password) {
+            return next({statusCode: 404, error: true, errormessage: "Password field missing"});
+        }
+        user.getModel().findOneAndUpdate({username: req.params.username}, {
+            name: req.body.name,
+            surname: req.body.surname,
+            username: req.body.username,
+            mail: req.body.mail,
+            temporary: false
+        }, {new: true}).then((u) => {
+            u.setPassword(req.body.password);
+            u.save().then((data) => {
+                return res.status(200).json({error: false, errormessage: "", id: data._id});
+            }).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
         }).catch((err) => {
             return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });
-    }).catch((err) => {
-        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
+    } else {
+        return next({statusCode: 404, error: true, errormessage: "Unauthorized"});
+    }
 });
 
 router.delete('/:username', async (req, res, next) => {
