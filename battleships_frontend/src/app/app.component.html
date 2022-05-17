@@ -1,3 +1,6 @@
 <div class="container">
+  <div *ngIf="router.url !== '/login' && router.url !== '/' && router.url !== '/signup'">
+    <app-navbar></app-navbar>
+  </div>
   <router-outlet></router-outlet>
 </div>

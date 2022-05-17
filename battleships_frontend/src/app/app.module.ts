@@ -15,7 +15,8 @@ import { ChatHttpService } from './chat-http.service';
 import { MessageHttpService } from './message-http.service';
 import { UsersHttpService } from './users-http.service';
 import { MatchHttpService } from './match-http.service';
-import { HomeComponent } from './home/home.component';
+import { NavbarComponent } from './navbar/navbar.component';
+import { GameComponent } from './game/game.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { HomeComponent } from './home/home.component';
     SignupComponent,
     ChatComponent,
     MessageEditorComponent,
-    HomeComponent
+    NavbarComponent,
+    GameComponent
   ],
   imports: [
     BrowserModule,
