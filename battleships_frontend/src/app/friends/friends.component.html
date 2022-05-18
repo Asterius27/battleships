@@ -23,7 +23,7 @@
     <div class="panel-body">
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let friend of friends">
-                {{ friend.username }}
+                <button class="btn btn-light" (click)="open_chat(friend._id);">{{ friend.username }}</button>
                 <button class="btn btn-outline-danger" style="float: right;" (click)="delete_friend(friend.username);">Delete Friend</button>
             </li>
         </ul>

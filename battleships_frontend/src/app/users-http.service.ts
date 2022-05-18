@@ -4,7 +4,7 @@ import { UserHttpService } from './user-http.service';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 
 export interface User {
-  id: string,
+  _id: string,
   name: string,
   surname: string,
   username: string,

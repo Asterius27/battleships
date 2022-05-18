@@ -9,7 +9,7 @@ router.post('/', (req, res, next) => {
     for (let elem of req.body.participants) {
         array.push(String(elem));
     }
-    let data = {participants: array, messages: []};
+    let data = {participants: array, messages: [], type: req.body.type};
     let c = chat.newChat(data);
     c.save().then((c) => {
         for (let p of array) {
@@ -44,5 +44,13 @@ router.get('/participant/:participantid', (req, res, next) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
 });
+
+router.get('/friends/:friendid', (req, res, next) => {
+    chat.getModel().findOne({participants: {$all: [req.auth.id, req.params.friendid]}, type: "friend"}).then((c) => {
+        return res.status(200).json(c);
+    }).catch((err) => {
+        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+})
 
 module.exports = router;

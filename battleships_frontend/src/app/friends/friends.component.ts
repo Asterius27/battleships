@@ -156,6 +156,11 @@ export class FriendsComponent implements OnInit {
     })
   }
 
+  open_chat(friend_id:string) {
+    console.log(friend_id);
+    this.router.navigate(['/chat', {friend_id: friend_id}]);
+  }
+
   setTabs(value:boolean) {
     this.tabs = value;
   }

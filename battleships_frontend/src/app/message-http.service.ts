@@ -4,7 +4,7 @@ import { UserHttpService } from './user-http.service';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 
 export interface Message {
-  id: string,
+  _id: string,
   owner: string,
   content: string,
   createdAt: Date
@@ -41,6 +41,15 @@ export class MessageHttpService {
 
   get_message(id:string) : Observable<Message> {
     return this.http.get<Message>(this.us.url + '/messages/' + id, this.create_options()).pipe(
+      tap({
+        next: (data) => {console.log(JSON.stringify(data));},
+        error: catchError(this.handleError)
+      })
+    );
+  }
+
+  get_messages(ids:string[]) : Observable<Message[]> {
+    return this.http.get<Message[]>(this.us.url + '/messages', this.create_options({ids: ids})).pipe(
       tap({
         next: (data) => {console.log(JSON.stringify(data));},
         error: catchError(this.handleError)

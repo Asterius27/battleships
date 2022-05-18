@@ -4,9 +4,10 @@ import { UserHttpService } from './user-http.service';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 
 export interface Chat {
-  id: string,
+  _id: string,
   participants: string[],
-  messages: string[]
+  messages: string[],
+  type: string
 }
 
 @Injectable({
@@ -49,6 +50,15 @@ export class ChatHttpService {
 
   get_participant_chats(id:string) : Observable<Chat> {
     return this.http.get<Chat>(this.us.url + '/chats/participant/' + id, this.create_options()).pipe(
+      tap({
+        next: (data) => {console.log(JSON.stringify(data));},
+        error: catchError(this.handleError)
+      })
+    );
+  }
+
+  get_friend_chat(friend_id:string) : Observable<Chat> {
+    return this.http.get<Chat>(this.us.url + '/chats/friends/' + friend_id, this.create_options()).pipe(
       tap({
         next: (data) => {console.log(JSON.stringify(data));},
         error: catchError(this.handleError)

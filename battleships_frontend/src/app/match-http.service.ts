@@ -4,7 +4,7 @@ import { UserHttpService } from './user-http.service';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 
 export interface Match {
-  id: string,
+  _id: string,
   playerOne: string,
   playerTwo: string,
   gridOne: string[][],

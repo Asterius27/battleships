@@ -4,7 +4,8 @@ const { Schema } = mongoose;
 export interface Chat extends mongoose.Document {
     readonly _id: mongoose.Schema.Types.ObjectId,
     participants: mongoose.Schema.Types.ObjectId[],
-    messages: mongoose.Schema.Types.ObjectId[]
+    messages: mongoose.Schema.Types.ObjectId[],
+    type: string
 }
 
 const chatSchema = new Schema({
@@ -14,6 +15,10 @@ const chatSchema = new Schema({
     },
     messages: {
         type: [mongoose.Types.ObjectId],
+        required: true
+    },
+    type: {
+        type: String,
         required: true
     }
 });
