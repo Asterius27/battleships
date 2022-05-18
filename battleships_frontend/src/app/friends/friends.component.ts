@@ -3,6 +3,7 @@ import { UserHttpService } from '../user-http.service';
 import { User, UsersHttpService } from '../users-http.service';
 import { Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
+import { Chat, ChatHttpService } from '../chat-http.service';
 
 @Component({
   selector: 'app-friends',
@@ -16,7 +17,7 @@ export class FriendsComponent implements OnInit {
   public friends:User[] = [];
   public friend_requests:User[] = [];
   public tabs = true;
-  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService) {}
+  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private c: ChatHttpService) {}
 
   ngOnInit(): void {
     this.load_friends_list();
@@ -157,8 +158,32 @@ export class FriendsComponent implements OnInit {
   }
 
   open_chat(friend_id:string) {
-    console.log(friend_id);
-    this.router.navigate(['/chat', {friend_id: friend_id}]);
+    this.c.get_friend_chat(friend_id).subscribe({
+      next: (d) => {
+        if (d) {
+          console.log('Routing to chat');
+          this.router.navigate(['/chat', {chat_id: d._id}]);
+        } else {
+          let body:Chat = {_id: "", participants: [friend_id], messages: [], type: "friend"};
+          this.c.post_chat(body).subscribe({
+            next: (d) => {
+              console.log('Routing to newly created chat');
+              this.router.navigate(['/chat', {chat_id: d._id}]);
+            },
+            error: (err) => {
+              console.log('Login error: ' + JSON.stringify(err));
+              this.errmessage = err.message;
+              this.logout();
+            }
+          });
+        }
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
   }
 
   setTabs(value:boolean) {

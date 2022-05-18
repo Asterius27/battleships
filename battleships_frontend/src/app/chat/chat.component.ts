@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 import { Chat, ChatHttpService } from '../chat-http.service';
 import { Message, MessageHttpService } from '../message-http.service';
+import { UsersHttpService } from '../users-http.service';
 
 @Component({
   selector: 'app-chat',
@@ -15,35 +16,23 @@ export class ChatComponent implements OnInit {
   public errmessage = undefined;
   public notification = "";
   public chat = {} as Chat;
+  public chat_id = "";
   public messages:Message[] = [];
-  constructor(private us: UserHttpService, private c: ChatHttpService, private m: MessageHttpService, private router: Router, private sio: SocketioService, private route: ActivatedRoute) { }
+  constructor(private us: UserHttpService, private c: ChatHttpService, private m: MessageHttpService, private router: Router, private sio: SocketioService, private route: ActivatedRoute, private uss: UsersHttpService) {}
 
   ngOnInit(): void {
+    this.chat_id = this.route.snapshot.paramMap.get('chat_id') || "";
     this.load_chat();
+    this.sio.connect("newmessage" + this.chat_id).subscribe((d) => {
+      this.load_chat();
+    });
   }
 
   load_chat() {
-    let friend_id = this.route.snapshot.paramMap.get('friend_id') || "";
-    this.c.get_friend_chat(friend_id).subscribe({
+    this.c.get_chat(this.chat_id).subscribe({
       next: (d) => {
-        if (d) {
-          console.log('Chat loaded');
-          this.chat = d;
-          this.get_messages();
-        } else {
-          let body:Chat = {_id: "", participants: [friend_id], messages: [], type: "friend"};
-          this.c.post_chat(body).subscribe({
-            next: (d) => {
-              console.log('Chat created and loaded');
-              this.chat = d;
-            },
-            error: (err) => {
-              console.log('Login error: ' + JSON.stringify(err));
-              this.errmessage = err.message;
-              this.logout();
-            }
-          });
-        }
+        this.chat = d;
+        this.get_messages();
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
@@ -58,6 +47,7 @@ export class ChatComponent implements OnInit {
       next: (d) => {
         console.log('Messages loaded');
         this.messages = d;
+        this.messages.reverse();
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
@@ -65,6 +55,25 @@ export class ChatComponent implements OnInit {
         this.logout();
       }
     });
+  }
+
+  add_message(message:Message) {
+    this.messages.push(message);
+  }
+
+  get_owner_username(owner:string) : string {
+    let username = "";
+    this.uss.get_user_id(owner).subscribe({
+      next: (d) => {
+        username = d.username;
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
+    return username;
   }
 
   logout() {

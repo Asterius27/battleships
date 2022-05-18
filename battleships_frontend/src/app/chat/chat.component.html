@@ -1,1 +1,9 @@
-<p>chat works!</p>
+<div *ngFor="let message of messages" class="card" style="margin: 5px" > 
+    <div class="card-body">
+        <h5 class="card-title"><i class="far fa-envelope"></i>&nbsp;{{ message.owner }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ message.createdAt }}</h6>
+        <p class="card-text">{{ message.content }}</p>
+    </div>
+</div>
+
+<app-message-editor [chat_id]="chat._id" (posted)="add_message($event)"></app-message-editor>

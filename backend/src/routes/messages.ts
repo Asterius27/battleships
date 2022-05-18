@@ -10,7 +10,7 @@ router.post('/', (req, res, next) => {
     m.save().then((m) => {
         chat.getModel().findOneAndUpdate({_id: req.body.chat}, {$push: {messages: m.id}}).then((c) => {
             ios.emit("newmessage" + c.id, m.id);
-            return res.status(200).json(c);
+            return res.status(200).json(m);
         }).catch((err) => {
             return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });
@@ -28,7 +28,7 @@ router.get('/:messageid', (req, res, next) => {
 });
 
 router.get('/', (req, res, next) => {
-    message.getModel().find({_id: {$in: req.query.ids}}).sort({createdAt: 1}).then((ms) => {
+    message.getModel().find({_id: {$in: req.query.ids}}).sort({createdAt: -1}).then((ms) => {
         return res.status(200).json(ms);
     }).catch((err) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});

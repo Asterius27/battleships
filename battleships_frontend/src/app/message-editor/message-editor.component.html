@@ -1,1 +1,6 @@
-<p>message-editor works!</p>
+<form class="form-inline">
+    <div class="input-group">
+        <input class="form-control" #messagetxt type="text" placeholder="Type message...">
+        <button class="btn btn-outline-success" (click)="post_message(messagetxt.value); messagetxt.value='';">Send</button>
+    </div>
+</form>

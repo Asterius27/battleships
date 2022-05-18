@@ -57,9 +57,9 @@ export class MessageHttpService {
     );
   }
 
-  post_message(m:Message) : Observable<Message> {
-    console.log('Posting ' + JSON.stringify(m));
-    return this.http.post<Message>(this.us.url + '/messages', m, this.create_options()).pipe(
+  post_message(body:any) : Observable<Message> {
+    console.log('Posting ' + JSON.stringify(body));
+    return this.http.post<Message>(this.us.url + '/messages', body, this.create_options()).pipe(
       catchError(this.handleError)
     );
   }
