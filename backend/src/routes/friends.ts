@@ -52,17 +52,21 @@ router.post('/request', (req, res, next) => {
 
 router.post('/play', (req, res, next) => {
     if (req.body.action === 'invite') {
-        user.getModel().findOne({$and: [{username: req.body.username}, {match_invites: req.auth.id}]}).then((u) => {
-            if (!u) {
-                user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {match_invites: req.auth.id}}).then((us) => {
-                    ios.emit("newmatchinvite" + req.body.username, req.auth.id);
-                    return res.status(200).json(us);
-                }).catch((err) => {
-                    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-                });
-            } else {
-                return next({statusCode: 404, error: true, errormessage: "Already sent match invite to this user"});
-            }
+        user.getModel().findOne({username: req.body.username}).then((temp) => {
+            user.getModel().findOne({$or: [{$and: [{username: req.auth.username}, {match_invites: temp._id}]}, {$and: [{username: req.body.username}, {match_invites: req.auth.id}]}]}).then((u) => {
+                if (!u) {
+                    user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {match_invites: req.auth.id}}).then((us) => {
+                        ios.emit("newmatchinvite" + req.body.username, req.auth.id);
+                        return res.status(200).json(us);
+                    }).catch((err) => {
+                        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+                    });
+                } else {
+                    return next({statusCode: 404, error: true, errormessage: "Already sent match invite to this user"});
+                }
+            }).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
         }).catch((err) => {
             return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });

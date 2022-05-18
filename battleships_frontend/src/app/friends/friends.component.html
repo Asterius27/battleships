@@ -55,8 +55,8 @@
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let friend of match_invites">
                 {{ friend.username }}
-                <button class="btn btn-outline-danger" style="float: right;" (click)="reject_match_invite(friend.username);">Reject Friend</button>
-                <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="accept_match_invite(friend.username);">Accept Friend</button>
+                <button class="btn btn-outline-danger" style="float: right;" (click)="reject_match_invite(friend.username);">Reject Invite</button>
+                <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="accept_match_invite(friend.username);">Accept Invite</button>
             </li>
         </ul>
     </div>
