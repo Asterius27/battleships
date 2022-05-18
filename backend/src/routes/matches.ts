@@ -10,7 +10,8 @@ router.post('/', (req, res, next) => {
         gridOne: [[]],
         gridTwo: [[]],
         moves: [],
-        result: "0-0"
+        result: "0-0",
+        chat: req.body.chat
     };
     let m = match.newMatch(data);
     m.setStartingPlayer();

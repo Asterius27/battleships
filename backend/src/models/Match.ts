@@ -10,6 +10,7 @@ export interface Match extends mongoose.Document {
     startingPlayer: mongoose.Schema.Types.ObjectId,
     moves: string[],
     result: string,
+    chat: mongoose.Schema.Types.ObjectId,
     createdAt: mongoose.Schema.Types.Date,
     setStartingPlayer: ()=>void,
     isMatchFinished: ()=>boolean,
@@ -46,6 +47,10 @@ const matchSchema = new Schema({
     result: {
         type: String,
         required: false
+    },
+    chat: {
+        type: mongoose.Types.ObjectId,
+        required: true
     }
 }, {
     timestamps: true
