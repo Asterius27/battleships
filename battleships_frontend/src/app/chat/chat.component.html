@@ -1,7 +1,7 @@
-<div *ngFor="let message of messages" class="card" style="margin: 5px" > 
+<div *ngFor="let message of messages" class="card" style="margin-top: 1%; margin-bottom: 1%;"> 
     <div class="card-body">
-        <h5 class="card-title"><i class="far fa-envelope"></i>&nbsp;{{ message.owner }}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{ message.createdAt }}</h6>
+        <h5 class="card-title"><i class="far fa-envelope"></i>&nbsp;{{ message.owner_username }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ get_date_formatted(message) }}</h6>
         <p class="card-text">{{ message.content }}</p>
     </div>
 </div>

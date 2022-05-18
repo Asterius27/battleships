@@ -76,6 +76,16 @@ export class ChatComponent implements OnInit {
     return username;
   }
 
+  
+  get_date_formatted(m:Message) : string {
+    let datetime = m.createdAt.split("T");
+    let date = datetime[0].replace(/-/g, "/");
+    let time = datetime[1].split(":");
+    let hour = time[0];
+    let minute = time[1];
+    return date + " " + hour + ":" + minute;
+  }
+
   logout() {
     this.us.logout();
     this.router.navigate(['/login']);

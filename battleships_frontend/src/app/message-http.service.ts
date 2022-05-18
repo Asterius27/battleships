@@ -6,8 +6,9 @@ import { catchError, Observable, tap, throwError } from 'rxjs';
 export interface Message {
   _id: string,
   owner: string,
+  owner_username: string,
   content: string,
-  createdAt: Date
+  createdAt: string
 }
 
 @Injectable({

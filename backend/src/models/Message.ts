@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 export interface Message extends mongoose.Document {
     readonly _id: mongoose.Schema.Types.ObjectId,
     owner: mongoose.Schema.Types.ObjectId,
+    owner_username: string,
     content: string,
     createdAt: mongoose.Schema.Types.Date
 }
@@ -11,6 +12,10 @@ export interface Message extends mongoose.Document {
 const messageSchema = new Schema({
     owner: {
         type: mongoose.Types.ObjectId,
+        required: true
+    },
+    owner_username: {
+        type: String,
         required: true
     },
     content: {
