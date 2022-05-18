@@ -1,9 +1,15 @@
-<div *ngFor="let message of messages" class="card" style="margin-top: 1%; margin-bottom: 1%;"> 
-    <div class="card-body">
-        <h5 class="card-title"><i class="far fa-envelope"></i>&nbsp;{{ message.owner_username }}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{ get_date_formatted(message) }}</h6>
-        <p class="card-text">{{ message.content }}</p>
+<div fxLayout="column" style="height: calc(100vh - 60px);">
+    <div fxFlex style="overflow: auto;">
+        <div *ngFor="let message of messages" class="card" style="margin-top: 1%; margin-bottom: 1%;">
+            <div class="card-body">
+                <h5 class="card-title"><i class="far fa-envelope"></i>&nbsp;{{ message.owner_username }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ get_date_formatted(message) }}</h6>
+                <p class="card-text">{{ message.content }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div>
+        <app-message-editor [chat_id]="chat._id" (posted)="add_message($event)"></app-message-editor>
     </div>
 </div>
-
-<app-message-editor [chat_id]="chat._id" (posted)="add_message($event)"></app-message-editor>
