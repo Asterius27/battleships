@@ -16,12 +16,14 @@ export class FriendsComponent implements OnInit {
   public notification = "";
   public friends:User[] = [];
   public friend_requests:User[] = [];
-  public tabs = true;
+  public match_invites:User[] = [];
+  public tabs = 1;
   constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private c: ChatHttpService) {}
 
   ngOnInit(): void {
     this.load_friends_list();
     this.load_friend_requests();
+    this.load_match_invites();
     this.sio.connect("newfriendrequest" + this.us.get_username()).subscribe((d) => {
       this.load_friend_requests();
     });
@@ -31,6 +33,37 @@ export class FriendsComponent implements OnInit {
     this.sio.connect("deletedfriend" + this.us.get_username()).subscribe((d) => {
       this.load_friends_list();
     });
+    this.sio.connect("newmatchinvite" + this.us.get_username()).subscribe((d) => {
+      this.load_match_invites();
+    });
+    this.sio.connect("matchinviteaccepted" + this.us.get_username()).subscribe((d) => {
+      this.router.navigate(['/play/match']); // TODO
+    })
+  }
+
+  load_match_invites() {
+    this.match_invites = []
+    this.uss.get_user_id(this.us.get_id()).subscribe({
+      next: (d) => {
+        for (let i = 0; i < d.match_invites.length; i++) {
+          this.uss.get_user_id(d.match_invites[i]).subscribe({
+            next: (u) => {
+              this.match_invites.push(u);
+            },
+            error: (err) => {
+              console.log('Login error: ' + JSON.stringify(err));
+              this.errmessage = err.message;
+              this.logout();
+            }
+          });
+        }
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    })
   }
 
   load_friends_list() {
@@ -186,7 +219,64 @@ export class FriendsComponent implements OnInit {
     });
   }
 
-  setTabs(value:boolean) {
+  invite_friend(username:string) {
+    let body = {
+      username: username,
+      action: "invite"
+    }
+    this.uss.post_friend_match(body).subscribe({
+      next: (d) => {
+        console.log('Friend invited');
+        this.notification = "Friend Invited";
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
+  }
+
+  accept_match_invite(username:string) {
+    let body = {
+      username: username,
+      action: "accept"
+    }
+    this.uss.post_friend_match(body).subscribe({
+      next: (d) => {
+        console.log('Invite accepted');
+        this.notification = "Invite Accepted";
+        this.load_match_invites();
+        this.router.navigate(['/play/match']); // TODO
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
+  }
+
+  reject_match_invite(username:string) {
+    let body = {
+      username: username,
+      action: "reject"
+    }
+    this.uss.post_friend_match(body).subscribe({
+      next: (d) => {
+        console.log('Invite rejected');
+        this.notification = "Invite rejected";
+        this.load_match_invites();
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
+  }
+
+  setTabs(value:number) {
     this.tabs = value;
   }
 
