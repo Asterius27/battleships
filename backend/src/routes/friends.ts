@@ -2,6 +2,7 @@ import express = require('express');
 import { ios } from '../app';
 import * as user from '../models/User';
 import * as match from '../models/Match';
+import * as chat from '../models/Chat';
 const router = express.Router();
 
 router.post('/request', (req, res, next) => {
@@ -74,20 +75,31 @@ router.post('/play', (req, res, next) => {
     if (req.body.action === 'accept') {
         user.getModel().findOne({username: req.body.username}).then((u) => {
             user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {match_invites: u._id}}).then((us) => {
-                ios.emit("matchinviteaccepted" + req.body.username, req.auth.id);
-                let data = {
-                    playerOne: req.auth.id,
-                    playerTwo: u._id,
-                    gridOne: [[]],
-                    gridTwo: [[]],
-                    moves: [],
-                    result: "0-0"
-                };
-                let m = match.newMatch(data);
-                m.setStartingPlayer();
-                m.save().then((m) => {
-                    ios.emit("newmatch", m._id, m.playerTwo);
-                    return res.status(200).json({error: false, errormessage: "", id: m._id});
+                let chat_data = {
+                    participants: [req.auth.id, u._id],
+                    messages: [],
+                    type: "match"
+                }
+                let c = chat.newChat(chat_data);
+                c.save().then((ch) => {
+                    let data = {
+                        playerOne: req.auth.id,
+                        playerTwo: u._id,
+                        gridOne: [[]],
+                        gridTwo: [[]],
+                        moves: [],
+                        result: "0-0",
+                        chat: ch._id
+                    };
+                    let m = match.newMatch(data);
+                    m.setStartingPlayer();
+                    m.save().then((m) => {
+                        ios.emit("newmatch", m._id, m.playerTwo);
+                        ios.emit("matchinviteaccepted" + req.body.username, m._id);
+                        return res.status(200).json({error: false, errormessage: "", id: m._id});
+                    }).catch((err) => {
+                        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+                    });
                 }).catch((err) => {
                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
                 });

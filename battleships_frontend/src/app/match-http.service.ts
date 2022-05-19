@@ -12,6 +12,7 @@ export interface Match {
   startingPlayer: string,
   moves: string[],
   result: string,
+  chat: string,
   createdAt: Date
 }
 

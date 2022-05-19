@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { UserHttpService } from '../user-http.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
@@ -16,12 +16,14 @@ export class ChatComponent implements OnInit {
   public errmessage = undefined;
   public notification = "";
   public chat = {} as Chat;
-  public chat_id = "";
+  @Input() chat_id = "";
   public messages:Message[] = [];
   constructor(private us: UserHttpService, private c: ChatHttpService, private m: MessageHttpService, private router: Router, private sio: SocketioService, private route: ActivatedRoute, private uss: UsersHttpService) {}
 
   ngOnInit(): void {
-    this.chat_id = this.route.snapshot.paramMap.get('chat_id') || "";
+    if (this.chat_id === "") {
+      this.chat_id = this.route.snapshot.paramMap.get('chat_id') || "";
+    }
     this.load_chat();
     this.sio.connect("newmessage" + this.chat_id).subscribe((d) => {
       this.load_chat();
@@ -79,11 +81,9 @@ export class ChatComponent implements OnInit {
   
   get_date_formatted(m:Message) : string {
     let datetime = m.createdAt.split("T");
-    let date = datetime[0].replace(/-/g, "/");
+    let date = datetime[0].split("-");
     let time = datetime[1].split(":");
-    let hour = time[0];
-    let minute = time[1];
-    return date + " " + hour + ":" + minute;
+    return date[2] + "/" + date[1] + "/" + date[0] + " " + time[0] + ":" + time[1];
   }
 
   logout() {

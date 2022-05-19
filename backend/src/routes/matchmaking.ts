@@ -2,6 +2,7 @@ import express = require('express');
 import { ios } from '../app';
 import { Mutex } from 'async-mutex';
 import * as match from '../models/Match';
+import * as chat from '../models/Chat';
 const router = express.Router();
 const mutex = new Mutex();
 let queue = [];
@@ -31,19 +32,30 @@ router.post('/queue', (req, res, next) => {
         let opponent_id = findOpponent(req.auth.id);
         release();
         if (opponent_id) {
-            let data = {
-                playerOne: req.auth.id,
-                playerTwo: opponent_id,
-                gridOne: [[]],
-                gridTwo: [[]],
-                moves: [],
-                result: "0-0"
-            };
-            let m = match.newMatch(data);
-            m.setStartingPlayer();
-            m.save().then((m) => {
-                ios.emit("newmatch", m._id, m.playerTwo);
-                return res.status(200).json({error: false, errormessage: "", id: m._id});
+            let chat_data = {
+                participants: [req.auth.id, opponent_id],
+                messages: [],
+                type: "match"
+            }
+            let c = chat.newChat(chat_data);
+            c.save().then((ch) => {
+                let data = {
+                    playerOne: req.auth.id,
+                    playerTwo: opponent_id,
+                    gridOne: [[]],
+                    gridTwo: [[]],
+                    moves: [],
+                    result: "0-0",
+                    chat: ch._id
+                };
+                let m = match.newMatch(data);
+                m.setStartingPlayer();
+                m.save().then((m) => {
+                    ios.emit("newmatch", m._id, m.playerTwo);
+                    return res.status(200).json({error: false, errormessage: "", id: m._id});
+                }).catch((err) => {
+                    return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+                });
             }).catch((err) => {
                 return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
             });

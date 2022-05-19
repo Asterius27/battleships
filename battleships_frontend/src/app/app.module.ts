@@ -18,6 +18,7 @@ import { MatchHttpService } from './match-http.service';
 import { NavbarComponent } from './navbar/navbar.component';
 import { GameComponent } from './game/game.component';
 import { FriendsComponent } from './friends/friends.component';
+import { PlayComponent } from './play/play.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { FriendsComponent } from './friends/friends.component';
     MessageEditorComponent,
     NavbarComponent,
     GameComponent,
-    FriendsComponent
+    FriendsComponent,
+    PlayComponent
   ],
   imports: [
     BrowserModule,
