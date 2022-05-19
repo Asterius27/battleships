@@ -1,1 +1,11 @@
-<p>play works!</p>
+<div class="panel panel-primary" id="my_ongoing_matches" style="padding-top: 2%">
+    <div class="panel-heading"><h3 class="panel-title">My Ongoing Matches</h3>
+    </div>
+    <div class="panel-body">
+        <ul class="list-group">
+            <li class="list-group-item" *ngFor="let match of my_ongoing_matches">
+                <button class="btn btn-light" (click)="open_match(match._id);">{{ match._id }}</button>
+            </li>
+        </ul>
+    </div>
+</div>

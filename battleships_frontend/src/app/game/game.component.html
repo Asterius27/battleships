@@ -1,0 +1,11 @@
+<div (contextmenu)="changeBoatDirection($event)">
+  <div class="drop" *ngFor="let ship of ships; let i=index;" [attr.id]="i">
+    {{ ship[0] }}
+  </div>
+
+  <div id="grid" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
+    <div class="dropzone" *ngFor="let cell of grid; let i=index" [attr.id]="i">
+      {{ cell }}
+    </div>
+  </div>
+</div>

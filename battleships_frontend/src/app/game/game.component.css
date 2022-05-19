@@ -1,0 +1,31 @@
+.drop-active {
+    background-color: #bfe4ff;
+    border-radius: 4px;
+    border: solid 2px red;
+    padding: 1em;
+    transition: background-color 0.3s;
+    text-align: center;
+}
+
+.drop-target {
+    background-color: rgb(16, 20, 243);
+}
+
+.drop {
+    display: inline-block;
+    color: #fff;
+    background-color: #29e;
+    border: solid 2px #fff;
+    touch-action: none;
+    transform: translate(0px, 0px);
+    transition: background-color 0.3s;
+}
+
+.dropzone {
+    background-color: #bfe4ff;
+    border-radius: 4px;
+    border: solid 2px white;
+    padding: 1em;
+    transition: background-color 0.3s;
+    text-align: center;
+}
