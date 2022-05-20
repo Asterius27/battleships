@@ -1,9 +1,10 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
 import { SocketioService } from '../socketio.service';
 import { UserHttpService } from '../user-http.service';
 import interact from 'interactjs';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-game',
@@ -18,7 +19,8 @@ export class GameComponent implements OnInit {
   public match_id = "";
   public ready = false;
   public opponent_ready = false;
-  public grid:string[] = new Array(100);
+  public post = false;
+  public grid:string[] = [];
   public drop:boolean = false;
   public ships = [
     ["Destroyer", "2"],
@@ -33,15 +35,27 @@ export class GameComponent implements OnInit {
     ["Battleship", "4"],
     ["Carrier", "5"]
   ];
-  constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2) {}
+  constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
-  // TODO add ready and reset button, lock ships when they are placed, add random grid
   ngOnInit(): void {
+    this.grid = new Array(100);
     this.match_id = this.route.snapshot.paramMap.get('match_id') || "";
     for (let i = 0; i < this.grid.length; i++) {
       this.grid[i] = "s";
     }
     this.load_match();
+    this.sio.connect(this.match_id).subscribe((d) => {
+      if (d === 'player one submitted his grid' && this.match.playerTwo === this.us.get_id()) {
+        this.opponent_ready = true;
+      }
+      if (d === 'player two submitted his grid' && this.match.playerOne === this.us.get_id()) {
+        this.opponent_ready = true;
+      }
+      if (this.ready && this.opponent_ready) {
+        console.log("Starting game");
+        // navigate to phase 2
+      }
+    });
     interact('.dropzone').dropzone({
       overlap: 0.75,
       ondropactivate: (event) => {
@@ -58,7 +72,6 @@ export class GameComponent implements OnInit {
         this.renderer.removeClass(event.target, 'drop-target');
       },
       ondrop: (event) => {
-        // event.stopImmediatePropagation();
         let direction = true;
         if (event.relatedTarget.classList.contains("vertical-boat")) {
           direction = false;
@@ -68,13 +81,19 @@ export class GameComponent implements OnInit {
         }
         console.log("Dropped ship at: " + event.target.id + " direction: " + direction);
         if (this.cellIsAvailable(event.relatedTarget.id, event.target.id, direction)) {
+          let boat_id = event.relatedTarget.id.slice(0, -1);
           console.log("Cell available true");
           this.update_grid(event.relatedTarget.id, event.target.id, direction);
+          this.renderer.addClass(event.relatedTarget, 'boat-dropped');
+          interact('.drop' + boat_id).unset();
         } else {
-          console.log("Cell available false");
-          event.relatedTarget.removeAttribute('data-x');
-          event.relatedTarget.removeAttribute('data-y');
-          event.relatedTarget.style.transform = 'translate(0px, 0px)';
+          if (!(event.relatedTarget.classList.contains("boat-dropped"))) {
+            console.log("classes: " + event.relatedTarget.classList);
+            console.log("Cell available false");
+            event.relatedTarget.removeAttribute('data-x');
+            event.relatedTarget.removeAttribute('data-y');
+            event.relatedTarget.style.transform = 'translate(0px, 0px)';
+          }
         }
       },
       ondropdeactivate: (event) => {
@@ -89,19 +108,21 @@ export class GameComponent implements OnInit {
         }
       }
     });
-    interact('.drop').draggable({
-      inertia: true,
-      modifiers: [
-        interact.modifiers.restrictRect({
-          restriction: 'parent', 
-          endOnly: true
-        })
-      ],
-      autoScroll: true,
-      listeners: {
-        move: this.dragMoveListener
-      }
-    });
+    for (let i = 0; i < this.ships.length; i++) {
+      interact('.drop' + i).draggable({
+        inertia: true,
+        modifiers: [
+          interact.modifiers.restrictRect({
+            restriction: 'parent', 
+            endOnly: true
+          })
+        ],
+        autoScroll: true,
+        listeners: {
+          move: this.dragMoveListener
+        }
+      });
+    }
   }
 
   load_match() {
@@ -109,6 +130,44 @@ export class GameComponent implements OnInit {
       next: (d) => {
         console.log("Match loaded");
         this.match = d;
+        if (this.match.gridOne[0].length !== 0 && this.match.playerOne === this.us.get_id()) {
+          this.post = true;
+          this.ready = true;
+          for (let i = 0; i < this.match.gridOne.length; i++) {
+            for (let j = 0; j < this.match.gridOne[i].length; j++) {
+              this.grid[(i * 10) + j] = this.match.gridOne[i][j];
+            }
+          }
+          for (let i = 0; i < this.ships.length; i++) {
+            this.renderer.removeAttribute(this.doc.getElementById(i + 'b'), 'data-x');
+            this.renderer.removeAttribute(this.doc.getElementById(i + 'b'), 'data-y');
+            this.doc.getElementById(i + 'b')!.style.transform = 'translate(0px, 0px)';
+            interact('.drop' + i).unset();
+          }
+          interact('.dropzone').unset();
+        }
+        if (this.match.gridTwo[0].length !== 0 && this.match.playerTwo === this.us.get_id()) {
+          this.post = true;
+          this.ready = true;
+          for (let i = 0; i < this.match.gridTwo.length; i++) {
+            for (let j = 0; j < this.match.gridTwo[i].length; j++) {
+              this.grid[(i * 10) + j] = this.match.gridTwo[i][j];
+            }
+          }
+          for (let i = 0; i < this.ships.length; i++) {
+            this.renderer.removeAttribute(this.doc.getElementById(i + 'b'), 'data-x');
+            this.renderer.removeAttribute(this.doc.getElementById(i + 'b'), 'data-y');
+            this.doc.getElementById(i + 'b')!.style.transform = 'translate(0px, 0px)';
+            interact('.drop' + i).unset();
+          }
+          interact('.dropzone').unset();
+        }
+        if (this.match.gridOne[0].length !== 0 && this.match.playerOne !== this.us.get_id()) {
+          this.opponent_ready = true;
+        }
+        if (this.match.gridTwo[0].length !== 0 && this.match.playerTwo !== this.us.get_id()) {
+          this.opponent_ready = true;
+        }
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
@@ -119,21 +178,38 @@ export class GameComponent implements OnInit {
   }
 
   post_grid() {
-    let body = {grid: this.grid};
+    this.post = true;
+    let body = {grid: this.convert_grid()};
     this.m.post_grid(this.match_id, body).subscribe({
       next: (d) => {
         this.ready = true;
+        interact('.dropzone').unset();
         if (this.opponent_ready) {
           console.log("Starting game");
-          this.load_match();
+          // navigate to phase 2
         }
       },
       error: (err) => {
+        this.post = false;
         console.log('Login error: ' + JSON.stringify(err));
         this.errmessage = err.message;
         this.logout();
       }
     })
+  }
+
+  convert_grid() : string[][] {
+    let output = new Array(10);
+    for (let i = 0; i < output.length; i++) {
+      output[i] = new Array(10);
+      for (let j = 0; j < output[i].length; j++) {
+        output[i][j] = 's';
+        if (this.grid[(i * 10) + j] === 'b') {
+          output[i][j] = 'b';
+        }
+      }
+    }
+    return output;
   }
 
   dragMoveListener(event:any) {
@@ -296,6 +372,40 @@ export class GameComponent implements OnInit {
     }
     console.log("Changed boat direction: " + direction);
     event.preventDefault();
+  }
+
+  reset_grid() {
+    this.grid = new Array(100);
+    for (let i = 0; i < this.grid.length; i++) {
+      this.grid[i] = "s";
+    }
+    interact('.dropzone').unset();
+    this.router.navigateByUrl('/play', {skipLocationChange: true}).then(() => {
+      this.router.navigate(['/play/match', {match_id: this.match_id}]);
+    });
+  }
+
+  random_grid() {
+    this.m.get_random_grid().subscribe({
+      next: (d) => {
+        for (let i = 0; i < d.grid.length; i++) {
+          for (let j = 0; j < d.grid[i].length; j++) {
+            this.grid[(i * 10) + j] = d.grid[i][j];
+          }
+        }
+        for (let i = 0; i < this.ships.length; i++) {
+          this.renderer.removeAttribute(this.doc.getElementById(i + 'b'), 'data-x');
+          this.renderer.removeAttribute(this.doc.getElementById(i + 'b'), 'data-y');
+          this.doc.getElementById(i + 'b')!.style.transform = 'translate(0px, 0px)';
+          interact('.drop' + i).unset();
+        }
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    })
   }
 
   logout() {

@@ -15,7 +15,115 @@
     background-color: black !important;
 }
 
-.drop {
+.horizontal-boat {
+    background-color: rgb(16, 20, 243) !important;
+}
+
+.vertical-boat {
+    background-color: red !important;
+}
+
+.drop0 {
+    display: inline-block;
+    color: #fff;
+    background-color: #29e;
+    margin-right: 1%;
+    touch-action: none;
+    transform: translate(0px, 0px);
+    transition: background-color 0.3s;
+}
+
+.drop1 {
+    display: inline-block;
+    color: #fff;
+    background-color: #29e;
+    margin-right: 1%;
+    touch-action: none;
+    transform: translate(0px, 0px);
+    transition: background-color 0.3s;
+}
+
+.drop2 {
+    display: inline-block;
+    color: #fff;
+    background-color: #29e;
+    margin-right: 1%;
+    touch-action: none;
+    transform: translate(0px, 0px);
+    transition: background-color 0.3s;
+}
+
+.drop3 {
+    display: inline-block;
+    color: #fff;
+    background-color: #29e;
+    margin-right: 1%;
+    touch-action: none;
+    transform: translate(0px, 0px);
+    transition: background-color 0.3s;
+}
+
+.drop4 {
+    display: inline-block;
+    color: #fff;
+    background-color: #29e;
+    margin-right: 1%;
+    touch-action: none;
+    transform: translate(0px, 0px);
+    transition: background-color 0.3s;
+}
+
+.drop5 {
+    display: inline-block;
+    color: #fff;
+    background-color: #29e;
+    margin-right: 1%;
+    touch-action: none;
+    transform: translate(0px, 0px);
+    transition: background-color 0.3s;
+}
+
+.drop6 {
+    display: inline-block;
+    color: #fff;
+    background-color: #29e;
+    margin-right: 1%;
+    touch-action: none;
+    transform: translate(0px, 0px);
+    transition: background-color 0.3s;
+}
+
+.drop7 {
+    display: inline-block;
+    color: #fff;
+    background-color: #29e;
+    margin-right: 1%;
+    touch-action: none;
+    transform: translate(0px, 0px);
+    transition: background-color 0.3s;
+}
+
+.drop8 {
+    display: inline-block;
+    color: #fff;
+    background-color: #29e;
+    margin-right: 1%;
+    touch-action: none;
+    transform: translate(0px, 0px);
+    transition: background-color 0.3s;
+}
+
+.drop9 {
+    display: inline-block;
+    color: #fff;
+    background-color: #29e;
+    margin-right: 1%;
+    touch-action: none;
+    transform: translate(0px, 0px);
+    transition: background-color 0.3s;
+}
+
+.drop10 {
     display: inline-block;
     color: #fff;
     background-color: #29e;

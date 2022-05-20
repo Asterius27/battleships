@@ -443,6 +443,11 @@ export function isValidGrid(grid:string[][]) : boolean {
                 }
             }
         }
+        for (let k = 0; k < boats.length; k++) {
+            if (boats[k] !== 0) {
+                return false;
+            }
+        }
         return true;
     } else {
         return false;
