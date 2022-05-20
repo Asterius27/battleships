@@ -94,7 +94,7 @@ router.post('/play', (req, res, next) => {
                     let m = match.newMatch(data);
                     m.setStartingPlayer();
                     m.save().then((m) => {
-                        ios.emit("newmatch", m._id, m.playerTwo);
+                        ios.emit("newmatch", m._id);
                         ios.emit("matchinviteaccepted" + req.body.username, m._id);
                         return res.status(200).json({error: false, errormessage: "", id: m._id});
                     }).catch((err) => {

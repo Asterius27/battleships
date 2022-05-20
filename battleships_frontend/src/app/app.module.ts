@@ -19,6 +19,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { GameComponent } from './game/game.component';
 import { FriendsComponent } from './friends/friends.component';
 import { PlayComponent } from './play/play.component';
+import { GamePhaseTwoComponent } from './game-phase-two/game-phase-two.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { PlayComponent } from './play/play.component';
     NavbarComponent,
     GameComponent,
     FriendsComponent,
-    PlayComponent
+    PlayComponent,
+    GamePhaseTwoComponent
   ],
   imports: [
     BrowserModule,

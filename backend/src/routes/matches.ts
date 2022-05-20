@@ -16,7 +16,7 @@ router.post('/', (req, res, next) => {
     let m = match.newMatch(data);
     m.setStartingPlayer();
     m.save().then((m) => {
-        ios.emit("newmatch", m._id, m.playerTwo);
+        ios.emit("newmatch", m._id);
         return res.status(200).json({error: false, errormessage: "", id: m._id});
     }).catch((err) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -68,14 +68,14 @@ router.post('/:matchid/move', (req, res, next) => {
                             m.updateMoves(req.body.move);
                             if (m.isMatchFinished()) {
                                 m.save().then((data) => {
-                                    ios.emit(m._id, "match is finished", m.result);
+                                    ios.emit(m._id, "matchisfinished " + m.result);
                                     return res.status(200).json(data);
                                 }).catch((err) => {
                                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
                                 });
                             } else {
                                 m.save().then((data) => {
-                                    ios.emit(m._id, req.auth.id + " made his move");
+                                    ios.emit(m._id, req.auth.id + " madehismove");
                                     return res.status(200).json(data);
                                 }).catch((err) => {
                                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -91,14 +91,14 @@ router.post('/:matchid/move', (req, res, next) => {
                             m.updateMoves(req.body.move);
                             if (m.isMatchFinished()) {
                                 m.save().then((data) => {
-                                    ios.emit(m._id, "match is finished", m.result);
+                                    ios.emit(m._id, "matchisfinished " + m.result);
                                     return res.status(200).json(data);
                                 }).catch((err) => {
                                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
                                 });
                             } else {
                                 m.save().then((data) => {
-                                    ios.emit(m._id, req.auth.id + " made his move");
+                                    ios.emit(m._id, req.auth.id + " madehismove");
                                     return res.status(200).json(data);
                                 }).catch((err) => {
                                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
