@@ -1,5 +1,5 @@
-<div (contextmenu)="changeBoatDirection($event)">
-  <div class="drop" *ngFor="let ship of ships; let i=index;" [attr.id]="i">
+<div>
+  <div class="drop horizontal-boat" *ngFor="let ship of ships; let i=index;" [attr.id]="i + 'b'" (contextmenu)="changeBoatDirection($event)">
     {{ ship[0] }}
   </div>
 

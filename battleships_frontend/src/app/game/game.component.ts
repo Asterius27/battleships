@@ -18,7 +18,6 @@ export class GameComponent implements OnInit {
   public match_id = "";
   public ready = false;
   public opponent_ready = false;
-  public direction = true;
   public grid:string[] = new Array(100);
   public drop:boolean = false;
   public ships = [
@@ -32,7 +31,7 @@ export class GameComponent implements OnInit {
     ["Cruiser", "3"],
     ["Battleship", "4"],
     ["Battleship", "4"],
-    ["Carrier", "1", "5"]
+    ["Carrier", "5"]
   ];
   constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2) {}
 
@@ -58,10 +57,18 @@ export class GameComponent implements OnInit {
         this.renderer.removeClass(event.target, 'drop-target');
       },
       ondrop: (event) => {
-        console.log("Dropped ship at: " + event.target.id);
-        if (this.cellIsAvailable(event.relatedTarget.id, event.target.id)) {
+        // event.stopImmediatePropagation();
+        let direction = true;
+        if (event.relatedTarget.classList.contains("vertical-boat")) {
+          direction = false;
+        }
+        if (event.relatedTarget.classList.contains("horizontal-boat")) {
+          direction = true;
+        }
+        console.log("Dropped ship at: " + event.target.id + " direction: " + direction);
+        if (this.cellIsAvailable(event.relatedTarget.id, event.target.id, direction)) {
           console.log("Cell available true");
-          this.update_grid(event.relatedTarget.id, event.target.id);
+          this.update_grid(event.relatedTarget.id, event.target.id, direction);
         } else {
           console.log("Cell available false");
           event.relatedTarget.removeAttribute('data-x');
@@ -137,117 +144,135 @@ export class GameComponent implements OnInit {
     target.setAttribute('data-y', y)
   }
 
-  // TODO check it
-  update_grid(boat_id:any, cell_id:any) {
+  update_grid(boat:any, cell:any, direction:boolean) {
+    let boat_id = boat.slice(0, -1);
     let length = parseInt(this.ships[boat_id][1]);
-    if (this.direction) {
-      this.grid[cell_id - 1] = "f";
+    let cell_id = parseInt(cell);
+    if (direction) {
+      if (cell_id - 1 >= 0 && Math.floor(cell_id / 10) === Math.floor((cell_id - 1) / 10)) {
+        this.grid[cell_id - 1] = "f";
+      }
       for (let i = 0; i < length; i++) {
         this.grid[cell_id + i] = "b";
-        this.grid[(cell_id + i) + 10] = "f";
-        this.grid[(cell_id + i) - 10] = "f";
+        if ((cell_id + i) + 10 < this.grid.length) {
+          this.grid[(cell_id + i) + 10] = "f";
+        }
+        if ((cell_id + i) - 10 >= 0) {
+          this.grid[(cell_id + i) - 10] = "f";
+        }
       }
-      this.grid[length] = "f";
+      if (cell_id + length < this.grid.length && Math.floor(cell_id / 10) === Math.floor((cell_id + length) / 10)) {
+        this.grid[cell_id + length] = "f";
+      }
     } else {
-      this.grid[cell_id + 10] = "f";
+      if (cell_id + 10 < this.grid.length) {
+        this.grid[cell_id + 10] = "f";
+      }
       for (let i = 0; i < length; i++) {
         this.grid[cell_id - (i * 10)] = "b";
-        this.grid[(cell_id - (i * 10)) + 1] = "f";
-        this.grid[(cell_id - (i * 10)) - 1] = "f";
+        if ((cell_id - (i * 10)) + 1 < this.grid.length && Math.floor((cell_id - (i * 10)) / 10) === Math.floor(((cell_id - (i * 10)) + 1) / 10)) {
+          this.grid[(cell_id - (i * 10)) + 1] = "f";
+        }
+        if ((cell_id - (i * 10)) - 1 >= 0 && Math.floor((cell_id - (i * 10)) / 10) === Math.floor(((cell_id - (i * 10)) - 1) / 10)) {
+          this.grid[(cell_id - (i * 10)) - 1] = "f";
+        }
       }
-      this.grid[cell_id - (length * 10)] = "f";
+      if (cell_id - (length * 10) >= 0) {
+        this.grid[cell_id - (length * 10)] = "f";
+      }
     }
   }
 
   checkNeighbour(position:number, direction:string, check:string) : boolean {
     if (direction === 'n') {
       if (position - 10 < 0) {
-        return true;
+        return false;
       } else {
         if (this.grid[position - 10] === check) {
-          return false;
-        } else {
           return true;
+        } else {
+          return false;
         }
       }
     }
     if (direction === 's') {
       if (position + 10 > this.grid.length - 1) {
-        return true;
+        return false;
       } else {
         if (this.grid[position + 10] === check) {
-          return false;
-        } else {
           return true;
+        } else {
+          return false;
         }
       }
     }
     if (direction === 'e') {
       if (position + 1 > this.grid.length - 1 || Math.floor(position / 10) !== Math.floor((position + 1) / 10)) {
-        return true;
+        return false;
       } else {
         if (this.grid[position + 1] === check) {
-          return false;
-        } else {
           return true;
+        } else {
+          return false;
         }
       }
     }
     if (direction === 'w') {
       if (position - 1 < 0 || Math.floor(position / 10) !== Math.floor((position - 1) / 10)) {
-        return true;
+        return false;
       } else {
         if (this.grid[position - 1] === check) {
-          return false;
-        } else {
           return true;
+        } else {
+          return false;
         }
       }
     }
     return false;
   }
 
-  cellIsAvailable(boat_id:any, cell:any) : boolean {
+  cellIsAvailable(boat:any, cell:any, direction:boolean) : boolean {
+    let boat_id = boat.slice(0, -1);
     let length = parseInt(this.ships[boat_id][1]);
     let cell_id = parseInt(cell);
-    console.log("position: " + cell_id + " boat length: " + length);
-    if (this.direction) {
-      if (cell_id + (length - 1) > this.grid.length - 1 || ((cell_id + (length - 1)) % 10 <= cell_id % 10)) {
+    console.log("position: " + cell_id + " boat length: " + length + " direction: " + direction);
+    if (direction) {
+      if (cell_id + (length - 1) > this.grid.length - 1 || Math.floor(cell_id / 10) !== Math.floor((cell_id + (length - 1)) / 10)) {
         return false;
       }
     } else {
-      if (cell_id - (length * 10) < 0) {
+      if (cell_id - ((length - 1) * 10) < 0) {
         return false;
       }
     }
     if (this.grid[cell_id] === 'b' || this.grid[cell_id] === 'f') {
       return false;
     } else {
-      if (this.direction) {
-        if (!this.checkNeighbour(cell_id, 'w', 'b')){
+      if (direction) {
+        if (this.checkNeighbour(cell_id, 'w', 'b')){
           return false;
         }
         for (let i = 0; i < length - 1; i++) {
           let temp = cell_id + i;
-          if (!(this.checkNeighbour(temp, 'e', 'b') && this.checkNeighbour(temp, 'e', 'f') && this.checkNeighbour(temp, 'n', 'b') && this.checkNeighbour(temp, 's', 'b'))) {
+          if (this.checkNeighbour(temp, 'e', 'b') || this.checkNeighbour(temp, 'e', 'f') || this.checkNeighbour(temp, 'n', 'b') || this.checkNeighbour(temp, 's', 'b')) {
             return false;
           }
         }
-        if (!(this.checkNeighbour(cell_id + (length - 1), 'e', 'b') && this.checkNeighbour(cell_id + (length - 1), 'n', 'b') && this.checkNeighbour(cell_id + (length - 1), 's', 'b'))) {
+        if (this.checkNeighbour(cell_id + (length - 1), 'e', 'b') || this.checkNeighbour(cell_id + (length - 1), 'n', 'b') || this.checkNeighbour(cell_id + (length - 1), 's', 'b')) {
           return false;
         }
         return true;
       } else {
-        if (!this.checkNeighbour(cell_id, 's', 'b')){
+        if (this.checkNeighbour(cell_id, 's', 'b')){
           return false;
         }
         for (let i = 0; i < length - 1; i++) {
           let temp = cell_id - (i * 10);
-          if (!(this.checkNeighbour(temp, 'n', 'b') && this.checkNeighbour(temp, 'n', 'f') && this.checkNeighbour(temp, 'e', 'b') && this.checkNeighbour(temp, 'w', 'b'))) {
+          if (this.checkNeighbour(temp, 'n', 'b') || this.checkNeighbour(temp, 'n', 'f') || this.checkNeighbour(temp, 'e', 'b') || this.checkNeighbour(temp, 'w', 'b')) {
             return false;
           }
         }
-        if (!(this.checkNeighbour(cell_id - ((length - 1) * 10), 'n', 'b') && this.checkNeighbour(cell_id - ((length - 1) * 10), 'e', 'b') && this.checkNeighbour(cell_id - ((length - 1) * 10), 'w', 'b'))) {
+        if (this.checkNeighbour(cell_id - ((length - 1) * 10), 'n', 'b') || this.checkNeighbour(cell_id - ((length - 1) * 10), 'e', 'b') || this.checkNeighbour(cell_id - ((length - 1) * 10), 'w', 'b')) {
           return false;
         }
         return true;
@@ -256,8 +281,19 @@ export class GameComponent implements OnInit {
   }
 
   changeBoatDirection(event:any) {
-    this.direction = !this.direction;
-    console.log("Changed boat direction " + this.direction);
+    let direction = true;
+    if (event.target.classList.contains("vertical-boat")) {
+      event.target.classList.add("horizontal-boat");
+      event.target.classList.remove("vertical-boat");
+      direction = true;
+    } else {
+      if (event.target.classList.contains("horizontal-boat")) {
+        event.target.classList.remove("horizontal-boat");
+        event.target.classList.add("vertical-boat");
+        direction = false;
+      }
+    }
+    console.log("Changed boat direction: " + direction);
     event.preventDefault();
   }
 

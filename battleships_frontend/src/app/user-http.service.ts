@@ -13,6 +13,8 @@ interface TokenData {
   id: string
 }
 
+// FIXME invalid token after page refresh
+
 @Injectable({
   providedIn: 'root'
 })
