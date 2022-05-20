@@ -35,6 +35,7 @@ export class GameComponent implements OnInit {
   ];
   constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2) {}
 
+  // TODO add ready and reset button, lock ships when they are placed, add random grid
   ngOnInit(): void {
     this.match_id = this.route.snapshot.paramMap.get('match_id') || "";
     for (let i = 0; i < this.grid.length; i++) {

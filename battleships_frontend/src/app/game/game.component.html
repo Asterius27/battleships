@@ -1,11 +1,10 @@
 <div>
   <div class="drop horizontal-boat" *ngFor="let ship of ships; let i=index;" [attr.id]="i + 'b'" (contextmenu)="changeBoatDirection($event)">
-    {{ ship[0] }}
+    {{ ship[0] }} ({{ ship[1] }})
   </div>
 
   <div id="grid" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
-    <div class="dropzone" *ngFor="let cell of grid; let i=index" [attr.id]="i">
-      {{ cell }}
+    <div [ngClass]="{'boat': cell === 'b', 'dropzone': true}" class="dropzone" *ngFor="let cell of grid; let i=index" [attr.id]="i">
     </div>
   </div>
 </div>

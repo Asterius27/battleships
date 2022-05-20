@@ -1,7 +1,7 @@
 .drop-active {
     background-color: #bfe4ff;
     border-radius: 4px;
-    border: solid 2px red;
+    border: solid 2px rgb(16, 20, 243);
     padding: 1em;
     transition: background-color 0.3s;
     text-align: center;
@@ -11,11 +11,15 @@
     background-color: rgb(16, 20, 243);
 }
 
+.boat {
+    background-color: black !important;
+}
+
 .drop {
     display: inline-block;
     color: #fff;
     background-color: #29e;
-    border: solid 2px #fff;
+    margin-right: 1%;
     touch-action: none;
     transform: translate(0px, 0px);
     transition: background-color 0.3s;
