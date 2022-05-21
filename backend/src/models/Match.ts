@@ -183,91 +183,165 @@ let checkBoat = function(i:number, j:number, grid:string[][], d:string, c:string
     }
 }
 
+let checkDestroyedBoatHelper = function(i:number, j:number, grid:string[][]) {
+    let north = checkBoat(i, j, grid, 'n', 'h', 'h');
+    let south = checkBoat(i, j, grid, 's', 'h', 'h');
+    let east = checkBoat(i, j, grid, 'e', 'h', 'h');
+    let west = checkBoat(i, j, grid, 'w', 'h', 'h');
+    let boat_length = 1 + north + south + east + west;
+    if (north !== 0 && south === 0) {
+        if (i - boat_length >= 0) {
+            if (grid[i - boat_length][j] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'n', 'h', 'd');
+            }
+        } else {
+            grid[i][j] = 'd';
+            checkBoat(i, j, grid, 'n', 'h', 'd');
+        }
+    }
+    if (south !== 0 && north === 0) {
+        if (i + boat_length < grid.length) {
+            if (grid[i + boat_length][j] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 's', 'h', 'd');
+            }
+        } else {
+            grid[i][j] = 'd';
+            checkBoat(i, j, grid, 's', 'h', 'd');
+        }
+    }
+    if (north !== 0 && south !== 0) {
+        if (i - (north + 1) >= 0) {
+            if (i + south + 1 < grid.length) {
+                if (grid[i + south + 1][j] !== 'b' && grid[i - (north + 1)][j] !== 'b') {
+                    grid[i][j] = 'd';
+                    checkBoat(i, j, grid, 's', 'h', 'd');
+                    checkBoat(i, j, grid, 'n', 'h', 'd');
+                }
+            } else {
+                if (grid[i - (north + 1)][j] !== 'b') {
+                    grid[i][j] = 'd';
+                    checkBoat(i, j, grid, 's', 'h', 'd');
+                    checkBoat(i, j, grid, 'n', 'h', 'd');
+                }
+            }
+        } else {
+            if (i + south + 1 < grid.length) {
+                if (grid[i + south + 1][j] !== 'b') {
+                    grid[i][j] = 'd';
+                    checkBoat(i, j, grid, 's', 'h', 'd');
+                    checkBoat(i, j, grid, 'n', 'h', 'd');
+                }
+            } else {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 's', 'h', 'd');
+                checkBoat(i, j, grid, 'n', 'h', 'd');
+            }
+        }
+    }
+    if (east !== 0 && west === 0) {
+        if (j + boat_length < grid.length) {
+            if (grid[i][j + boat_length] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'e', 'h', 'd');
+            }
+        } else {
+            grid[i][j] = 'd';
+            checkBoat(i, j, grid, 'e', 'h', 'd');
+        }
+    }
+    if (west !== 0 && east === 0) {
+        if (j - boat_length >= 0) {
+            if (grid[i][j - boat_length] !== 'b') {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'w', 'h', 'd');
+            }
+        } else {
+            grid[i][j] = 'd';
+            checkBoat(i, j, grid, 'w', 'h', 'd');
+        }
+    }
+    if (west !== 0 && east !== 0) {
+        if (j - (west + 1) >= 0) {
+            if (j + east + 1 < grid.length) {
+                if (grid[i][j + east + 1] !== 'b' && grid[i][j - (west + 1)] !== 'b') {
+                    grid[i][j] = 'd';
+                    checkBoat(i, j, grid, 'e', 'h', 'd');
+                    checkBoat(i, j, grid, 'w', 'h', 'd');
+                }
+            } else {
+                if (grid[i][j - (west + 1)] !== 'b') {  
+                    grid[i][j] = 'd';
+                    checkBoat(i, j, grid, 'e', 'h', 'd');
+                    checkBoat(i, j, grid, 'w', 'h', 'd');
+                }
+            }
+        } else {
+            if (j + east + 1 < grid.length) {
+                if (grid[i][j + east + 1] !== 'b') {
+                    grid[i][j] = 'd';
+                    checkBoat(i, j, grid, 'e', 'h', 'd');
+                    checkBoat(i, j, grid, 'w', 'h', 'd');
+                }
+            } else {
+                grid[i][j] = 'd';
+                checkBoat(i, j, grid, 'e', 'h', 'd');
+                checkBoat(i, j, grid, 'w', 'h', 'd');
+            }
+        }
+    }
+}
+
 let checkDestroyedBoat = function(i:number, j:number, grid:string[][]) {
     if (i > 0 && i < grid.length - 1 && j > 0 && j < grid.length - 1) {
         if (grid[i - 1][j] !== 'b' && grid[i + 1][j] !== 'b' && grid[i][j - 1] !== 'b' && grid[i][j + 1] !== 'b') {
-            grid[i][j] = 'd';
-            checkBoat(i, j, grid, 'n', 'h', 'd');
-            checkBoat(i, j, grid, 's', 'h', 'd');
-            checkBoat(i, j, grid, 'e', 'h', 'd');
-            checkBoat(i, j, grid, 'w', 'h', 'd');
+            checkDestroyedBoatHelper(i, j, grid);
         }
     }
     if (i === 0) {
         if (j === 0) {
             if (grid[i + 1][j] !== 'b' && grid[i][j + 1] !== 'b') {
-                grid[i][j] = 'd';
-                checkBoat(i, j, grid, 'n', 'h', 'd');
-                checkBoat(i, j, grid, 's', 'h', 'd');
-                checkBoat(i, j, grid, 'e', 'h', 'd');
-                checkBoat(i, j, grid, 'w', 'h', 'd');
+                checkDestroyedBoatHelper(i, j, grid);
             }
         }
         if (j === grid.length - 1) {
             if (grid[i + 1][j] !== 'b' && grid[i][j - 1] !== 'b') {
-                grid[i][j] = 'd';
-                checkBoat(i, j, grid, 'n', 'h', 'd');
-                checkBoat(i, j, grid, 's', 'h', 'd');
-                checkBoat(i, j, grid, 'e', 'h', 'd');
-                checkBoat(i, j, grid, 'w', 'h', 'd');
+                checkDestroyedBoatHelper(i, j, grid);
             }
         }
         if (j > 0 && j < grid.length - 1) {
             if (grid[i + 1][j] !== 'b' && grid[i][j - 1] !== 'b' && grid[i][j + 1] !== 'b') {
-                grid[i][j] = 'd';
-                checkBoat(i, j, grid, 'n', 'h', 'd');
-                checkBoat(i, j, grid, 's', 'h', 'd');
-                checkBoat(i, j, grid, 'e', 'h', 'd');
-                checkBoat(i, j, grid, 'w', 'h', 'd');
+                checkDestroyedBoatHelper(i, j, grid);
             }
         }
     }
     if (i === grid.length - 1) {
         if (j === 0) {
             if (grid[i - 1][j] !== 'b' && grid[i][j + 1] !== 'b') {
-                grid[i][j] = 'd';
-                checkBoat(i, j, grid, 'n', 'h', 'd');
-                checkBoat(i, j, grid, 's', 'h', 'd');
-                checkBoat(i, j, grid, 'e', 'h', 'd');
-                checkBoat(i, j, grid, 'w', 'h', 'd');
+                checkDestroyedBoatHelper(i, j, grid);
             }
         }
         if (j === grid.length - 1) {
             if (grid[i - 1][j] !== 'b' && grid[i][j - 1] !== 'b') {
-                grid[i][j] = 'd';
-                checkBoat(i, j, grid, 'n', 'h', 'd');
-                checkBoat(i, j, grid, 's', 'h', 'd');
-                checkBoat(i, j, grid, 'e', 'h', 'd');
-                checkBoat(i, j, grid, 'w', 'h', 'd');
+                checkDestroyedBoatHelper(i, j, grid);
             }
         }
         if (j > 0 && j < grid.length - 1) {
             if (grid[i - 1][j] !== 'b' && grid[i][j - 1] !== 'b' && grid[i][j + 1] !== 'b') {
-                grid[i][j] = 'd';
-                checkBoat(i, j, grid, 'n', 'h', 'd');
-                checkBoat(i, j, grid, 's', 'h', 'd');
-                checkBoat(i, j, grid, 'e', 'h', 'd');
-                checkBoat(i, j, grid, 'w', 'h', 'd');
+                checkDestroyedBoatHelper(i, j, grid);
             }
         }
     }
     if (i > 0 && i < grid.length - 1) {
         if (j === 0) {
             if (grid[i - 1][j] !== 'b' && grid[i + 1][j] !== 'b' && grid[i][j + 1] !== 'b') {
-                grid[i][j] = 'd';
-                checkBoat(i, j, grid, 'n', 'h', 'd');
-                checkBoat(i, j, grid, 's', 'h', 'd');
-                checkBoat(i, j, grid, 'e', 'h', 'd');
-                checkBoat(i, j, grid, 'w', 'h', 'd');
+                checkDestroyedBoatHelper(i, j, grid);
             }
         }
         if (j === grid.length - 1) {
             if (grid[i - 1][j] !== 'b' && grid[i + 1][j] !== 'b' && grid[i][j - 1] !== 'b') {
-                grid[i][j] = 'd';
-                checkBoat(i, j, grid, 'n', 'h', 'd');
-                checkBoat(i, j, grid, 's', 'h', 'd');
-                checkBoat(i, j, grid, 'e', 'h', 'd');
-                checkBoat(i, j, grid, 'w', 'h', 'd');
+                checkDestroyedBoatHelper(i, j, grid);
             }
         }
     }
