@@ -349,7 +349,6 @@ let checkDestroyedBoat = function(i:number, j:number, grid:string[][]) {
 
 matchSchema.methods.updateGrid = function(move:string, player:boolean) {
     let {i, j} = parseMove(move);
-    console.log("Move: " + i + " " + j);
     if (player) {
         if (this.gridTwo[i][j] === 'b') {
             this.gridTwo[i][j] = 'h';

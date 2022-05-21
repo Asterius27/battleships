@@ -102,7 +102,7 @@ export class GamePhaseTwoComponent implements OnInit {
 
   setMove(event:any) {
     if (this.move !== 100) {
-      this.renderer.removeClass(this.doc.getElementById(String(this.move)), "selected");
+      this.renderer.removeClass(this.doc.getElementById(String(this.move)), "selected"); // TODO this is bugged, sometimes the selected class is added at random
     }
     this.move = event.target.id;
     event.target.classList.add("selected");
