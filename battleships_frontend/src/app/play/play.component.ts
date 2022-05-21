@@ -38,8 +38,12 @@ export class PlayComponent implements OnInit {
     });
   }
 
-  open_match(match_id:string) {
-    this.router.navigate(['/play/match', {match_id: match_id}]);
+  open_match(match:Match) {
+    if (match.gridOne[0].length !== 0 && match.gridTwo[0].length !== 0) {
+      this.router.navigate(['/play/match/two', {match_id: match._id}]);
+    } else {
+      this.router.navigate(['/play/match', {match_id: match._id}]);
+    }
   }
 
   logout() {

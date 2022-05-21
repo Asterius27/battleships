@@ -1,0 +1,23 @@
+.boat {
+    background-color: black !important;
+}
+
+.cell {
+    background-color: blue;
+}
+
+.selected {
+    border: solid 2px green;
+}
+
+.hit {
+    background-color: red !important;
+}
+
+.miss {
+    background-color: indigo !important;
+}
+
+.destroyed {
+    background-color: hotpink !important;
+}

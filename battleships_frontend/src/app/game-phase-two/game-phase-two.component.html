@@ -1,1 +1,21 @@
-<p>game-phase-two works!</p>
+<div style="width: 50%; display: inline-block; margin-left: 2px; margin-right: 2px; margin-top: 2px;">
+  <h6>Your Grid</h6>
+  <div id="grid" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
+    <div [ngClass]="{'cell': true, 'boat': cell === 'b', 'hit': cell === 'h', 'miss': cell === 'm', 'destroyed': cell === 'd'}" *ngFor="let cell of grid; let i=index" [attr.id]="i">
+      {{ cell }}
+    </div>
+  </div>
+</div>
+
+<app-chat [chat_id]="match.chat" *ngIf="match.chat" style="display: block; width: 48%; float: right;"></app-chat>
+
+<div style="width: 50%; display: inline-block; margin-left: 2px; margin-right: 2px; margin-top: 2px;">
+  <h6>Opponent's Grid</h6>
+  <div id="grid" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
+    <div [ngClass]="{'cell': true, 'hit': cell === 'h', 'miss': cell === 'm', 'destroyed': cell === 'd'}" *ngFor="let cell of opponent_grid; let i=index" [attr.id]="i" (click)="setMove($event);">
+      {{ cell }}
+    </div>
+  </div>
+</div>
+
+<button type="button" class="btn btn-success" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="post_move();" [disabled]="!turn">Make Move</button>

@@ -6,6 +6,8 @@ import { Chat, ChatHttpService } from '../chat-http.service';
 import { Message, MessageHttpService } from '../message-http.service';
 import { UsersHttpService } from '../users-http.service';
 
+// TODO scroll to bottom when chat is loaded
+
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',

@@ -53,7 +53,7 @@ export class GameComponent implements OnInit {
       }
       if (this.ready && this.opponent_ready) {
         console.log("Starting game");
-        // navigate to phase 2
+        this.router.navigate(['/play/match/two', {match_id: this.match_id}]);
       }
     });
     interact('.dropzone').dropzone({
@@ -186,7 +186,7 @@ export class GameComponent implements OnInit {
         interact('.dropzone').unset();
         if (this.opponent_ready) {
           console.log("Starting game");
-          // navigate to phase 2
+          this.router.navigate(['/play/match/two', {match_id: this.match_id}]);
         }
       },
       error: (err) => {

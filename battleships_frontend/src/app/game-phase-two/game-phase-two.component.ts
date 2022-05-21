@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
 import { SocketioService } from '../socketio.service';
@@ -15,8 +16,10 @@ export class GamePhaseTwoComponent implements OnInit {
   public turn = false;
   public match_id = "";
   public match = {} as Match;
-  public grid:string[] = []; // TODO
-  constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router) {}
+  public grid:string[] = [];
+  public opponent_grid:string[] = [];
+  public move:number = 100;
+  constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     this.match_id = this.route.snapshot.paramMap.get('match_id') || "";
@@ -25,6 +28,16 @@ export class GamePhaseTwoComponent implements OnInit {
       let arr = d.split(" ");
       if (arr[0] !== this.us.get_id() && arr[1] === "madehismove") {
         this.turn = true;
+        this.load_match();
+      }
+      if (arr[0] === "matchisfinished") {
+        if ((this.match.playerOne === this.us.get_id() && arr[1] === "1-0") || (this.match.playerTwo === this.us.get_id() && arr[1] === "0-1")) {
+          console.log("You have won!")
+        }
+        if ((this.match.playerOne === this.us.get_id() && arr[1] === "0-1") || (this.match.playerTwo === this.us.get_id() && arr[1] === "1-0")) {
+          console.log("You have lost!")
+        }
+        // navigate to observer and post you have won message
       }
     });
   }
@@ -40,6 +53,8 @@ export class GamePhaseTwoComponent implements OnInit {
         if (this.match.startingPlayer !== this.us.get_id() && this.match.moves.length % 2 !== 0) {
           this.turn = true;
         }
+        this.load_linear_grid();
+        this.load_linear_grid_opponent();
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
@@ -47,6 +62,111 @@ export class GamePhaseTwoComponent implements OnInit {
         this.logout();
       }
     });
+  }
+
+  load_linear_grid() {
+    this.grid = new Array(100);
+    if (this.match.playerOne === this.us.get_id()) {
+      for (let i = 0; i < this.match.gridOne.length; i++) {
+        for (let j = 0; j < this.match.gridOne[i].length; j++) {
+          this.grid[(i * 10) + j] = this.match.gridOne[i][j];
+        }
+      }
+    }
+    if (this.match.playerTwo === this.us.get_id()) {
+      for (let i = 0; i < this.match.gridTwo.length; i++) {
+        for (let j = 0; j < this.match.gridTwo[i].length; j++) {
+          this.grid[(i * 10) + j] = this.match.gridTwo[i][j];
+        }
+      }
+    }
+  }
+
+  load_linear_grid_opponent() {
+    this.opponent_grid = new Array(100);
+    if (this.match.playerOne !== this.us.get_id()) {
+      for (let i = 0; i < this.match.gridOne.length; i++) {
+        for (let j = 0; j < this.match.gridOne[i].length; j++) {
+          this.opponent_grid[(i * 10) + j] = this.match.gridOne[i][j];
+        }
+      }
+    }
+    if (this.match.playerTwo !== this.us.get_id()) {
+      for (let i = 0; i < this.match.gridTwo.length; i++) {
+        for (let j = 0; j < this.match.gridTwo[i].length; j++) {
+          this.opponent_grid[(i * 10) + j] = this.match.gridTwo[i][j];
+        }
+      }
+    }
+  }
+
+  setMove(event:any) {
+    if (this.move !== 100) {
+      this.renderer.removeClass(this.doc.getElementById(String(this.move)), "selected");
+    }
+    this.move = event.target.id;
+    event.target.classList.add("selected");
+  }
+
+  post_move() {
+    if (this.move !== 100) {
+      let body = {move: this.get_parsed_move()};
+      this.turn = false;
+      this.m.post_move(this.match_id, body).subscribe({
+        next: (d) => {
+          this.match = d;
+          this.load_linear_grid();
+          this.load_linear_grid_opponent();
+          console.log("Move posted");
+        },
+        error: (err) => {
+          console.log('Login error: ' + JSON.stringify(err));
+          this.errmessage = err.message;
+          this.logout();
+        }
+      });
+    }
+  }
+
+  get_parsed_move(): string {
+    let letter = "";
+    let lett = (this.move % 10);
+    let num = Math.floor(this.move / 10) + 1;
+    switch (lett) {
+      case 0:
+        letter = 'A';
+        break;
+      case 1:
+        letter = 'B';
+        break;
+      case 2:
+        letter = 'C';
+        break;
+      case 3:
+        letter = 'D';
+        break;
+      case 4:
+        letter = 'E';
+        break;
+      case 5:
+        letter = 'F';
+        break;
+      case 6:
+        letter = 'G';
+        break;
+      case 7:
+        letter = 'H';
+        break;
+      case 8:
+        letter = 'I';
+        break;
+      case 9:
+        letter = 'J';
+        break;
+      default:
+        console.log("Parse move error");
+    }
+    return letter + num;
   }
 
   logout() {
