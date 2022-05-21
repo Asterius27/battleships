@@ -23,11 +23,11 @@ router.post('/', (req, res, next) => {
     });
 });
 
-router.post('/:matchid/grid', (req, res, next) => {
+router.post('/grid/:matchid', (req, res, next) => {
     match.getModel().findOne({_id: req.params.matchid}).then((m) => {
         if (req.auth.id === String(m.playerOne)) {
             if (match.isValidGrid(req.body.grid)) {
-                match.getModel().updateOne({gridOne: req.body.grid}).then(() => {
+                match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: req.body.grid}, {new: true}).then(() => {
                     ios.emit(m._id, "player one submitted his grid");
                     return res.status(200).json(m);
                 }).catch((err) => {
@@ -39,7 +39,7 @@ router.post('/:matchid/grid', (req, res, next) => {
         }
         if (req.auth.id === String(m.playerTwo)) {
             if (match.isValidGrid(req.body.grid)) {
-                match.getModel().updateOne({gridTwo: req.body.grid}).then(() => {
+                match.getModel().findOneAndUpdate({_id: m._id}, {gridTwo: req.body.grid}, {new: true}).then(() => {
                     ios.emit(m._id, "player two submitted his grid");
                     return res.status(200).json(m);
                 }).catch((err) => {
@@ -57,7 +57,7 @@ router.post('/:matchid/grid', (req, res, next) => {
     });
 });
 
-router.post('/:matchid/move', (req, res, next) => {
+router.post('/move/:matchid', (req, res, next) => {
     if (match.isMove(req.body.move)) {
         match.getModel().findOne({_id: req.params.matchid}).then((m) => {
             if (req.auth.id === String(m.playerOne) || req.auth.id === String(m.playerTwo)) {
@@ -67,14 +67,14 @@ router.post('/:matchid/move', (req, res, next) => {
                             m.updateGrid(req.body.move, true);
                             m.updateMoves(req.body.move);
                             if (m.isMatchFinished()) {
-                                m.save().then((data) => {
+                                match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: m.gridOne, gridTwo: m.gridTwo, moves: m.moves, result: m.result}, {new: true}).then((data) => {
                                     ios.emit(m._id, "matchisfinished " + m.result);
                                     return res.status(200).json(data);
                                 }).catch((err) => {
                                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
                                 });
                             } else {
-                                m.save().then((data) => {
+                                match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: m.gridOne, gridTwo: m.gridTwo, moves: m.moves, result: m.result}, {new: true}).then((data) => {
                                     ios.emit(m._id, req.auth.id + " madehismove");
                                     return res.status(200).json(data);
                                 }).catch((err) => {
@@ -90,14 +90,14 @@ router.post('/:matchid/move', (req, res, next) => {
                             m.updateGrid(req.body.move, false);
                             m.updateMoves(req.body.move);
                             if (m.isMatchFinished()) {
-                                m.save().then((data) => {
+                                match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: m.gridOne, gridTwo: m.gridTwo, moves: m.moves, result: m.result}, {new: true}).then((data) => {
                                     ios.emit(m._id, "matchisfinished " + m.result);
                                     return res.status(200).json(data);
                                 }).catch((err) => {
                                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
                                 });
                             } else {
-                                m.save().then((data) => {
+                                match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: m.gridOne, gridTwo: m.gridTwo, moves: m.moves, result: m.result}, {new: true}).then((data) => {
                                     ios.emit(m._id, req.auth.id + " madehismove");
                                     return res.status(200).json(data);
                                 }).catch((err) => {

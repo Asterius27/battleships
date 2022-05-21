@@ -52,7 +52,7 @@ export class MatchHttpService {
   }
 
   post_grid(id:string, body:any) : Observable<Match> {
-    return this.http.post<Match>(this.us.url + '/matches/' + id + '/grid', body, this.create_options()).pipe(
+    return this.http.post<Match>(this.us.url + '/matches/grid/' + id, body, this.create_options()).pipe(
       tap({
         next: (data) => {console.log(JSON.stringify(data));},
         error: catchError(this.handleError)
@@ -61,7 +61,7 @@ export class MatchHttpService {
   }
 
   post_move(id:string, body:any) : Observable<Match> {
-    return this.http.post<Match>(this.us.url + '/matches/' + id + '/move', body, this.create_options()).pipe(
+    return this.http.post<Match>(this.us.url + '/matches/move/' + id, body, this.create_options()).pipe(
       tap({
         next: (data) => {console.log(JSON.stringify(data));},
         error: catchError(this.handleError)

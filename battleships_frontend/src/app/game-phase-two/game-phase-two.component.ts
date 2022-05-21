@@ -32,10 +32,10 @@ export class GamePhaseTwoComponent implements OnInit {
       }
       if (arr[0] === "matchisfinished") {
         if ((this.match.playerOne === this.us.get_id() && arr[1] === "1-0") || (this.match.playerTwo === this.us.get_id() && arr[1] === "0-1")) {
-          console.log("You have won!")
+          console.log("You have won!");
         }
         if ((this.match.playerOne === this.us.get_id() && arr[1] === "0-1") || (this.match.playerTwo === this.us.get_id() && arr[1] === "1-0")) {
-          console.log("You have lost!")
+          console.log("You have lost!");
         }
         // navigate to observer and post you have won message
       }

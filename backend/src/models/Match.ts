@@ -66,7 +66,13 @@ matchSchema.methods.setStartingPlayer = function() {
 }
 
 let parseMove = function(move:string) : {i:number, j:number} {
-    let i = parseInt(move.charAt(1)) - 1;
+    let i = 10;
+    if (move.length === 2) {
+        i = parseInt(move.charAt(1)) - 1;
+    }
+    if (move.length === 3) {
+        i = 9;
+    }
     let j = 0;
     switch (move.charAt(0)) {
         case 'A':
@@ -102,19 +108,22 @@ let parseMove = function(move:string) : {i:number, j:number} {
         default:
             console.log("parse move error");
     }
+    if (i === 10) {
+        console.log("parse move error");
+    }
     return {i, j};
 }
 
 matchSchema.methods.validateMove = function(move:string, player:boolean) : boolean {
     let {i, j} = parseMove(move);
     if (player) {
-        if (this.gridOne[i][j] === 'h' || this.gridOne[i][j] === 'm' || this.gridOne[i][j] === 'd') {
+        if (this.gridTwo[i][j] === 'h' || this.gridTwo[i][j] === 'm' || this.gridTwo[i][j] === 'd') {
             return false;
         } else {
             return true;
         }
     } else {
-        if (this.gridTwo[i][j] === 'h' || this.gridTwo[i][j] === 'm' || this.gridTwo[i][j] === 'd') {
+        if (this.gridOne[i][j] === 'h' || this.gridOne[i][j] === 'm' || this.gridOne[i][j] === 'd') {
             return false;
         } else {
             return true;
@@ -233,7 +242,7 @@ let checkDestroyedBoat = function(i:number, j:number, grid:string[][]) {
             }
         }
         if (j > 0 && j < grid.length - 1) {
-            if (grid[i + 1][j] !== 'b' && grid[i][j - 1] !== 'b' && grid[i][j + 1] !== 'b') {
+            if (grid[i - 1][j] !== 'b' && grid[i][j - 1] !== 'b' && grid[i][j + 1] !== 'b') {
                 grid[i][j] = 'd';
                 checkBoat(i, j, grid, 'n', 'h', 'd');
                 checkBoat(i, j, grid, 's', 'h', 'd');
@@ -266,21 +275,22 @@ let checkDestroyedBoat = function(i:number, j:number, grid:string[][]) {
 
 matchSchema.methods.updateGrid = function(move:string, player:boolean) {
     let {i, j} = parseMove(move);
+    console.log("Move: " + i + " " + j);
     if (player) {
-        if (this.gridOne[i][j] === 'b') {
-            this.gridOne[i][j] = 'h';
-            checkDestroyedBoat(i, j, this.gridOne);
-        }
-        if (this.gridOne[i][j] === 's') {
-            this.gridOne[i][j] = 'm';
-        }
-    } else {
         if (this.gridTwo[i][j] === 'b') {
             this.gridTwo[i][j] = 'h';
             checkDestroyedBoat(i, j, this.gridTwo);
         }
         if (this.gridTwo[i][j] === 's') {
             this.gridTwo[i][j] = 'm';
+        }
+    } else {
+        if (this.gridOne[i][j] === 'b') {
+            this.gridOne[i][j] = 'h';
+            checkDestroyedBoat(i, j, this.gridOne);
+        }
+        if (this.gridOne[i][j] === 's') {
+            this.gridOne[i][j] = 'm';
         }
     }
 }
@@ -293,14 +303,14 @@ matchSchema.methods.isMatchFinished = function() : boolean {
     let playerOneWon = true;
     let playerTwoWon = true;
     for (let i = 0; i < this.gridOne.length; i++) {
-        for (let j = 0; j < this.gridOne[i].length; i++) {
+        for (let j = 0; j < this.gridOne[i].length; j++) {
             if (this.gridOne[i][j] === 'b') {
                 playerTwoWon = false;
             }
         }
     }
     for (let i = 0; i < this.gridTwo.length; i++) {
-        for (let j = 0; j < this.gridTwo[i].length; i++) {
+        for (let j = 0; j < this.gridTwo[i].length; j++) {
             if (this.gridTwo[i][j] === 'b') {
                 playerOneWon = false;
             }
