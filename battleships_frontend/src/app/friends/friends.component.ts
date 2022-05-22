@@ -37,7 +37,7 @@ export class FriendsComponent implements OnInit {
       this.load_match_invites();
     });
     this.sio.connect("matchinviteaccepted" + this.us.get_username()).subscribe((d) => {
-      this.router.navigate(['/play/match/one', {match_id: d}]);
+      this.router.navigate(['/play/match', {match_id: d, section: "1"}]);
     })
   }
 
@@ -247,7 +247,7 @@ export class FriendsComponent implements OnInit {
         console.log('Invite accepted');
         this.notification = "Invite Accepted";
         this.load_match_invites();
-        this.router.navigate(['/play/match/one', {match_id: d.id}]);
+        this.router.navigate(['/play/match', {match_id: d.id, section: "1"}]);
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));

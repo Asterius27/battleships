@@ -1,5 +1,5 @@
 <div fxLayout="column" style="height: calc(100vh - 60px);">
-    <div fxFlex style="overflow: auto;">
+    <div fxFlex style="overflow: auto;" id="chat-container">
         <div *ngFor="let message of messages" class="card" style="margin-top: 1%; margin-bottom: 1%;">
             <div class="card-body">
                 <h5 class="card-title"><i class="far fa-envelope"></i>&nbsp;{{ message.owner_username }}</h5>
@@ -10,6 +10,6 @@
     </div>
     
     <div>
-        <app-message-editor [chat_id]="chat._id" (posted)="add_message($event)"></app-message-editor>
+        <app-message-editor [chat_id]="chat._id" [observer_id]="participant_id" (posted)="add_message($event)"></app-message-editor>
     </div>
 </div>

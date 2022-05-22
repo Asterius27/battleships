@@ -14,12 +14,18 @@ export class MessageEditorComponent implements OnInit {
   public notification = "";
   @Output() posted = new EventEmitter<Message>();
   @Input() chat_id = "";
+  @Input() observer_id = "";
   constructor(private us: UserHttpService, private m: MessageHttpService, private router: Router) {}
 
   ngOnInit(): void {}
 
   post_message(message:string) {
-    let body = {content: message, chat: this.chat_id};
+    let body = {};
+    if (this.observer_id === "") {
+      body = {content: message, chat: this.chat_id, visibility: true};
+    } else {
+      body = {content: message, chat: this.chat_id, visibility: false};
+    }
     this.m.post_message(body).subscribe({
       next: (d) => {
         console.log('Message posted');

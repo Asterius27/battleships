@@ -49,8 +49,8 @@ export class MessageHttpService {
     );
   }
 
-  get_messages(ids:string[]) : Observable<Message[]> {
-    return this.http.get<Message[]>(this.us.url + '/messages', this.create_options({ids: ids})).pipe(
+  get_messages(ids:string[], visibility:string) : Observable<Message[]> {
+    return this.http.get<Message[]>(this.us.url + '/messages', this.create_options({ids: ids, visibility: visibility})).pipe(
       tap({
         next: (data) => {console.log(JSON.stringify(data));},
         error: catchError(this.handleError)

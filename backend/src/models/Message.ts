@@ -6,6 +6,7 @@ export interface Message extends mongoose.Document {
     owner: mongoose.Schema.Types.ObjectId,
     owner_username: string,
     content: string,
+    visibility: boolean,
     createdAt: mongoose.Schema.Types.Date
 }
 
@@ -20,6 +21,10 @@ const messageSchema = new Schema({
     },
     content: {
         type: String,
+        required: true
+    },
+    visibility: {
+        type: Boolean,
         required: true
     }
 }, {

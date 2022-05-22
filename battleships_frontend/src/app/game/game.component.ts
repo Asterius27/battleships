@@ -3,8 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
 import { UserHttpService } from '../user-http.service';
 
-// TODO chat for observers
-
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
@@ -17,11 +15,15 @@ export class GameComponent implements OnInit {
   public match = {} as Match;
   public match_id = "";
   public section = 1;
+  public participant_id = "";
   constructor(private us: UserHttpService, private m: MatchHttpService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
     this.match_id = this.route.snapshot.paramMap.get('match_id') || "";
     this.section = parseInt(this.route.snapshot.paramMap.get('section') || "1");
+    if (this.section === 3) {
+      this.participant_id = this.us.get_id();
+    }
     this.load_match();
   }
 

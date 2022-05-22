@@ -1,12 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { UserHttpService } from '../user-http.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 import { Chat, ChatHttpService } from '../chat-http.service';
 import { Message, MessageHttpService } from '../message-http.service';
 import { UsersHttpService } from '../users-http.service';
-
-// TODO scroll to bottom when chat is loaded
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-chat',
@@ -19,8 +18,9 @@ export class ChatComponent implements OnInit {
   public notification = "";
   public chat = {} as Chat;
   @Input() chat_id = "";
+  @Input() participant_id = "";
   public messages:Message[] = [];
-  constructor(private us: UserHttpService, private c: ChatHttpService, private m: MessageHttpService, private router: Router, private sio: SocketioService, private route: ActivatedRoute, private uss: UsersHttpService) {}
+  constructor(private us: UserHttpService, private c: ChatHttpService, private m: MessageHttpService, private router: Router, private sio: SocketioService, private route: ActivatedRoute, private uss: UsersHttpService, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     if (this.chat_id === "") {
@@ -36,6 +36,9 @@ export class ChatComponent implements OnInit {
     this.c.get_chat(this.chat_id).subscribe({
       next: (d) => {
         this.chat = d;
+        if (this.participant_id !== "" && !this.chat.participants.includes(this.participant_id)) {
+          this.post_participant();
+        }
         this.get_messages();
       },
       error: (err) => {
@@ -47,11 +50,16 @@ export class ChatComponent implements OnInit {
   }
 
   get_messages() {
-    this.m.get_messages(this.chat.messages).subscribe({
+    let visibility = "true";
+    if (this.participant_id !== "") {
+      visibility = "false";
+    }
+    this.m.get_messages(this.chat.messages, visibility).subscribe({
       next: (d) => {
         console.log('Messages loaded');
         this.messages = d;
         this.messages.reverse();
+        this.doc.getElementById("chat-container")!.scrollTop = this.doc.getElementById("chat-container")!.scrollHeight;
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
@@ -63,6 +71,7 @@ export class ChatComponent implements OnInit {
 
   add_message(message:Message) {
     this.messages.push(message);
+    this.doc.getElementById("chat-container")!.scrollTop = this.doc.getElementById("chat-container")!.scrollHeight;
   }
 
   get_owner_username(owner:string) : string {
@@ -80,6 +89,18 @@ export class ChatComponent implements OnInit {
     return username;
   }
 
+  post_participant() {
+    this.c.post_chat_participant(this.chat_id).subscribe({
+      next: (d) => {
+        console.log('Participant added');
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
+  }
   
   get_date_formatted(m:Message) : string {
     let datetime = m.createdAt.split("T");
