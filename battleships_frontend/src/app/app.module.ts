@@ -22,6 +22,7 @@ import { PlayComponent } from './play/play.component';
 import { GamePhaseTwoComponent } from './game-phase-two/game-phase-two.component';
 import { GameObserveComponent } from './game-observe/game-observe.component';
 import { GamePhaseOneComponent } from './game-phase-one/game-phase-one.component';
+import { EditUserComponent } from './edit-user/edit-user.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { GamePhaseOneComponent } from './game-phase-one/game-phase-one.component
     PlayComponent,
     GamePhaseTwoComponent,
     GameObserveComponent,
-    GamePhaseOneComponent
+    GamePhaseOneComponent,
+    EditUserComponent
   ],
   imports: [
     BrowserModule,
