@@ -3,11 +3,12 @@
 }
 
 .cell {
+    border: solid 3px white;
     background-color: blue;
 }
 
 .selected {
-    border: solid 3px green;
+    border: solid 3px green !important;
 }
 
 .hit {

@@ -381,7 +381,7 @@ export class GameComponent implements OnInit {
     }
     interact('.dropzone').unset();
     this.router.navigateByUrl('/play', {skipLocationChange: true}).then(() => {
-      this.router.navigate(['/play/match', {match_id: this.match_id}]);
+      this.router.navigate(['/play/match/one', {match_id: this.match_id}]);
     });
   }
 

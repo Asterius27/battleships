@@ -42,7 +42,7 @@ export class PlayComponent implements OnInit {
     if (match.gridOne[0].length !== 0 && match.gridTwo[0].length !== 0) {
       this.router.navigate(['/play/match/two', {match_id: match._id}]);
     } else {
-      this.router.navigate(['/play/match', {match_id: match._id}]);
+      this.router.navigate(['/play/match/one', {match_id: match._id}]);
     }
   }
 

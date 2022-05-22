@@ -47,6 +47,12 @@ export class GamePhaseTwoComponent implements OnInit {
       next: (d) => {
         console.log("Match loaded");
         this.match = d;
+        if (this.match.playerOne !== this.us.get_id() && this.match.playerTwo !== this.us.get_id()) {
+          this.router.navigate(['/play/match/observe', {match_id: this.match_id}]);
+        }
+        if (this.match.result !== "0-0") {
+          // navigate to observer and post you have won message
+        }
         if (this.match.startingPlayer === this.us.get_id() && this.match.moves.length % 2 === 0) {
           this.turn = true;
         }
@@ -102,16 +108,18 @@ export class GamePhaseTwoComponent implements OnInit {
 
   setMove(event:any) {
     if (this.move !== 100) {
-      this.renderer.removeClass(this.doc.getElementById(String(this.move)), "selected"); // TODO this is bugged, sometimes the selected class is added at random
+      this.renderer.removeClass(this.doc.getElementById(String(this.move)), "selected");
     }
     this.move = event.target.id;
-    event.target.classList.add("selected");
+    this.renderer.addClass(event.target, "selected");
   }
 
   post_move() {
     if (this.move !== 100) {
       let body = {move: this.get_parsed_move()};
       this.turn = false;
+      this.renderer.removeClass(this.doc.getElementById(String(this.move)), "selected");
+      this.move = 100;
       this.m.post_move(this.match_id, body).subscribe({
         next: (d) => {
           this.match = d;
