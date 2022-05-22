@@ -1,4 +1,4 @@
-<div style="width: 50%; display: inline-block; margin-left: 2px; margin-right: 2px; margin-top: 2px;">
+<div style="display: inline-block; margin-left: 2px; margin-right: 2px; margin-top: 2px;">
   <h6>{{ match.playerOne }}'s grid</h6>
   <div id="gridone" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
     <div [ngClass]="{'cell': true, 'boat': cell === 'b', 'hit': cell === 'h', 'miss': cell === 'm', 'destroyed': cell === 'd'}" *ngFor="let cell of gridPlayerOne; let i=index" [attr.id]="i + 'y'">
@@ -7,7 +7,7 @@
   </div>
 </div>
 
-<div style="width: 50%; display: block; margin-left: 2px; margin-right: 2px; margin-top: 2px;">
+<div style="display: block; margin-left: 2px; margin-right: 2px; margin-top: 2px;">
   <h6>{{ match.playerTwo }}'s grid</h6>
   <div id="gridtwo" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
     <div [ngClass]="{'cell': true, 'boat': cell === 'b', 'hit': cell === 'h', 'miss': cell === 'm', 'destroyed': cell === 'd'}" *ngFor="let cell of gridPlayerTwo; let i=index" [attr.id]="i">

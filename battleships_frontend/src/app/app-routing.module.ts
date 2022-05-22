@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ChatComponent } from './chat/chat.component';
 import { FriendsComponent } from './friends/friends.component';
-import { GameObserveComponent } from './game-observe/game-observe.component';
-import { GamePhaseTwoComponent } from './game-phase-two/game-phase-two.component';
 import { GameComponent } from './game/game.component';
 import { LoginComponent } from './login/login.component';
 import { PlayComponent } from './play/play.component';
@@ -14,9 +12,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'signup', component: SignupComponent},
   {path: 'play', component: PlayComponent},
-  {path: 'play/match/one', component: GameComponent},
-  {path: 'play/match/two', component: GamePhaseTwoComponent},
-  {path: 'play/match/observe', component: GameObserveComponent},
+  {path: 'play/match', component: GameComponent},
   {path: 'friends', component: FriendsComponent},
   {path: 'chat', component: ChatComponent}
 ];

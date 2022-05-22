@@ -62,14 +62,14 @@ export class PlayComponent implements OnInit {
 
   open_match(match:Match) {
     if (match.gridOne[0].length !== 0 && match.gridTwo[0].length !== 0) {
-      this.router.navigate(['/play/match/two', {match_id: match._id}]);
+      this.router.navigate(['/play/match', {match_id: match._id, section: "2"}]);
     } else {
-      this.router.navigate(['/play/match/one', {match_id: match._id}]);
+      this.router.navigate(['/play/match', {match_id: match._id, section: "1"}]);
     }
   }
 
   observe_match(match:Match) {
-    this.router.navigate(['/play/match/observe', {match_id: match._id}]);
+    this.router.navigate(['/play/match', {match_id: match._id, section: "3"}]);
   }
 
   setTabs(value:number) {

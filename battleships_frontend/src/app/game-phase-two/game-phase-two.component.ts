@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
 import { SocketioService } from '../socketio.service';
@@ -12,9 +12,10 @@ import { UserHttpService } from '../user-http.service';
 })
 export class GamePhaseTwoComponent implements OnInit {
 
+  @Output() sectionChange = new EventEmitter<number>();
   public errmessage = undefined;
   public turn = false;
-  public match_id = "";
+  @Input() match_id = "";
   public match = {} as Match;
   public grid:string[] = [];
   public opponent_grid:string[] = [];
@@ -22,7 +23,9 @@ export class GamePhaseTwoComponent implements OnInit {
   constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
-    this.match_id = this.route.snapshot.paramMap.get('match_id') || "";
+    if (this.match_id = "") {
+      this.match_id = this.route.snapshot.paramMap.get('match_id') || "";
+    }
     this.load_match();
     this.sio.connect(this.match_id).subscribe((d) => {
       let arr = d.split(" ");
@@ -48,7 +51,8 @@ export class GamePhaseTwoComponent implements OnInit {
         console.log("Match loaded");
         this.match = d;
         if (this.match.playerOne !== this.us.get_id() && this.match.playerTwo !== this.us.get_id()) {
-          this.router.navigate(['/play/match/observe', {match_id: this.match_id}]);
+          this.sectionChange.emit(3);
+          // this.router.navigate(['/play/match/observe', {match_id: this.match_id}]);
         }
         if (this.match.result !== "0-0") {
           // navigate to post game

@@ -1,14 +1,7 @@
-<div>
-  <div class="horizontal-boat" [ngClass]="{'drop0': i === 0, 'drop1': i === 1, 'drop2': i === 2, 'drop3': i === 3, 'drop4': i === 4, 'drop5': i === 5, 'drop6': i === 6, 'drop7': i === 7, 'drop8': i === 8, 'drop9': i === 9, 'drop10': i === 10}" *ngFor="let ship of ships; let i=index;" [attr.id]="i + 'b'" (contextmenu)="changeBoatDirection($event)">
-    {{ ship[0] }} ({{ ship[1] }})
-  </div>
+<app-game-phase-one [match_id]="match_id" (sectionChange)="setSection($event)" *ngIf="section === 1" style="display: inline-block; width: 50%;"></app-game-phase-one>
 
-  <div id="grid" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
-    <div [ngClass]="{'boat': cell === 'b', 'dropzone': true}" class="dropzone" *ngFor="let cell of grid; let i=index" [attr.id]="i">
-    </div>
-  </div>
+<app-game-phase-two [match_id]="match_id" (sectionChange)="setSection($event)" *ngIf="section === 2" style="display: inline-block; width: 50%;"></app-game-phase-two>
 
-  <button type="button" class="btn btn-danger" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="reset_grid();" [disabled]="post">Reset</button>
-  <button type="button" class="btn btn-success" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="post_grid();" [disabled]="post">Ready</button>
-  <button type="button" class="btn btn-primary" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="random_grid();" [disabled]="post">Random</button>
-</div>
+<app-game-observe [match_id]="match_id" *ngIf="section === 3" style="display: inline-block; width: 50%;"></app-game-observe>
+
+<app-chat [chat_id]="match.chat" *ngIf="match.chat" style="display: block; width: 48%; float: right;"></app-chat>

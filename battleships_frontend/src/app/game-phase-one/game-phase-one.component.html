@@ -1,1 +1,14 @@
-<p>game-phase-one works!</p>
+<div>
+  <div class="horizontal-boat" [ngClass]="{'drop0': i === 0, 'drop1': i === 1, 'drop2': i === 2, 'drop3': i === 3, 'drop4': i === 4, 'drop5': i === 5, 'drop6': i === 6, 'drop7': i === 7, 'drop8': i === 8, 'drop9': i === 9, 'drop10': i === 10}" *ngFor="let ship of ships; let i=index;" [attr.id]="i + 'b'" (contextmenu)="changeBoatDirection($event)">
+    {{ ship[0] }} ({{ ship[1] }})
+  </div>
+
+  <div id="grid" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
+    <div [ngClass]="{'boat': cell === 'b', 'dropzone': true}" class="dropzone" *ngFor="let cell of grid; let i=index" [attr.id]="i">
+    </div>
+  </div>
+
+  <button type="button" class="btn btn-danger" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="reset_grid();" [disabled]="post">Reset</button>
+  <button type="button" class="btn btn-success" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="post_grid();" [disabled]="post">Ready</button>
+  <button type="button" class="btn btn-primary" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="random_grid();" [disabled]="post">Random</button>
+</div>
