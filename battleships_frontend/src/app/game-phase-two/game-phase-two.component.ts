@@ -37,7 +37,7 @@ export class GamePhaseTwoComponent implements OnInit {
         if ((this.match.playerOne === this.us.get_id() && arr[1] === "0-1") || (this.match.playerTwo === this.us.get_id() && arr[1] === "1-0")) {
           console.log("You have lost!");
         }
-        // navigate to observer and post you have won message
+        // navigate to post game
       }
     });
   }
@@ -51,7 +51,7 @@ export class GamePhaseTwoComponent implements OnInit {
           this.router.navigate(['/play/match/observe', {match_id: this.match_id}]);
         }
         if (this.match.result !== "0-0") {
-          // navigate to observer and post you have won message
+          // navigate to post game
         }
         if (this.match.startingPlayer === this.us.get_id() && this.match.moves.length % 2 === 0) {
           this.turn = true;
