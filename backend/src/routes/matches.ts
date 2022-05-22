@@ -150,7 +150,7 @@ router.get('/grid', (req, res, next) => {
 });
 
 router.get('/ongoing', (req, res, next) => {
-    match.getModel().find({result: "0-0"}).then((ms) => {
+    match.getModel().find({playerOne: {$ne: req.auth.id}, playerTwo: {$ne: req.auth.id}, result: "0-0"}).then((ms) => {
         return res.status(200).json(ms);
     }).catch((err) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
