@@ -29,7 +29,7 @@ export class GameObserveComponent implements OnInit {
     this.sio.connect(this.match_id).subscribe((d) => {
       let arr = d.split(" ");
       if (arr[0] === "matchisfinished") {
-        // navigate to post game
+        // TODO navigate to post game
       }
       this.load_match();
     });
@@ -59,6 +59,9 @@ export class GameObserveComponent implements OnInit {
         this.gridPlayerOne[(i * 10) + j] = this.match.gridOne[i][j];
       }
     }
+    if (this.match.gridOne.length === 1) {
+      this.gridPlayerOne = Array(100).fill('s');
+    }
   }
 
   load_linear_grid_player_two() {
@@ -67,6 +70,9 @@ export class GameObserveComponent implements OnInit {
       for (let j = 0; j < this.match.gridTwo[i].length; j++) {
         this.gridPlayerTwo[(i * 10) + j] = this.match.gridTwo[i][j];
       }
+    }
+    if (this.match.gridTwo.length === 1) {
+      this.gridPlayerTwo = Array(100).fill('s');
     }
   }
 
