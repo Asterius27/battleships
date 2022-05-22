@@ -23,7 +23,7 @@ export class GamePhaseTwoComponent implements OnInit {
   constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
-    if (this.match_id = "") {
+    if (this.match_id === "") {
       this.match_id = this.route.snapshot.paramMap.get('match_id') || "";
     }
     this.load_match();

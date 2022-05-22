@@ -40,7 +40,7 @@ export class GamePhaseOneComponent implements OnInit {
 
   ngOnInit(): void {
     this.grid = new Array(100);
-    if (this.match_id = "") {
+    if (this.match_id === "") {
       this.match_id = this.route.snapshot.paramMap.get('match_id') || "";
     }
     for (let i = 0; i < this.grid.length; i++) {

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
 import { SocketioService } from '../socketio.service';
 import { UserHttpService } from '../user-http.service';
+import { UsersHttpService } from '../users-http.service';
 
 @Component({
   selector: 'app-game-observe',
@@ -13,13 +14,15 @@ export class GameObserveComponent implements OnInit {
 
   public gridPlayerOne:string[] = [];
   public gridPlayerTwo:string[] = [];
+  public playerOne:string = "";
+  public playerTwo:string = "";
   @Input() match_id = "";
   public errmessage = undefined;
   public match = {} as Match;
-  constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private us: UserHttpService, private uss: UsersHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
-    if (this.match_id = "") {
+    if (this.match_id === "") {
       this.match_id = this.route.snapshot.paramMap.get('match_id') || "";
     }
     this.load_match();
@@ -39,6 +42,7 @@ export class GameObserveComponent implements OnInit {
         this.match = d;
         this.load_linear_grid_player_one();
         this.load_linear_grid_player_two();
+        this.get_players_username();
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
@@ -64,6 +68,29 @@ export class GameObserveComponent implements OnInit {
         this.gridPlayerTwo[(i * 10) + j] = this.match.gridTwo[i][j];
       }
     }
+  }
+
+  get_players_username() {
+    this.uss.get_user_id(this.match.playerOne).subscribe({
+      next: (d) => {
+        this.playerOne = d.username;
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
+    this.uss.get_user_id(this.match.playerTwo).subscribe({
+      next: (d) => {
+        this.playerTwo = d.username;
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
   }
 
   logout() {

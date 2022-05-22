@@ -29,14 +29,18 @@ export class MessageHttpService {
     return throwError(() => new Error('Something bad happened; please try again later.'));
   }
 
-  private create_options(params = {}) {
+  private create_options(paramone = {}, paramtwo = "") {
+    let httpParams = new HttpParams({fromObject: paramone});
+    if (paramtwo !== "") {
+      httpParams = httpParams.append('visibility', paramtwo);
+    }
     return {
       headers: new HttpHeaders({
         authorization: 'Bearer ' + this.us.get_token(),
         'cache-control': 'no-cache',
         'Content-Type':  'application/json',
       }),
-      params: new HttpParams({fromObject: params})
+      params: httpParams
     };
   }
 
@@ -50,7 +54,7 @@ export class MessageHttpService {
   }
 
   get_messages(ids:string[], visibility:string) : Observable<Message[]> {
-    return this.http.get<Message[]>(this.us.url + '/messages', this.create_options({ids: ids, visibility: visibility})).pipe(
+    return this.http.get<Message[]>(this.us.url + '/messages', this.create_options({ids: ids}, visibility)).pipe(
       tap({
         next: (data) => {console.log(JSON.stringify(data));},
         error: catchError(this.handleError)
