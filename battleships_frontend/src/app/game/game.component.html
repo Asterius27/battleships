@@ -4,4 +4,4 @@
 
 <app-game-observe [match_id]="match_id" *ngIf="section === 3 && match_id" style="display: inline-block; width: 50%;"></app-game-observe>
 
-<app-chat [chat_id]="match.chat" [participant_id]="participant_id" *ngIf="match.chat" style="display: block; width: 48%; float: right;"></app-chat>
+<app-chat [chat_id]="match.chat" [participant_id]="participant_id" *ngIf="match.chat && section !== 1" style="display: block; width: 48%; float: right;"></app-chat>
