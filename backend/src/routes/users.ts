@@ -5,6 +5,8 @@ import * as chat from '../models/Chat';
 import * as match from '../models/Match';
 const router = express.Router();
 
+// TODO add stats endpoints
+
 router.get('/username/:username', (req, res, next) => {
     user.getModel().findOne({username: req.params.username}, {digest: 0, salt: 0}).then((u) => {
         return res.status(200).json(u);
