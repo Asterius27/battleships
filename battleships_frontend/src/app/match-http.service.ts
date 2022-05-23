@@ -45,6 +45,7 @@ export class MatchHttpService {
     };
   }
 
+  // never used
   post_match(m:Match) : Observable<any> {
     return this.http.post<any>(this.us.url + '/matches', m, this.create_options()).pipe(
       catchError(this.handleError)

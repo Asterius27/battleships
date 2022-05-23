@@ -44,6 +44,7 @@ export class MessageHttpService {
     };
   }
 
+  // never used
   get_message(id:string) : Observable<Message> {
     return this.http.get<Message>(this.us.url + '/messages/' + id, this.create_options()).pipe(
       tap({
