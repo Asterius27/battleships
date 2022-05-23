@@ -69,7 +69,7 @@ export class UsersHttpService {
     );
   }
 
-  patch_user(username:string, u:User) : Observable<any> {
+  patch_user(username:string, u:any) : Observable<any> {
     return this.http.patch<any>(this.us.url + '/users/' + username, u, this.create_options()).pipe(
       tap({
         next: (data) => {console.log(JSON.stringify(data));},

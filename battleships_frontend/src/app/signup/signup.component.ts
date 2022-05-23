@@ -12,7 +12,7 @@ export class SignupComponent implements OnInit {
   public errmessage = undefined;
   public user = {username: '', name: '', surname: '', mail: '', password: ''};
 
-  constructor(private us: UserHttpService, private router: Router) { }
+  constructor(private us: UserHttpService, private router: Router) {}
 
   ngOnInit(): void {}
 
