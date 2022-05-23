@@ -9,6 +9,9 @@
         <li class="nav-item" style="padding-right: 2%">
             <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(3);">Match Invites</button>
         </li>
+        <li class="nav-item" style="padding-right: 2%">
+            <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(4);">Mods Messages</button>
+        </li>
         <li class="nav-item ms-auto">
             <form class="form-inline">
                 <div class="input-group">
@@ -57,6 +60,18 @@
                 {{ friend.username }}
                 <button class="btn btn-outline-danger" style="float: right;" (click)="reject_match_invite(friend.username);">Reject Invite</button>
                 <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="accept_match_invite(friend.username);">Accept Invite</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="panel panel-primary" id="mod_chats" [hidden]="!(tabs===4)" style="padding-top: 2%">
+    <div class="panel-heading"><h3 class="panel-title">Messages Received from Moderators</h3>
+    </div>
+    <div class="panel-body">
+        <ul class="list-group">
+            <li class="list-group-item" *ngFor="let chat of moderator_chats">
+                <button class="btn btn-light" (click)="open_moderator_chat(chat._id);">{{ chat._id }}</button>
             </li>
         </ul>
     </div>

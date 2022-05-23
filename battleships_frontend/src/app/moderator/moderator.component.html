@@ -1,0 +1,101 @@
+<div style="padding-top: 2%">
+    <ul class="nav">
+        <li class="nav-item" style="padding-right: 2%">
+            <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(1);">Add Moderator</button>
+        </li>
+        <li class="nav-item" style="padding-right: 2%">
+            <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(2);">Delete User</button>
+        </li>
+        <li class="nav-item" style="padding-right: 2%">
+            <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(3);">Message User</button>
+        </li>
+    </ul>
+</div>
+
+<div style="width: 400px; margin-top: 20px; margin: auto;" [hidden]="!(tabs===1)">
+    <form class="form-signin"  >
+      
+      <div class="text-center">  
+        <i class="fas fa-envelope loginlogo"></i>
+        <h1 class="h3 mb-3 font-weight-normal">Add New Moderator</h1>
+      </div>
+      
+      <div class="form-group" style="padding-bottom: 5%">
+        <label for="inputUsername">Username</label>
+        <input type="text" #username="ngModel" required name="username" [(ngModel)]="user.username" class="form-control" id="inputUsername" placeholder="Enter username">
+      </div>
+    
+      <div [hidden]="username.valid || username.pristine"
+          class="alert alert-danger">
+        Username is required
+      </div>
+    
+      <div class="form-group" style="padding-bottom: 15%">
+        <label for="inputPassword">Password</label>
+        <input type="password" #password="ngModel" required name="password" [(ngModel)]="user.password" class="form-control" id="inputPassword" placeholder="Password">
+      </div>
+    
+      <div [hidden]="password.valid || password.pristine"
+          class="alert alert-danger">
+        Password is required
+      </div>
+    
+      <div *ngIf="errmessage" class="alert alert-danger" role="alert">
+        New moderator error: {{errmessage}}
+      </div>
+    
+      <div class="text-center">
+        <button class="btn btn-lg btn-primary btn-block" [disabled]="!password.valid || !username.valid" (click)="post_moderator();">Add New Moderator</button>
+      </div>
+
+    </form>
+</div>
+
+<div style="width: 400px; margin-top: 20px; margin: auto;" [hidden]="!(tabs===2)">
+    <form class="form-signin"  >
+      
+      <div class="text-center">  
+        <i class="fas fa-envelope loginlogo"></i>
+        <h1 class="h3 mb-3 font-weight-normal">Delete User</h1>
+      </div>
+      
+      <div class="form-group" style="padding-bottom: 5%">
+        <label for="inputdeleteUsername">Username</label>
+        <input type="text" #username="ngModel" required name="username" [(ngModel)]="delete_target.username" class="form-control" id="inputdeleteUsername" placeholder="Enter username">
+      </div>
+    
+      <div [hidden]="username.valid || username.pristine"
+          class="alert alert-danger">
+        Username is required
+      </div>
+    
+      <div *ngIf="errmessage" class="alert alert-danger" role="alert">
+        Deleting error: {{errmessage}}
+      </div>
+    
+      <div class="text-center">
+        <button class="btn btn-lg btn-danger btn-block" [disabled]="!username.valid" (click)="delete_user();">Delete User</button>
+      </div>
+
+    </form>
+</div>
+
+<div [hidden]="!(tabs===3)">
+    <form class="form-inline" style="margin-top: 1%;">
+        <div class="input-group">
+            <input class="form-control" #usernametxt type="text" placeholder="Username">
+            <button class="btn btn-outline-success" (click)="message_user(usernametxt.value);">Message User</button>
+        </div>
+    </form>
+    <div class="panel panel-primary" id="chat_list" style="padding-top: 2%">
+        <div class="panel-heading"><h3 class="panel-title">Chats</h3>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group">
+                <li class="list-group-item" *ngFor="let chat of chats">
+                    <button class="btn btn-light" (click)="open_chat(chat._id);">{{ chat._id }}</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -23,6 +23,7 @@ import { GamePhaseTwoComponent } from './game-phase-two/game-phase-two.component
 import { GameObserveComponent } from './game-observe/game-observe.component';
 import { GamePhaseOneComponent } from './game-phase-one/game-phase-one.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
+import { ModeratorComponent } from './moderator/moderator.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { EditUserComponent } from './edit-user/edit-user.component';
     GamePhaseTwoComponent,
     GameObserveComponent,
     GamePhaseOneComponent,
-    EditUserComponent
+    EditUserComponent,
+    ModeratorComponent
   ],
   imports: [
     BrowserModule,

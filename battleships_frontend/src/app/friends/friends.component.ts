@@ -17,6 +17,7 @@ export class FriendsComponent implements OnInit {
   public friends:User[] = [];
   public friend_requests:User[] = [];
   public match_invites:User[] = [];
+  public moderator_chats:Chat[] = [];
   public tabs = 1;
   constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private c: ChatHttpService) {}
 
@@ -24,6 +25,7 @@ export class FriendsComponent implements OnInit {
     this.load_friends_list();
     this.load_friend_requests();
     this.load_match_invites();
+    this.load_moderator_chats();
     this.sio.connect("newfriendrequest" + this.us.get_username()).subscribe((d) => {
       this.load_friend_requests();
     });
@@ -38,7 +40,26 @@ export class FriendsComponent implements OnInit {
     });
     this.sio.connect("matchinviteaccepted" + this.us.get_username()).subscribe((d) => {
       this.router.navigate(['/play/match', {match_id: d, section: "1"}]);
-    })
+    });
+    this.sio.connect("newchat" + this.us.get_id()).subscribe((d) => {
+      if (d.type === "moderator") {
+        this.load_moderator_chats();
+      }
+    });
+  }
+
+  load_moderator_chats() {
+    this.c.get_moderator_chats(this.us.get_id()).subscribe({
+      next: (d) => {
+        this.moderator_chats = d;
+        console.log("Chats loaded");
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
   }
 
   load_match_invites() {
@@ -274,6 +295,11 @@ export class FriendsComponent implements OnInit {
         this.logout();
       }
     });
+  }
+
+  open_moderator_chat(chat_id:string) {
+    console.log('Routing to chat');
+    this.router.navigate(['/chat', {chat_id: chat_id}]);
   }
 
   setTabs(value:number) {

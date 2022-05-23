@@ -13,7 +13,7 @@ router.post('/', (req, res, next) => {
     let c = chat.newChat(data);
     c.save().then((c) => {
         for (let p of array) {
-            ios.emit("newchat" + p, c._id);
+            ios.emit("newchat" + p, c);
         }
         return res.status(200).json(c);
     }).catch((err) => {
@@ -37,8 +37,8 @@ router.get('/chat/:chatid', (req, res, next) => {
     });
 });
 
-router.get('/participant/:participantid', (req, res, next) => {
-    chat.getModel().find({participants: req.params.participantid}).then((cs) => {
+router.get('/moderator/:participantid', (req, res, next) => {
+    chat.getModel().find({participants: req.params.participantid, type: "moderator"}).then((cs) => {
         return res.status(200).json(cs);
     }).catch((err) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});

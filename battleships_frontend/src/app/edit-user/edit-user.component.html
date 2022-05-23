@@ -58,11 +58,11 @@
       </div>
     
       <div *ngIf="errmessage" class="alert alert-danger" role="alert">
-        Sign-up error: {{errmessage}}
+        Editing error: {{errmessage}}
       </div>
     
       <div class="text-center">
-        <button class="btn btn-lg btn-primary btn-block" [disabled]="!mail.valid || !password.valid || !username.valid || !surname.valid || !name.valid" (click)="signup();">Edit</button>
+        <button class="btn btn-lg btn-primary btn-block" [disabled]="!mail.valid || !password.valid || !username.valid || !surname.valid || !name.valid" (click)="post_user();">Edit</button>
       </div>
 
     </form>

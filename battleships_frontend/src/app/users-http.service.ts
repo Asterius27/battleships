@@ -63,7 +63,7 @@ export class UsersHttpService {
     );
   }
 
-  post_moderator_user(u:User) : Observable<any> {
+  post_moderator_user(u:any) : Observable<any> {
     return this.http.post<any>(this.us.url + '/users/moderator', u, this.create_options()).pipe(
       catchError(this.handleError)
     );

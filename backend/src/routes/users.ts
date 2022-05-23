@@ -24,10 +24,10 @@ router.get('/id/:userid', (req, res, next) => {
 router.post('/moderator', (req, res, next) => {
     if (req.auth.role === 'MODERATOR') {
         let data = {
-            name: req.body.name,
-            surname: req.body.surname,
+            name: "placeholder",
+            surname: "placeholder",
             username: req.body.username,
-            mail: req.body.mail,
+            mail: "placeholder",
             role: "MODERATOR",
             friends_list: [],
             friend_requests: [],

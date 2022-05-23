@@ -12,6 +12,9 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/friends">Friends</a>
         </li>
+        <li class="nav-item" *ngIf="moderator">
+          <a class="nav-link" routerLink="/moderator">Moderator</a>
+        </li>
       </ul>
       <form class="form-inline ms-auto">
         <button class="btn btn-sm btn-outline-secondary" type="button" (click)="logout();">Logout</button>

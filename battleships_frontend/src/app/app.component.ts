@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-// TODO move global sio connect here so that they are application wide
+// TODO move global sio connect here so that they are application wide, add notification system
 
 @Component({
   selector: 'app-root',

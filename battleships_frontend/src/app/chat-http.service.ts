@@ -48,8 +48,8 @@ export class ChatHttpService {
     );
   }
 
-  get_participant_chats(id:string) : Observable<Chat> {
-    return this.http.get<Chat>(this.us.url + '/chats/participant/' + id, this.create_options()).pipe(
+  get_moderator_chats(id:string) : Observable<Chat[]> {
+    return this.http.get<Chat[]>(this.us.url + '/chats/moderator/' + id, this.create_options()).pipe(
       tap({
         next: (data) => {console.log(JSON.stringify(data));},
         error: catchError(this.handleError)
