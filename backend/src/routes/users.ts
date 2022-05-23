@@ -3,9 +3,8 @@ import * as user from '../models/User';
 import * as message from '../models/Message';
 import * as chat from '../models/Chat';
 import * as match from '../models/Match';
+import mongoose from 'mongoose';
 const router = express.Router();
-
-// TODO add stats endpoints
 
 router.get('/username/:username', (req, res, next) => {
     user.getModel().findOne({username: req.params.username}, {digest: 0, salt: 0}).then((u) => {
@@ -18,6 +17,42 @@ router.get('/username/:username', (req, res, next) => {
 router.get('/id/:userid', (req, res, next) => {
     user.getModel().findOne({_id: req.params.userid}, {digest: 0, salt: 0}).then((u) => {
         return res.status(200).json(u);
+    }).catch((err) => {
+        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+});
+
+router.get('/stats/:userid', (req, res, next) => {
+    let id = new mongoose.Types.ObjectId(req.params.userid);
+    match.getModel().aggregate([
+        {
+            $match: {$or: [{playerOne: id}, {playerTwo: id}]}
+        },
+        {
+            $project: {
+                win: {$cond: {if: {$or: [
+                    {$and: [{$eq: ['$result', '1-0']}, {$eq: ['$playerOne', id]}]},
+                    {$and: [{$eq: ['$result', '0-1']}, {$eq: ['$playerTwo', id]}]}
+                ]}, then: 1, else: 0}},
+                loss: {$cond: {if: {$or: [
+                    {$and: [{$eq: ['$result', '1-0']}, {$eq: ['$playerTwo', id]}]},
+                    {$and: [{$eq: ['$result', '0-1']}, {$eq: ['$playerOne', id]}]}
+                ]}, then: 1, else: 0}}
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                wins: {$sum: '$win'},
+                losses: {$sum: '$loss'}
+            }
+        }
+    ]).then((d) => {
+        if (d.length !== 0) {
+            return res.status(200).json(d[0]);
+        } else {
+            return res.status(200).json({_id: null, wins: 0, losses: 0});
+        }
     }).catch((err) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
