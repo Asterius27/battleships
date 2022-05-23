@@ -105,6 +105,20 @@ export class ModeratorComponent implements OnInit {
     });
   }
 
+  open_stats(username:string) {
+    this.uss.get_user_username(username).subscribe({
+      next: (d) => {
+        console.log('Routing to stats');
+        this.router.navigate(['/profile', {user_id: d._id, username: username}]);
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
+  }
+
   logout() {
     this.us.logout();
     this.router.navigate(['/login']);

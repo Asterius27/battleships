@@ -302,6 +302,11 @@ export class FriendsComponent implements OnInit {
     this.router.navigate(['/chat', {chat_id: chat_id}]);
   }
 
+  open_stats(friend_id:string, friend_username:string) {
+    console.log('Routing to stats');
+    this.router.navigate(['/profile', {user_id: friend_id, username: friend_username}]);
+  }
+
   setTabs(value:number) {
     this.tabs = value;
   }

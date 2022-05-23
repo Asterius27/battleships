@@ -24,6 +24,8 @@ import { GameObserveComponent } from './game-observe/game-observe.component';
 import { GamePhaseOneComponent } from './game-phase-one/game-phase-one.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { ModeratorComponent } from './moderator/moderator.component';
+import { ProfileComponent } from './profile/profile.component';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -40,14 +42,16 @@ import { ModeratorComponent } from './moderator/moderator.component';
     GameObserveComponent,
     GamePhaseOneComponent,
     EditUserComponent,
-    ModeratorComponent
+    ModeratorComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    NgChartsModule
   ],
   providers: [
     {provide: UserHttpService, useClass: UserHttpService},

@@ -63,6 +63,15 @@ export class UsersHttpService {
     );
   }
 
+  get_user_stats(id:string) : Observable<any> {
+    return this.http.get<any>(this.us.url + '/users/stats/' + id, this.create_options()).pipe(
+      tap({
+        next: (data) => {console.log(JSON.stringify(data));},
+        error: catchError(this.handleError)
+      })
+    );
+  }
+
   post_moderator_user(u:any) : Observable<any> {
     return this.http.post<any>(this.us.url + '/users/moderator', u, this.create_options()).pipe(
       catchError(this.handleError)
