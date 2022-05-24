@@ -1,10 +1,10 @@
 <div style="padding-top: 2%">
-    <ul class="nav">
-        <li class="nav-item" style="padding-right: 2%">
-            <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(1);">My Ongoing Matches</button>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active previous-tab" aria-current="page" href="#" (click)="setTabs(1, $event);">My Ongoing Matches</a>
         </li>
-        <li class="nav-item" style="padding-right: 2%">
-            <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(2);">Ongoing Matches</button>
+        <li class="nav-item">
+            <a class="nav-link" href="#" (click)="setTabs(2, $event);">Ongoing Matches</a>
         </li>
         <li class="nav-item ms-auto" style="padding-right: 1%">
             <div class="spinner-border" role="status" [hidden]="match_making_button === 'Find Match'"></div>

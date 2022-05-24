@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { UsersHttpService } from '../users-http.service';
 import { UserHttpService } from '../user-http.service';
 import { Router } from '@angular/router';
 import { Chat, ChatHttpService } from '../chat-http.service';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-moderator',
@@ -16,7 +17,7 @@ export class ModeratorComponent implements OnInit {
   public user = {username: '', password: ''};
   public delete_target = {username: ''};
   public chats:Chat[] = [];
-  constructor(private uss: UsersHttpService, private us: UserHttpService, private c: ChatHttpService, private router: Router) {}
+  constructor(private uss: UsersHttpService, private us: UserHttpService, private c: ChatHttpService, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     this.load_chats();
@@ -36,8 +37,14 @@ export class ModeratorComponent implements OnInit {
     });
   }
 
-  setTabs(tab:number) {
-    this.tabs = tab;
+  setTabs(value:number, event:any) {
+    let prev = this.doc.getElementsByClassName("previous-tab");
+    this.renderer.removeClass(prev[0], "active");
+    this.renderer.removeClass(prev[0], "previous-tab");
+    this.renderer.addClass(event.target, "active");
+    this.renderer.addClass(event.target, "previous-tab");
+    this.tabs = value;
+    event.preventDefault();
   }
 
   post_moderator() {

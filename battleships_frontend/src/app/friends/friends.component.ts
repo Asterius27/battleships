@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { UserHttpService } from '../user-http.service';
 import { User, UsersHttpService } from '../users-http.service';
 import { Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 import { Chat, ChatHttpService } from '../chat-http.service';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-friends',
@@ -19,7 +20,7 @@ export class FriendsComponent implements OnInit {
   public match_invites:User[] = [];
   public moderator_chats:Chat[] = [];
   public tabs = 1;
-  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private c: ChatHttpService) {}
+  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private c: ChatHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     this.load_friends_list();
@@ -307,8 +308,14 @@ export class FriendsComponent implements OnInit {
     this.router.navigate(['/profile', {user_id: friend_id, username: friend_username}]);
   }
 
-  setTabs(value:number) {
+  setTabs(value:number, event:any) {
+    let prev = this.doc.getElementsByClassName("previous-tab");
+    this.renderer.removeClass(prev[0], "active");
+    this.renderer.removeClass(prev[0], "previous-tab");
+    this.renderer.addClass(event.target, "active");
+    this.renderer.addClass(event.target, "previous-tab");
     this.tabs = value;
+    event.preventDefault();
   }
 
   logout() {

@@ -3,6 +3,8 @@ import { ios } from '../app';
 import * as match from '../models/Match';
 const router = express.Router();
 
+// TODO add retire from match
+
 router.post('/', (req, res, next) => {
     let data = {
         playerOne: req.auth.id,

@@ -1,8 +1,9 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { UserHttpService } from '../user-http.service';
 import { Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 import { Match, MatchHttpService } from '../match-http.service';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-play',
@@ -20,7 +21,7 @@ export class PlayComponent implements OnInit {
   public win_range = 25;
   public flag = true;
   public timeout:null|ReturnType<typeof setTimeout> = null;
-  constructor(private us: UserHttpService, private router: Router, private sio: SocketioService, private m: MatchHttpService, private renderer: Renderer2) {}
+  constructor(private us: UserHttpService, private router: Router, private sio: SocketioService, private m: MatchHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     this.load_my_matches();
@@ -145,8 +146,14 @@ export class PlayComponent implements OnInit {
     this.router.navigate(['/play/match', {match_id: match._id, section: "3"}]);
   }
 
-  setTabs(value:number) {
+  setTabs(value:number, event:any) {
+    let prev = this.doc.getElementsByClassName("previous-tab");
+    this.renderer.removeClass(prev[0], "active");
+    this.renderer.removeClass(prev[0], "previous-tab");
+    this.renderer.addClass(event.target, "active");
+    this.renderer.addClass(event.target, "previous-tab");
     this.tabs = value;
+    event.preventDefault();
   }
 
   logout() {

@@ -13,8 +13,6 @@ interface TokenData {
   id: string
 }
 
-// FIXME invalid token after page refresh
-
 @Injectable({
   providedIn: 'root'
 })
@@ -29,8 +27,8 @@ export class UserHttpService {
       console.log("No token found in local storage");
       this.token = "";
     } else {
-      this.token = JSON.stringify(localStorage.getItem('battleships_token') || "");
-      console.log("JWT loaded from local storage");
+      this.token = localStorage.getItem('battleships_token') || "";
+      console.log("JWT loaded from local storage: " + this.token);
     }
   }
 

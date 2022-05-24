@@ -1,13 +1,13 @@
 <div style="padding-top: 2%">
-    <ul class="nav">
-        <li class="nav-item" style="padding-right: 2%">
-            <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(1);">Add Moderator</button>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active previous-tab" aria-current="page" href="#" (click)="setTabs(1, $event);">Add Moderator</a>
         </li>
-        <li class="nav-item" style="padding-right: 2%">
-            <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(2);">Delete User</button>
+        <li class="nav-item">
+          <a class="nav-link" href="#" (click)="setTabs(2, $event);">Delete User</a>
         </li>
-        <li class="nav-item" style="padding-right: 2%">
-            <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(3);">Message User</button>
+        <li class="nav-item">
+          <a class="nav-link" href="#" (click)="setTabs(3, $event);">Message User</a>
         </li>
         <li class="nav-item ms-auto">
           <form class="form-inline">
@@ -20,8 +20,8 @@
     </ul>
 </div>
 
-<div style="width: 400px; margin-top: 20px; margin: auto;" [hidden]="!(tabs===1)">
-    <form class="form-signin"  >
+<div style="width: 400px; margin: auto;" [hidden]="!(tabs===1)">
+    <form class="form-signin" style="margin-top: 2%;">
       
       <div class="text-center">  
         <i class="fas fa-envelope loginlogo"></i>
@@ -53,14 +53,14 @@
       </div>
     
       <div class="text-center">
-        <button class="btn btn-lg btn-primary btn-block" [disabled]="!password.valid || !username.valid" (click)="post_moderator();">Add New Moderator</button>
+        <button class="btn btn-primary btn-block" [disabled]="!password.valid || !username.valid" (click)="post_moderator();">Add New Moderator</button>
       </div>
 
     </form>
 </div>
 
-<div style="width: 400px; margin-top: 20px; margin: auto;" [hidden]="!(tabs===2)">
-    <form class="form-signin"  >
+<div style="width: 400px; margin: auto;" [hidden]="!(tabs===2)">
+    <form class="form-signin" style="margin-top: 2%;" >
       
       <div class="text-center">  
         <i class="fas fa-envelope loginlogo"></i>
@@ -82,7 +82,7 @@
       </div>
     
       <div class="text-center">
-        <button class="btn btn-lg btn-danger btn-block" [disabled]="!username.valid" (click)="delete_user();">Delete User</button>
+        <button class="btn btn-danger btn-block" [disabled]="!username.valid" (click)="delete_user();">Delete User</button>
       </div>
 
     </form>
