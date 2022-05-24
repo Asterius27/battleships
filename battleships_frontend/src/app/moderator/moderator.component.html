@@ -101,7 +101,7 @@
         <div class="panel-body">
             <ul class="list-group">
                 <li class="list-group-item" *ngFor="let chat of chats">
-                    <button class="btn btn-light" (click)="open_chat(chat._id);">{{ chat._id }}</button>
+                    <button class="btn bg-transparent text-start w-100" (click)="open_chat(chat._id);">With: {{ usernames[chat._id] }}</button>
                 </li>
             </ul>
         </div>

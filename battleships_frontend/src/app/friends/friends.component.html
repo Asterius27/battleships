@@ -29,7 +29,7 @@
     <div class="panel-body">
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let friend of friends">
-                <button class="btn btn-light" (click)="open_stats(friend._id, friend.username);">{{ friend.username }}</button>
+                <button class="btn bg-transparent text-start w-25" (click)="open_stats(friend._id, friend.username);">{{ friend.username }}</button>
                 <button class="btn btn-outline-danger" style="float: right;" (click)="delete_friend(friend.username);">Delete Friend</button>
                 <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="invite_friend(friend.username);">Invite to Play</button>
                 <button class="btn btn-outline-primary" style="float: right; margin-right: 2%;" (click)="open_chat(friend._id);">Chat</button>
@@ -58,7 +58,7 @@
     <div class="panel-body">
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let friend of match_invites">
-                <button class="btn btn-light" (click)="open_stats(friend._id, friend.username);">{{ friend.username }}</button>
+                <button class="btn bg-transparent text-start w-25" (click)="open_stats(friend._id, friend.username);">{{ friend.username }}</button>
                 <button class="btn btn-outline-danger" style="float: right;" (click)="reject_match_invite(friend.username);">Reject Invite</button>
                 <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="accept_match_invite(friend.username);">Accept Invite</button>
             </li>
@@ -72,7 +72,7 @@
     <div class="panel-body">
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let chat of moderator_chats">
-                <button class="btn btn-light" (click)="open_moderator_chat(chat._id);">{{ chat._id }}</button>
+                <button class="btn bg-transparent text-start w-100" (click)="open_moderator_chat(chat._id);">Moderator: {{ moderators[chat._id] }}</button>
             </li>
         </ul>
     </div>

@@ -17,6 +17,7 @@ export class ModeratorComponent implements OnInit {
   public user = {username: '', password: ''};
   public delete_target = {username: ''};
   public chats:Chat[] = [];
+  public usernames:{[k: string]: any} = {};
   constructor(private uss: UsersHttpService, private us: UserHttpService, private c: ChatHttpService, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
@@ -27,6 +28,11 @@ export class ModeratorComponent implements OnInit {
     this.c.get_moderator_chats(this.us.get_id()).subscribe({
       next: (d) => {
         this.chats = d;
+        for (let chat of this.chats) {
+          for (let participant of chat.participants) {
+            this.load_moderators(participant, chat._id);
+          }
+        }
         console.log("Chats loaded");
       },
       error: (err) => {
@@ -35,6 +41,21 @@ export class ModeratorComponent implements OnInit {
         this.logout();
       }
     });
+  }
+
+  load_moderators(participant_id:string, chat_id:string) {
+    if (!(chat_id in this.usernames) && participant_id !== this.us.get_id()) {
+      this.uss.get_user_id(participant_id).subscribe({
+        next: (d) => {
+          this.usernames[chat_id] = d.username;
+        },
+        error: (err:any) => {
+          console.log('Login error: ' + JSON.stringify(err));
+          this.errmessage = err.message;
+          this.logout();
+        }
+      });
+    }
   }
 
   setTabs(value:number, event:any) {

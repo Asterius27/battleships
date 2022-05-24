@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 import { Match, MatchHttpService } from '../match-http.service';
 import { DOCUMENT } from '@angular/common';
+import { UsersHttpService } from '../users-http.service';
 
 @Component({
   selector: 'app-play',
@@ -21,7 +22,8 @@ export class PlayComponent implements OnInit {
   public win_range = 25;
   public flag = true;
   public timeout:null|ReturnType<typeof setTimeout> = null;
-  constructor(private us: UserHttpService, private router: Router, private sio: SocketioService, private m: MatchHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
+  public usernames:{[k: string]: any} = {};
+  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private m: MatchHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     this.load_my_matches();
@@ -46,6 +48,10 @@ export class PlayComponent implements OnInit {
     this.m.get_ongoing_matches().subscribe({
       next: (d) => {
         this.ongoing_matches = d;
+        for (let m of this.ongoing_matches) {
+          this.load_usernames(m.playerOne);
+          this.load_usernames(m.playerTwo);
+        }
         console.log("Loaded ongoing matches");
       },
       error: (err) => {
@@ -63,6 +69,8 @@ export class PlayComponent implements OnInit {
         for (let match of d) {
           if (match.result === "0-0") {
             this.my_ongoing_matches.push(match);
+            this.load_usernames(match.playerOne);
+            this.load_usernames(match.playerTwo);
           }
         }
         console.log("Loaded my ongoing matches");
@@ -131,7 +139,9 @@ export class PlayComponent implements OnInit {
     self.match_range = self.match_range * 2;
     self.m.post_queue(self.match_range, self.win_range).subscribe({
       next: (d:any) => {
-        self.timeout = setTimeout(self.match_making_callback, 5000, self);
+        if (self.flag) {
+          self.timeout = setTimeout(self.match_making_callback, 5000, self);
+        }
         console.log("Widened the search");
       },
       error: (err:any) => {
@@ -144,6 +154,21 @@ export class PlayComponent implements OnInit {
 
   observe_match(match:Match) {
     this.router.navigate(['/play/match', {match_id: match._id, section: "3"}]);
+  }
+
+  load_usernames(id:string) {
+    if (!(id in this.usernames)) {
+      this.uss.get_user_id(id).subscribe({
+        next: (d) => {
+          this.usernames[id] = d.username;
+        },
+        error: (err:any) => {
+          console.log('Login error: ' + JSON.stringify(err));
+          this.errmessage = err.message;
+          this.logout();
+        }
+      });
+    }
   }
 
   setTabs(value:number, event:any) {

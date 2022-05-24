@@ -21,7 +21,7 @@
     <div class="panel-body">
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let match of my_ongoing_matches">
-                <button class="btn btn-light" (click)="open_match(match);">{{ match._id }}</button>
+                <button class="btn bg-transparent text-start w-100" (click)="open_match(match);">{{ usernames[match.playerOne] }} VS. {{ usernames[match.playerTwo] }}</button>
             </li>
         </ul>
     </div>
@@ -33,7 +33,7 @@
     <div class="panel-body">
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let match of ongoing_matches">
-                <button class="btn btn-light" (click)="observe_match(match);">{{ match._id }}</button>
+                <button class="btn bg-transparent text-start w-100" (click)="observe_match(match);">{{ usernames[match.playerOne] }} VS. {{ usernames[match.playerTwo] }}</button>
             </li>
         </ul>
     </div>

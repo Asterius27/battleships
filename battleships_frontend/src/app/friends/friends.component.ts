@@ -20,6 +20,7 @@ export class FriendsComponent implements OnInit {
   public match_invites:User[] = [];
   public moderator_chats:Chat[] = [];
   public tabs = 1;
+  public moderators:{[k: string]: any} = {};
   constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private c: ChatHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
@@ -53,6 +54,11 @@ export class FriendsComponent implements OnInit {
     this.c.get_moderator_chats(this.us.get_id()).subscribe({
       next: (d) => {
         this.moderator_chats = d;
+        for (let chat of this.moderator_chats) {
+          for (let participant of chat.participants) {
+            this.load_moderators(participant, chat._id);
+          }
+        }
         console.log("Chats loaded");
       },
       error: (err) => {
@@ -61,6 +67,25 @@ export class FriendsComponent implements OnInit {
         this.logout();
       }
     });
+  }
+
+  load_moderators(participant_id:string, chat_id:string) {
+    if (!(chat_id in this.moderators) && participant_id !== this.us.get_id()) {
+      this.uss.get_user_id(participant_id).subscribe({
+        next: (d) => {
+          if (d.role === "MODERATOR") {
+            this.moderators[chat_id] = d.username;
+          } else {
+            this.moderators[chat_id] = "You";
+          }
+        },
+        error: (err:any) => {
+          console.log('Login error: ' + JSON.stringify(err));
+          this.errmessage = err.message;
+          this.logout();
+        }
+      });
+    }
   }
 
   load_match_invites() {
