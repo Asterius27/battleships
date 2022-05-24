@@ -116,41 +116,47 @@ router.patch('/:username', (req, res, next) => {
 router.delete('/:username', async (req, res, next) => {
     if (req.auth.role === 'MODERATOR') {
         let deleted_user_id = undefined;
+        let deleted_user_role = undefined;
         let deleted_messages_ids = [];
         await user.getModel().findOne({username: req.params.username}).then((u) => {
             deleted_user_id = u._id;
+            deleted_user_role = u.role;
         }).catch((err) => {
             return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });
-        await user.getModel().deleteOne({username: req.params.username}).catch((err) => {
-            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-        await user.getModel().updateMany({friends_list: deleted_user_id}, {$pull: {friends_list: deleted_user_id}}).catch((err) => {
-            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-        await user.getModel().updateMany({friend_requests: deleted_user_id}, {$pull: {friend_requests: deleted_user_id}}).catch((err) => {
-            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-        await message.getModel().find({owner: deleted_user_id}).then((ms) => {
-            for (let m of ms) {
-                deleted_messages_ids.push(m._id);
-            }
-        }).catch((err) => {
-            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-        await message.getModel().deleteMany({owner: deleted_user_id}).catch((err) => {
-            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-        await chat.getModel().updateMany({participants: deleted_user_id}, {$pull: {participants: deleted_user_id}, $pullAll: {messages: deleted_messages_ids}}).catch((err) => {
-            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-        await match.getModel().deleteMany({$or: [{playerOne: deleted_user_id}, {playerTwo: deleted_user_id}]}).catch((err) => {
-            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-        await user.getModel().updateMany({match_invites: deleted_user_id}, {$pull: {match_invites: deleted_user_id}}).catch((err) => {
-            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-        });
-        return res.status(200).json({error: false, errormessage: "", id: deleted_user_id});
+        if (deleted_user_role !== 'MODERATOR') {
+            await user.getModel().deleteOne({username: req.params.username}).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
+            await user.getModel().updateMany({friends_list: deleted_user_id}, {$pull: {friends_list: deleted_user_id}}).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
+            await user.getModel().updateMany({friend_requests: deleted_user_id}, {$pull: {friend_requests: deleted_user_id}}).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
+            await message.getModel().find({owner: deleted_user_id}).then((ms) => {
+                for (let m of ms) {
+                    deleted_messages_ids.push(m._id);
+                }
+            }).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
+            await message.getModel().deleteMany({owner: deleted_user_id}).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
+            await chat.getModel().updateMany({participants: deleted_user_id}, {$pull: {participants: deleted_user_id}, $pullAll: {messages: deleted_messages_ids}}).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
+            await match.getModel().deleteMany({$or: [{playerOne: deleted_user_id}, {playerTwo: deleted_user_id}]}).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
+            await user.getModel().updateMany({match_invites: deleted_user_id}, {$pull: {match_invites: deleted_user_id}}).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
+            return res.status(200).json({error: false, errormessage: "", id: deleted_user_id});
+        } else {
+            return next({statusCode: 404, error: true, errormessage: "Cannot delete a moderator"});
+        }
     } else {
         return next({statusCode: 404, error: true, errormessage: "Unauthorized"});
     }
