@@ -106,8 +106,9 @@ export class MatchHttpService {
     );
   }
 
-  post_queue() : Observable<any> {
-    return this.http.post<any>(this.us.url + '/matchmaking/queue', {}, this.create_options()).pipe(
+  post_queue(match_range:number, win_range:number) : Observable<any> {
+    let body = {match_range: match_range, win_range: win_range};
+    return this.http.post<any>(this.us.url + '/matchmaking/queue', body, this.create_options()).pipe(
       tap({
         next: (data) => {console.log(JSON.stringify(data));},
         error: catchError(this.handleError)

@@ -6,7 +6,10 @@
         <li class="nav-item" style="padding-right: 2%">
             <button class="btn btn-sm btn-primary btn-block" (click)="setTabs(2);">Ongoing Matches</button>
         </li>
-        <li class="nav-item ms-auto" style="padding-right: 2%">
+        <li class="nav-item ms-auto" style="padding-right: 1%">
+            <div class="spinner-border" role="status" [hidden]="match_making_button === 'Find Match'"></div>
+        </li>
+        <li class="nav-item" style="padding-right: 1%">
             <button class="btn btn-success btn-block" (click)="match_making($event);">{{ match_making_button }}</button>
         </li>
     </ul>

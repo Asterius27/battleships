@@ -16,6 +16,10 @@ export class PlayComponent implements OnInit {
   public my_ongoing_matches:Match[] = [];
   public ongoing_matches:Match[] = [];
   public tabs = 1;
+  public match_range = 50;
+  public win_range = 25;
+  public flag = true;
+  public timeout:null|ReturnType<typeof setTimeout> = null;
   constructor(private us: UserHttpService, private router: Router, private sio: SocketioService, private m: MatchHttpService, private renderer: Renderer2) {}
 
   ngOnInit(): void {
@@ -23,6 +27,12 @@ export class PlayComponent implements OnInit {
     this.load_ongoing_matches();
     this.sio.connect("newmatch").subscribe((d) => {
       if (d.playerOne === this.us.get_id() || d.playerTwo === this.us.get_id()) {
+        if (this.timeout !== null) {
+          clearTimeout(this.timeout);
+        }
+        this.flag = false;
+        this.match_range = 50;
+        this.win_range = 25;
         this.open_match(d);
       }
       this.load_my_matches();
@@ -74,11 +84,15 @@ export class PlayComponent implements OnInit {
 
   match_making(event:any) {
     if (this.match_making_button === "Find Match") {
-      this.m.post_queue().subscribe({
+      this.m.post_queue(this.match_range, this.win_range).subscribe({
         next: (d) => {
           this.match_making_button = "Cancel";
           this.renderer.removeClass(event.target, "btn-success");
           this.renderer.addClass(event.target, "btn-danger");
+          if (this.flag) {
+            let self = this;
+            this.timeout = setTimeout(this.match_making_callback, 5000, self);
+          }
           console.log("Player queued");
         },
         error: (err) => {
@@ -86,7 +100,7 @@ export class PlayComponent implements OnInit {
           this.errmessage = err.message;
           this.logout();
         }
-      })
+      });
     } else {
       if (this.match_making_button === "Cancel") {
         this.m.delete_queue().subscribe({
@@ -94,6 +108,11 @@ export class PlayComponent implements OnInit {
             this.match_making_button = "Find Match";
             this.renderer.removeClass(event.target, "btn-danger");
             this.renderer.addClass(event.target, "btn-success");
+            if (this.timeout !== null) {
+              clearTimeout(this.timeout);
+            }
+            this.match_range = 50;
+            this.win_range = 25;
             console.log("Player removed from queued");
           },
           error: (err) => {
@@ -104,6 +123,22 @@ export class PlayComponent implements OnInit {
         });
       }
     }
+  }
+
+  match_making_callback(self:any) {
+    self.win_range = self.win_range * 2;
+    self.match_range = self.match_range * 2;
+    self.m.post_queue(self.match_range, self.win_range).subscribe({
+      next: (d:any) => {
+        self.timeout = setTimeout(self.match_making_callback, 5000, self);
+        console.log("Widened the search");
+      },
+      error: (err:any) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        self.errmessage = err.message;
+        self.logout();
+      }
+    });
   }
 
   observe_match(match:Match) {
