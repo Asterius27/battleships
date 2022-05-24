@@ -1,3 +1,7 @@
+<div *ngIf="alert" class="alert alert-success" style="margin-top: 1%;" role="alert">{{ alert }}</div>
+
+<div *ngIf="errmessage" class="alert alert-danger" style="margin-top: 1%;" role="alert">{{errmessage}}</div>
+
 <div style="padding-top: 2%">
     <ul class="nav nav-tabs">
         <li class="nav-item">
@@ -16,7 +20,7 @@
             <form class="form-inline">
                 <div class="input-group">
                     <input class="form-control" #usernametxt type="text" placeholder="Username">
-                    <button class="btn btn-outline-success" (click)="add_friend(usernametxt.value);">Add Friend</button>
+                    <button class="btn btn-outline-success" (click)="add_friend(usernametxt.value); usernametxt.value='';">Add Friend</button>
                 </div>
             </form>
         </li>

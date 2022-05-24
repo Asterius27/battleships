@@ -14,7 +14,7 @@ import { DOCUMENT } from '@angular/common';
 export class FriendsComponent implements OnInit {
 
   public errmessage = undefined;
-  public notification = "";
+  public alert = "";
   public friends:User[] = [];
   public friend_requests:User[] = [];
   public match_invites:User[] = [];
@@ -36,6 +36,7 @@ export class FriendsComponent implements OnInit {
     });
     this.sio.connect("deletedfriend" + this.us.get_username()).subscribe((d) => {
       this.load_friends_list();
+      this.load_match_invites();
     });
     this.sio.connect("newmatchinvite" + this.us.get_username()).subscribe((d) => {
       this.load_match_invites();
@@ -173,7 +174,8 @@ export class FriendsComponent implements OnInit {
     this.uss.post_friend(body).subscribe({
       next: (d) => {
         console.log('Friend added');
-        this.notification = "Friend Added";
+        this.alert = "Friend Added";
+        setTimeout(() => {this.alert = "";}, 3000);
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
@@ -191,7 +193,8 @@ export class FriendsComponent implements OnInit {
     this.uss.post_friend(body).subscribe({
       next: (d) => {
         console.log('Friend accepted');
-        this.notification = "Friend Accepted";
+        this.alert = "Friend Accepted";
+        setTimeout(() => {this.alert = "";}, 3000);
         this.load_friend_requests();
         this.load_friends_list();
       },
@@ -211,7 +214,8 @@ export class FriendsComponent implements OnInit {
     this.uss.post_friend(body).subscribe({
       next: (d) => {
         console.log('Friend rejected');
-        this.notification = "Friend Rejected";
+        this.alert = "Friend Rejected";
+        setTimeout(() => {this.alert = "";}, 3000);
         this.load_friend_requests();
       },
       error: (err) => {
@@ -226,8 +230,10 @@ export class FriendsComponent implements OnInit {
     this.uss.delete_friend(username).subscribe({
       next: (d) => {
         console.log('Friend deleted');
-        this.notification = "Friend Deleted";
+        this.alert = "Friend Deleted";
+        setTimeout(() => {this.alert = "";}, 3000);
         this.load_friends_list();
+        this.load_match_invites();
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
@@ -274,7 +280,8 @@ export class FriendsComponent implements OnInit {
     this.uss.post_friend_match(body).subscribe({
       next: (d) => {
         console.log('Friend invited');
-        this.notification = "Friend Invited";
+        this.alert = "Friend Invited";
+        setTimeout(() => {this.alert = "";}, 3000);
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
@@ -292,7 +299,8 @@ export class FriendsComponent implements OnInit {
     this.uss.post_friend_match(body).subscribe({
       next: (d) => {
         console.log('Invite accepted');
-        this.notification = "Invite Accepted";
+        this.alert = "Invite Accepted";
+        setTimeout(() => {this.alert = "";}, 3000);
         this.load_match_invites();
         this.router.navigate(['/play/match', {match_id: d.id, section: "1"}]);
       },
@@ -312,7 +320,8 @@ export class FriendsComponent implements OnInit {
     this.uss.post_friend_match(body).subscribe({
       next: (d) => {
         console.log('Invite rejected');
-        this.notification = "Invite rejected";
+        this.alert = "Invite rejected";
+        setTimeout(() => {this.alert = "";}, 3000);
         this.load_match_invites();
       },
       error: (err) => {

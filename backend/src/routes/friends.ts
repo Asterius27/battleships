@@ -128,9 +128,9 @@ router.post('/play', (req, res, next) => {
 });
 
 router.delete('/:username', (req, res, next) => {
-    user.getModel().findOneAndUpdate({username: req.params.username}, {$pull: {friends_list: req.auth.id}}).then((u) => {
+    user.getModel().findOneAndUpdate({username: req.params.username}, {$pull: {friends_list: req.auth.id, match_invites: req.auth.id}}).then((u) => {
         ios.emit("deletedfriend" + req.params.username, req.auth.id);
-        user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {friends_list: u._id}}).then((u) => {
+        user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {friends_list: u._id, match_invites: u._id}}).then((u) => {
             return res.status(200).json(u);
         }).catch((err) => {
             return next({statusCode: 404, error: true, errormessage: "DB error: " + err});

@@ -12,6 +12,7 @@ import { DOCUMENT } from '@angular/common';
 })
 export class ModeratorComponent implements OnInit {
 
+  public alert = "";
   public errmessage = undefined;
   public tabs = 1;
   public user = {username: '', password: ''};
@@ -71,6 +72,10 @@ export class ModeratorComponent implements OnInit {
   post_moderator() {
     this.uss.post_moderator_user(this.user).subscribe({
       next: (d) => {
+        this.user.username = '';
+        this.user.password = '';
+        this.alert = "New moderator added";
+        setTimeout(() => {this.alert = "";}, 3000);
         console.log("New moderator added");
       },
       error: (err) => {
@@ -84,6 +89,9 @@ export class ModeratorComponent implements OnInit {
   delete_user() {
     this.uss.delete_user(this.delete_target.username).subscribe({
       next: (d) => {
+        this.delete_target.username = '';
+        this.alert = "User deleted";
+        setTimeout(() => {this.alert = "";}, 3000);
         console.log("User deleted");
       },
       error: (err) => {
