@@ -405,18 +405,6 @@ matchSchema.methods.isMatchFinished = function() : boolean {
     }
 }
 
-// TODO remove
-let printGrid = function(grid:string[][]) {
-    console.log(" ");
-    for (let i = 0; i < grid.length; i++) {
-        let s = "";
-        for (let j = 0; j < grid[i].length; j++) {
-            s = s + grid[i][j] + " ";
-        }
-        console.log(s);
-    }
-}
-
 let checkVisited = function(i:number, j:number, grid:string[][], d:string) : number {
     if (d === 'n') {
         if (i > 0) {

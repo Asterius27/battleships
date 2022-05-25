@@ -2,8 +2,6 @@ import mongoose from "mongoose";
 import crypto = require('crypto');
 const { Schema } = mongoose;
 
-// TODO add player stats (wins, losses, ecc.)
-
 export interface User extends mongoose.Document {
     readonly _id: mongoose.Schema.Types.ObjectId,
     name: string,

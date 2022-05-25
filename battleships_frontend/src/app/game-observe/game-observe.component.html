@@ -1,3 +1,22 @@
+<button type="button" class="btn btn-primary" style="display: none;" id="post-game" (click)="open_modal()"></button>
+
+<div class="modal" tabindex="-1" role="dialog" [ngStyle]="{'display': display}">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle" *ngIf="match.result === '1-0'">{{ playerOne }} has won!</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle" *ngIf="match.result === '0-1'">{{ playerTwo }} has won!</h5>
+      </div>
+      <div class="modal-body">
+        Thank you for watching, we hope you had fun!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="close_game();">Close Game</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div style="display: block; margin-left: 2px; margin-right: 2px; margin-top: 2px;">
   <h6>{{ playerOne }}'s grid</h6>
   <div id="gridone" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">

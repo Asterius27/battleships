@@ -14,7 +14,7 @@ export class SocketioService {
   connect(event:string) : Observable<any> {
     this.socket = io(this.us.url);
     return new Observable((observer) => {
-      this.socket.on(event, (arg:any) => { // TODO add handling of multiple args
+      this.socket.on(event, (arg:any) => {
         console.log('Socket.io message received: ' + JSON.stringify(arg));
         observer.next(arg);
       });

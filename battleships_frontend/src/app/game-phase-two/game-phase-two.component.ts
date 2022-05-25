@@ -20,6 +20,9 @@ export class GamePhaseTwoComponent implements OnInit {
   public grid:string[] = [];
   public opponent_grid:string[] = [];
   public move:number = 100;
+  public display:string = "none";
+  public user_id = "";
+  public result = "";
   constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
@@ -35,17 +38,20 @@ export class GamePhaseTwoComponent implements OnInit {
       }
       if (arr[0] === "matchisfinished") {
         if ((this.match.playerOne === this.us.get_id() && arr[1] === "1-0") || (this.match.playerTwo === this.us.get_id() && arr[1] === "0-1")) {
+          this.result = "won!";
           console.log("You have won!");
         }
         if ((this.match.playerOne === this.us.get_id() && arr[1] === "0-1") || (this.match.playerTwo === this.us.get_id() && arr[1] === "1-0")) {
+          this.result = "lost";
           console.log("You have lost!");
         }
-        // TODO navigate to post game
+        this.doc.getElementById("post-game")?.click();
       }
     });
   }
 
   load_match() {
+    this.user_id = this.us.get_id();
     this.m.get_match(this.match_id).subscribe({
       next: (d) => {
         console.log("Match loaded");
@@ -55,7 +61,7 @@ export class GamePhaseTwoComponent implements OnInit {
           // this.router.navigate(['/play/match/observe', {match_id: this.match_id}]);
         }
         if (this.match.result !== "0-0") {
-          // TODO navigate to post game
+          this.doc.getElementById("post-game")?.click();
         }
         if (this.match.startingPlayer === this.us.get_id() && this.match.moves.length % 2 === 0) {
           this.turn = true;
@@ -111,11 +117,13 @@ export class GamePhaseTwoComponent implements OnInit {
   }
 
   setMove(event:any) {
-    if (this.move !== 100) {
-      this.renderer.removeClass(this.doc.getElementById(String(this.move)), "selected");
+    if (this.opponent_grid[event.target.id] === 'b' || this.opponent_grid[event.target.id] === 's') {
+      if (this.move !== 100) {
+        this.renderer.removeClass(this.doc.getElementById(String(this.move)), "selected");
+      }
+      this.move = event.target.id;
+      this.renderer.addClass(event.target, "selected");
     }
-    this.move = event.target.id;
-    this.renderer.addClass(event.target, "selected");
   }
 
   post_move() {
@@ -138,6 +146,14 @@ export class GamePhaseTwoComponent implements OnInit {
         }
       });
     }
+  }
+
+  close_game() {
+    this.router.navigate(['/play']);
+  }
+
+  open_modal() {
+    this.display = "block";
   }
 
   get_parsed_move(): string {

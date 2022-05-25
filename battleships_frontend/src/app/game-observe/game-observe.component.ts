@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
 import { SocketioService } from '../socketio.service';
@@ -19,7 +20,8 @@ export class GameObserveComponent implements OnInit {
   @Input() match_id = "";
   public errmessage = undefined;
   public match = {} as Match;
-  constructor(private us: UserHttpService, private uss: UsersHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router) {}
+  public display:string = "none";
+  constructor(private us: UserHttpService, private uss: UsersHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     if (this.match_id === "") {
@@ -29,7 +31,7 @@ export class GameObserveComponent implements OnInit {
     this.sio.connect(this.match_id).subscribe((d) => {
       let arr = d.split(" ");
       if (arr[0] === "matchisfinished") {
-        // TODO navigate to post game
+        this.doc.getElementById("post-game")?.click();
       }
       this.load_match();
     });
@@ -97,6 +99,14 @@ export class GameObserveComponent implements OnInit {
         this.logout();
       }
     });
+  }
+
+  close_game() {
+    this.router.navigate(['/play']);
+  }
+
+  open_modal() {
+    this.display = "block";
   }
 
   logout() {

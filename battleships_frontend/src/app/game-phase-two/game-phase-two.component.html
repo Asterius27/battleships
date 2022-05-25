@@ -1,3 +1,21 @@
+<button type="button" class="btn btn-primary" style="display: none;" id="post-game" (click)="open_modal()"></button>
+
+<div class="modal" tabindex="-1" role="dialog" [ngStyle]="{'display': display}">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">You have {{ result }}</h5>
+      </div>
+      <div class="modal-body">
+        Thank you for playing, we hope you had fun!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="close_game();">Close Game</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div style="display: block; margin-left: 2px; margin-right: 2px; margin-top: 2px;">
   <h6>Your Grid</h6>
   <div id="grid" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
