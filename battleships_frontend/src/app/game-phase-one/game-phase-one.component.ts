@@ -36,9 +36,11 @@ export class GamePhaseOneComponent implements OnInit {
     ["Battleship", "4"],
     ["Carrier", "5"]
   ];
+  public placed = 11;
   constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
+    interact('.dropzone').unset();
     this.grid = new Array(100);
     if (this.match_id === "") {
       this.match_id = this.route.snapshot.paramMap.get('match_id') || "";
@@ -90,6 +92,7 @@ export class GamePhaseOneComponent implements OnInit {
           this.update_grid(event.relatedTarget.id, event.target.id, direction);
           this.renderer.addClass(event.relatedTarget, 'boat-dropped');
           interact('.drop' + boat_id).unset();
+          this.placed = this.placed - 1;
         } else {
           if (!(event.relatedTarget.classList.contains("boat-dropped"))) {
             console.log("classes: " + event.relatedTarget.classList);
@@ -404,6 +407,7 @@ export class GamePhaseOneComponent implements OnInit {
           this.doc.getElementById(i + 'b')!.style.transform = 'translate(0px, 0px)';
           interact('.drop' + i).unset();
         }
+        this.placed = 0;
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));

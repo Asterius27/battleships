@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
 import { UserHttpService } from '../user-http.service';
 
-// TODO make it nicer, ship drop isn't working because zone is too small
+// TODO make it nicer
 
 @Component({
   selector: 'app-game',

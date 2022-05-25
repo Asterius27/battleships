@@ -3,12 +3,17 @@
     {{ ship[0] }} ({{ ship[1] }})
   </div>
 
-  <div id="grid" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
+  <div id="grid" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 7em);">
     <div [ngClass]="{'boat': cell === 'b', 'dropzone': true}" class="dropzone" *ngFor="let cell of grid; let i=index" [attr.id]="i">
     </div>
   </div>
 
+  <p>Drag and drop the boats (the item you drop represents the lower/left end of the boat (depending on whether the boat is verical or horizonotal))<br>
+    Right click to change it's direction (red = vertical, blue = horizonotal)<br>
+    The number between the parenthesis is the length of the boat
+  </p>
+
   <button type="button" class="btn btn-danger" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="reset_grid();" [disabled]="post">Reset</button>
-  <button type="button" class="btn btn-success" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="post_grid();" [disabled]="post">Ready</button>
+  <button type="button" class="btn btn-success" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="post_grid();" [disabled]="post || placed !== 0">Ready</button>
   <button type="button" class="btn btn-primary" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="random_grid();" [disabled]="post">Random</button>
 </div>
