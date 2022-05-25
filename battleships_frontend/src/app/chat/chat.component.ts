@@ -7,6 +7,8 @@ import { Message, MessageHttpService } from '../message-http.service';
 import { UsersHttpService } from '../users-http.service';
 import { DOCUMENT } from '@angular/common';
 
+// TODO make it nicer
+
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
