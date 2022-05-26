@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { UserHttpService } from '../user-http.service';
 import { User, UsersHttpService } from '../users-http.service';
 import { Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { DOCUMENT } from '@angular/common';
   templateUrl: './friends.component.html',
   styleUrls: ['./friends.component.css']
 })
-export class FriendsComponent implements OnInit {
+export class FriendsComponent implements OnInit, OnDestroy {
 
   public errmessage = undefined;
   public alert = "";
@@ -49,6 +49,15 @@ export class FriendsComponent implements OnInit {
         this.load_moderator_chats();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.sio.removeListener("newfriendrequest" + this.us.get_username());
+    this.sio.removeListener("friendrequestaccepted" + this.us.get_username());
+    this.sio.removeListener("deletedfriend" + this.us.get_username());
+    this.sio.removeListener("newmatchinvite" + this.us.get_username());
+    this.sio.removeListener("matchinviteaccepted" + this.us.get_username());
+    this.sio.removeListener("newchat" + this.us.get_id());
   }
 
   load_moderator_chats() {

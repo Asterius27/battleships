@@ -47,6 +47,17 @@ export class PlayComponent implements OnInit, OnDestroy {
     if (this.timeout !== null) {
       clearTimeout(this.timeout);
     }
+    this.m.delete_queue().subscribe({
+      next: (d) => {
+        console.log("Player removed from queued");
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
+    this.sio.removeListener("newmatch");
   }
 
   load_ongoing_matches() {

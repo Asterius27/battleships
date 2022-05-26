@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, Inject, Input, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { UserHttpService } from '../user-http.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
@@ -14,7 +14,7 @@ import { DOCUMENT } from '@angular/common';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, AfterViewChecked {
+export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   public errmessage = undefined;
   public notification = "";
@@ -36,6 +36,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     this.doc.getElementById("chat-container")!.scrollTop = this.doc.getElementById("chat-container")!.scrollHeight;
+  }
+
+  ngOnDestroy(): void {
+    this.sio.removeListener("newmessage" + this.chat_id);
   }
 
   load_chat() {

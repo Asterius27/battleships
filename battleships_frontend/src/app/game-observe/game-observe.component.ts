@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
 import { SocketioService } from '../socketio.service';
@@ -11,7 +11,7 @@ import { UsersHttpService } from '../users-http.service';
   templateUrl: './game-observe.component.html',
   styleUrls: ['./game-observe.component.css']
 })
-export class GameObserveComponent implements OnInit {
+export class GameObserveComponent implements OnInit, OnDestroy {
 
   public gridPlayerOne:string[] = [];
   public gridPlayerTwo:string[] = [];
@@ -35,6 +35,10 @@ export class GameObserveComponent implements OnInit {
       }
       this.load_match();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.sio.removeListener(this.match_id);
   }
 
   load_match() {

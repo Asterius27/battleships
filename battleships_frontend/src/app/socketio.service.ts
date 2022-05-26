@@ -32,4 +32,10 @@ export class SocketioService {
       this.socket.disconnect();
     }
   }
+
+  removeListener(event:string) {
+    if (this.socket !== null) {
+      this.socket.off(event);
+    }
+  }
 }

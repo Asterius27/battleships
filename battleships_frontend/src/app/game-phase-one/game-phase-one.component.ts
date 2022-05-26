@@ -136,6 +136,7 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.ships.length; i++) {
       interact('.drop' + i).unset();
     }
+    this.sio.removeListener(this.match_id);
   }
 
   load_match() {

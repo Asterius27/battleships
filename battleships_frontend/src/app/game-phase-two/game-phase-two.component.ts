@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, EventEmitter, Inject, Input, OnInit, Output, Renderer2 } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
 import { SocketioService } from '../socketio.service';
@@ -10,7 +10,7 @@ import { UserHttpService } from '../user-http.service';
   templateUrl: './game-phase-two.component.html',
   styleUrls: ['./game-phase-two.component.css']
 })
-export class GamePhaseTwoComponent implements OnInit {
+export class GamePhaseTwoComponent implements OnInit, OnDestroy {
 
   @Output() sectionChange = new EventEmitter<number>();
   public errmessage = undefined;
@@ -48,6 +48,10 @@ export class GamePhaseTwoComponent implements OnInit {
         this.doc.getElementById("post-game")?.click();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.sio.removeListener(this.match_id);
   }
 
   load_match() {
