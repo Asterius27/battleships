@@ -12,7 +12,6 @@ import { UserHttpService } from '../user-http.service';
 })
 export class GamePhaseTwoComponent implements OnInit, OnDestroy {
 
-  @Output() sectionChange = new EventEmitter<number>();
   public errmessage = undefined;
   public turn = false;
   @Input() match_id = "";
@@ -60,9 +59,6 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
       next: (d) => {
         console.log("Match loaded");
         this.match = d;
-        if (this.match.playerOne !== this.us.get_id() && this.match.playerTwo !== this.us.get_id()) {
-          this.sectionChange.emit(3);
-        }
         if (this.match.result !== "0-0") {
           this.doc.getElementById("post-game")?.click();
         }

@@ -3,8 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
 import { UserHttpService } from '../user-http.service';
 
-// TODO make it nicer
-
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',

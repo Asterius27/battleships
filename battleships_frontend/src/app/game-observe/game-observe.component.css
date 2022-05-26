@@ -3,7 +3,8 @@
 }
 
 .cell {
-    background-color: blue;
+    background-color: #bfe4ff;
+    height: 2em;
 }
 
 .hit {

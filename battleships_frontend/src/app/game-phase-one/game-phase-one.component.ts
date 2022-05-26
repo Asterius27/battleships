@@ -182,6 +182,10 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
         if (this.match.gridTwo[0].length !== 0 && this.match.playerTwo !== this.us.get_id()) {
           this.opponent_ready = true;
         }
+        if (this.ready && this.opponent_ready) {
+          console.log("Starting game");
+          this.sectionChange.emit(2);
+        }
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));

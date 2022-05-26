@@ -32,8 +32,9 @@ export class GameObserveComponent implements OnInit, OnDestroy {
       let arr = d.split(" ");
       if (arr[0] === "matchisfinished") {
         this.doc.getElementById("post-game")?.click();
+      } else  {
+        this.load_match();
       }
-      this.load_match();
     });
   }
 
@@ -46,9 +47,14 @@ export class GameObserveComponent implements OnInit, OnDestroy {
       next: (d) => {
         console.log("Match loaded");
         this.match = d;
-        this.load_linear_grid_player_one();
-        this.load_linear_grid_player_two();
-        this.get_players_username();
+        if (d.result === "0-0") {
+          this.load_linear_grid_player_one();
+          this.load_linear_grid_player_two();
+          this.get_players_username();
+        } else {
+          this.get_players_username();
+          this.doc.getElementById("post-game")?.click();
+        }
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
