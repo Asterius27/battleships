@@ -7,8 +7,6 @@ import { Message, MessageHttpService } from '../message-http.service';
 import { UsersHttpService } from '../users-http.service';
 import { DOCUMENT } from '@angular/common';
 
-// TODO make it nicer
-
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -117,6 +115,14 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
     let date = datetime[0].split("-");
     let time = datetime[1].split(":");
     return date[2] + "/" + date[1] + "/" + date[0] + " " + time[0] + ":" + time[1];
+  }
+
+  getMessageStyle(message_owner:string) : string {
+    if (message_owner === this.us.get_username()) {
+      return "right";
+    } else {
+      return "left";
+    }
   }
 
   logout() {
