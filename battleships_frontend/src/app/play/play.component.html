@@ -21,7 +21,8 @@
     <div class="panel-body">
         <ul class="list-group">
             <li class="list-group-item" *ngFor="let match of my_ongoing_matches">
-                <button class="btn bg-transparent text-start w-100" (click)="open_match(match);">{{ usernames[match.playerOne] }} VS. {{ usernames[match.playerTwo] }}</button>
+                <button class="btn bg-transparent text-start w-75" (click)="open_match(match);">{{ usernames[match.playerOne] }} VS. {{ usernames[match.playerTwo] }}</button>
+                <button class="btn btn-outline-danger" style="float: right;" (click)="forfeit(match._id);">Forfeit</button>
             </li>
         </ul>
     </div>

@@ -3,8 +3,6 @@ import { ios } from '../app';
 import * as match from '../models/Match';
 const router = express.Router();
 
-// TODO add retire from match
-
 router.post('/', (req, res, next) => {
     let data = {
         playerOne: req.auth.id,
@@ -71,6 +69,7 @@ router.post('/move/:matchid', (req, res, next) => {
                             if (m.isMatchFinished()) {
                                 match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: m.gridOne, gridTwo: m.gridTwo, moves: m.moves, result: m.result}, {new: true}).then((data) => {
                                     ios.emit(m._id, "matchisfinished " + m.result);
+                                    ios.emit("matchfinished", + m._id);
                                     return res.status(200).json(data);
                                 }).catch((err) => {
                                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -94,6 +93,7 @@ router.post('/move/:matchid', (req, res, next) => {
                             if (m.isMatchFinished()) {
                                 match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: m.gridOne, gridTwo: m.gridTwo, moves: m.moves, result: m.result}, {new: true}).then((data) => {
                                     ios.emit(m._id, "matchisfinished " + m.result);
+                                    ios.emit("matchfinished", + m._id);
                                     return res.status(200).json(data);
                                 }).catch((err) => {
                                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -157,6 +157,30 @@ router.get('/ongoing', (req, res, next) => {
     }).catch((err) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
-})
+});
+
+router.delete('/retire/:matchid', (req, res, next) => {
+    match.getModel().findOne({_id: req.params.matchid}).then((d) => {
+        if (String(d.playerOne) === req.auth.id) {
+            d.result = "0-1";
+        }
+        if (String(d.playerTwo) === req.auth.id) {
+            d.result = "1-0";
+        }
+        d.save().then((m) => {
+            if (m.result !== "0-0") {
+                ios.emit(m._id, "matchisfinished " + m.result);
+                ios.emit("matchfinished", + m._id);
+                return res.status(200).json(m);
+            } else {
+                return next({statusCode: 404, error: true, errormessage: "You are not a player"});
+            }
+        }).catch((err) => {
+            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+        });
+    }).catch((err) => {
+        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+});
 
 module.exports = router;

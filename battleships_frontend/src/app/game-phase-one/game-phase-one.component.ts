@@ -37,6 +37,8 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
     ["Carrier", "5"]
   ];
   public placed = 11;
+  public result = "";
+  public display:string = "none";
   constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
@@ -55,6 +57,18 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
       }
       if (d === 'player two submitted his grid' && this.match.playerOne === this.us.get_id()) {
         this.opponent_ready = true;
+      }
+      let arr = d.split(" ");
+      if (arr[0] === "matchisfinished") {
+        if ((this.match.playerOne === this.us.get_id() && arr[1] === "1-0") || (this.match.playerTwo === this.us.get_id() && arr[1] === "0-1")) {
+          this.result = "won!";
+          console.log("You have won!");
+        }
+        if ((this.match.playerOne === this.us.get_id() && arr[1] === "0-1") || (this.match.playerTwo === this.us.get_id() && arr[1] === "1-0")) {
+          this.result = "lost";
+          console.log("You have lost!");
+        }
+        this.doc.getElementById("post-game")?.click();
       }
       if (this.ready && this.opponent_ready) {
         console.log("Starting game");
@@ -425,6 +439,27 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
         this.logout();
       }
     })
+  }
+
+  forfeit() {
+    this.m.forfeit_match(this.match_id).subscribe({
+      next: (d) => {
+        console.log("Match forfeited");
+      },
+      error: (err:any) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    })
+  }
+
+  close_game() {
+    this.router.navigate(['/play']);
+  }
+
+  open_modal() {
+    this.display = "block";
   }
 
   logout() {

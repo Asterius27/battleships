@@ -106,6 +106,15 @@ export class MatchHttpService {
     );
   }
 
+  forfeit_match(match_id:string) : Observable<any> {
+    return this.http.delete<any>(this.us.url + "/matches/retire/" + match_id, this.create_options()).pipe(
+      tap({
+        next: (data) => {console.log(JSON.stringify(data));},
+        error: catchError(this.handleError)
+      })
+    );
+  }
+
   post_queue(match_range:number, win_range:number) : Observable<any> {
     let body = {match_range: match_range, win_range: win_range};
     return this.http.post<any>(this.us.url + '/matchmaking/queue', body, this.create_options()).pipe(

@@ -32,9 +32,8 @@ export class GameObserveComponent implements OnInit, OnDestroy {
       let arr = d.split(" ");
       if (arr[0] === "matchisfinished") {
         this.doc.getElementById("post-game")?.click();
-      } else  {
-        this.load_match();
       }
+      this.load_match();
     });
   }
 

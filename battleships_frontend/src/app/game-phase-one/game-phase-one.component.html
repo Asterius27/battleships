@@ -1,4 +1,22 @@
 <div>
+  <button type="button" class="btn btn-primary" style="display: none;" id="post-game" (click)="open_modal()"></button>
+
+  <div class="modal" tabindex="-1" role="dialog" [ngStyle]="{'display': display}">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">You have {{ result }}</h5>
+        </div>
+        <div class="modal-body">
+          Thank you for playing, we hope you had fun!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="close_game();">Close Game</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="horizontal-boat" [ngClass]="{'drop0': i === 0, 'drop1': i === 1, 'drop2': i === 2, 'drop3': i === 3, 'drop4': i === 4, 'drop5': i === 5, 'drop6': i === 6, 'drop7': i === 7, 'drop8': i === 8, 'drop9': i === 9, 'drop10': i === 10}" *ngFor="let ship of ships; let i=index;" [attr.id]="i + 'b'" (contextmenu)="changeBoatDirection($event)">
     {{ ship[0] }} ({{ ship[1] }})
   </div>
@@ -13,6 +31,7 @@
     The number between the parenthesis is the length of the boat
   </p>
 
+  <button type="button" class="btn btn-danger" style="margin-right: 1%; margin-top: 2%;" (click)="forfeit();">Forfeit</button>
   <button type="button" class="btn btn-danger" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="reset_grid();" [disabled]="post">Reset</button>
   <button type="button" class="btn btn-success" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="post_grid();" [disabled]="post || placed !== 0">Ready</button>
   <button type="button" class="btn btn-primary" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="random_grid();" [disabled]="post">Random</button>

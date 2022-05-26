@@ -41,6 +41,10 @@ export class PlayComponent implements OnInit, OnDestroy {
       this.load_my_matches();
       this.load_ongoing_matches();
     });
+    this.sio.connect("matchfinished").subscribe((d) => {
+      this.load_my_matches();
+      this.load_ongoing_matches();
+    })
   }
 
   ngOnDestroy(): void {
@@ -58,6 +62,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       }
     });
     this.sio.removeListener("newmatch");
+    this.sio.removeListener("matchfinished");
   }
 
   load_ongoing_matches() {
@@ -196,6 +201,19 @@ export class PlayComponent implements OnInit, OnDestroy {
     this.renderer.addClass(event.target, "previous-tab");
     this.tabs = value;
     event.preventDefault();
+  }
+
+  forfeit(match_id:string) {
+    this.m.forfeit_match(match_id).subscribe({
+      next: (d) => {
+        console.log("Match forfeited");
+      },
+      error: (err:any) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    })
   }
 
   logout() {
