@@ -1,26 +1,27 @@
-<div style="padding-top: 2%">
+<div *ngIf="section === 1">
+  <div style="padding-top: 2%">
     <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <a class="nav-link active previous-tab" aria-current="page" href="#" (click)="setTabs(1, $event);">Add Moderator</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" (click)="setTabs(2, $event);">Delete User</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" (click)="setTabs(3, $event);">Message User</a>
-        </li>
-        <li class="nav-item ms-auto">
-          <form class="form-inline">
-              <div class="input-group">
-                  <input class="form-control" #usernametxt type="text" placeholder="Username">
-                  <button class="btn btn-outline-success" (click)="open_stats(usernametxt.value); usernametxt.value='';">See User Stats</button>
-              </div>
-          </form>
+      <li class="nav-item">
+        <a class="nav-link active previous-tab" aria-current="page" href="#" (click)="setTabs(1, $event);">Add Moderator</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" (click)="setTabs(2, $event);">Delete User</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" (click)="setTabs(3, $event);">Message User</a>
+      </li>
+      <li class="nav-item ms-auto">
+        <form class="form-inline">
+          <div class="input-group">
+            <input class="form-control" #usernametxt type="text" placeholder="Username">
+            <button class="btn btn-outline-success" (click)="open_stats(usernametxt.value); usernametxt.value='';">See User Stats</button>
+          </div>
+        </form>
       </li>
     </ul>
-</div>
+  </div>
 
-<div style="width: 400px; margin: auto;" [hidden]="!(tabs===1)">
+  <div style="width: 400px; margin: auto;" [hidden]="!(tabs===1)">
     <form class="form-signin" style="margin-top: 2%;">
       
       <div class="text-center">  
@@ -49,9 +50,9 @@
       </div>
 
     </form>
-</div>
+  </div>
 
-<div style="width: 400px; margin: auto;" [hidden]="!(tabs===2)">
+  <div style="width: 400px; margin: auto;" [hidden]="!(tabs===2)">
     <form class="form-signin" style="margin-top: 2%;" >
       
       <div class="text-center">  
@@ -75,24 +76,27 @@
       </div>
 
     </form>
-</div>
+  </div>
 
-<div [hidden]="!(tabs===3)">
+  <div [hidden]="!(tabs===3)">
     <form class="form-inline" style="margin-top: 1%;">
-        <div class="input-group">
-            <input class="form-control" #usernametxt type="text" placeholder="Username">
-            <button class="btn btn-outline-success" (click)="message_user(usernametxt.value);">Message User</button>
-        </div>
+      <div class="input-group">
+        <input class="form-control" #usernametxt type="text" placeholder="Username">
+        <button class="btn btn-outline-success" (click)="message_user(usernametxt.value);">Message User</button>
+      </div>
     </form>
     <div class="panel panel-primary" id="chat_list" style="padding-top: 2%">
-        <div class="panel-heading"><h3 class="panel-title">Chats</h3>
-        </div>
-        <div class="panel-body">
-            <ul class="list-group">
-                <li class="list-group-item" *ngFor="let chat of chats">
-                    <button class="btn bg-transparent text-start w-100" (click)="open_chat(chat._id);">With: {{ usernames[chat._id] }}</button>
-                </li>
-            </ul>
-        </div>
+      <div class="panel-heading"><h3 class="panel-title">Chats</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-group">
+          <li class="list-group-item" *ngFor="let chat of chats">
+            <button class="btn bg-transparent text-start w-100" (click)="open_chat(chat._id);">With: {{ usernames[chat._id] }}</button>
+          </li>
+        </ul>
+      </div>
     </div>
+  </div>
 </div>
+
+<app-chat [chat_id]="chat_id" *ngIf="chat_id && section === 2" style="display: block;"></app-chat>

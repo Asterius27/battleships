@@ -2,82 +2,86 @@
 
 <div *ngIf="errmessage" class="alert alert-danger" style="margin-top: 1%;" role="alert">{{errmessage}}</div>
 
-<div style="padding-top: 2%">
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link active previous-tab" aria-current="page" href="#" (click)="setTabs(1, $event);">Friends List</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#" (click)="setTabs(2, $event);">Friend Requests</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#" (click)="setTabs(3, $event);">Match Invites</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#" (click)="setTabs(4, $event);">Mods Messages</a>
-        </li>
-        <li class="nav-item ms-auto">
-            <form class="form-inline">
-                <div class="input-group">
-                    <input class="form-control" #usernametxt type="text" placeholder="Username">
-                    <button class="btn btn-outline-success" (click)="add_friend(usernametxt.value); usernametxt.value='';">Add Friend</button>
-                </div>
-            </form>
-        </li>
-    </ul>
-</div>
-
-<div class="panel panel-primary" id="friends_list" [hidden]="!(tabs===1)" style="padding-top: 2%">
-    <div class="panel-heading"><h3 class="panel-title">Friends List</h3>
-    </div>
-    <div class="panel-body">
-        <ul class="list-group">
-            <li class="list-group-item" *ngFor="let friend of friends">
-                <button class="btn bg-transparent text-start w-25" (click)="open_stats(friend._id, friend.username);">{{ friend.username }}</button>
-                <button class="btn btn-outline-danger" style="float: right;" (click)="delete_friend(friend.username);">Delete Friend</button>
-                <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="invite_friend(friend.username);">Invite to Play</button>
-                <button class="btn btn-outline-primary" style="float: right; margin-right: 2%;" (click)="open_chat(friend._id);">Chat</button>
+<div *ngIf="section === 1">
+    <div style="padding-top: 2%">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active previous-tab" aria-current="page" href="#" (click)="setTabs(1, $event);">Friends List</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" (click)="setTabs(2, $event);">Friend Requests</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" (click)="setTabs(3, $event);">Match Invites</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" (click)="setTabs(4, $event);">Mods Messages</a>
+            </li>
+            <li class="nav-item ms-auto">
+                <form class="form-inline">
+                    <div class="input-group">
+                        <input class="form-control" #usernametxt type="text" placeholder="Username">
+                        <button class="btn btn-outline-success" (click)="add_friend(usernametxt.value); usernametxt.value='';">Add Friend</button>
+                    </div>
+                </form>
             </li>
         </ul>
     </div>
+    
+    <div class="panel panel-primary" id="friends_list" [hidden]="!(tabs===1)" style="padding-top: 2%">
+        <div class="panel-heading"><h3 class="panel-title">Friends List</h3>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group">
+                <li class="list-group-item" *ngFor="let friend of friends">
+                    <button class="btn bg-transparent text-start w-25" (click)="open_stats(friend._id, friend.username);">{{ friend.username }}</button>
+                    <button class="btn btn-outline-danger" style="float: right;" (click)="delete_friend(friend.username);">Delete Friend</button>
+                    <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="invite_friend(friend.username);">Invite to Play</button>
+                    <button class="btn btn-outline-primary" style="float: right; margin-right: 2%;" (click)="open_chat(friend._id);">Chat</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="panel panel-primary" id="friend_requests" [hidden]="!(tabs===2)" style="padding-top: 2%">
+        <div class="panel-heading"><h3 class="panel-title">Friend Requests</h3>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group">
+                <li class="list-group-item" *ngFor="let friend of friend_requests">
+                    {{ friend.username }}
+                    <button class="btn btn-outline-danger" style="float: right;" (click)="reject_friend(friend.username);">Reject Friend</button>
+                    <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="accept_friend(friend.username);">Accept Friend</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="panel panel-primary" id="friend_requests" [hidden]="!(tabs===3)" style="padding-top: 2%">
+        <div class="panel-heading"><h3 class="panel-title">Match Invites</h3>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group">
+                <li class="list-group-item" *ngFor="let friend of match_invites">
+                    <button class="btn bg-transparent text-start w-25" (click)="open_stats(friend._id, friend.username);">{{ friend.username }}</button>
+                    <button class="btn btn-outline-danger" style="float: right;" (click)="reject_match_invite(friend.username);">Reject Invite</button>
+                    <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="accept_match_invite(friend.username);">Accept Invite</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="panel panel-primary" id="mod_chats" [hidden]="!(tabs===4)" style="padding-top: 2%">
+        <div class="panel-heading"><h3 class="panel-title">Messages Received from Moderators</h3>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group">
+                <li class="list-group-item" *ngFor="let chat of moderator_chats">
+                    <button class="btn bg-transparent text-start w-100" (click)="open_moderator_chat(chat._id);">Moderator: {{ moderators[chat._id] }}</button>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
 
-<div class="panel panel-primary" id="friend_requests" [hidden]="!(tabs===2)" style="padding-top: 2%">
-    <div class="panel-heading"><h3 class="panel-title">Friend Requests</h3>
-    </div>
-    <div class="panel-body">
-        <ul class="list-group">
-            <li class="list-group-item" *ngFor="let friend of friend_requests">
-                {{ friend.username }}
-                <button class="btn btn-outline-danger" style="float: right;" (click)="reject_friend(friend.username);">Reject Friend</button>
-                <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="accept_friend(friend.username);">Accept Friend</button>
-            </li>
-        </ul>
-    </div>
-</div>
-
-<div class="panel panel-primary" id="friend_requests" [hidden]="!(tabs===3)" style="padding-top: 2%">
-    <div class="panel-heading"><h3 class="panel-title">Match Invites</h3>
-    </div>
-    <div class="panel-body">
-        <ul class="list-group">
-            <li class="list-group-item" *ngFor="let friend of match_invites">
-                <button class="btn bg-transparent text-start w-25" (click)="open_stats(friend._id, friend.username);">{{ friend.username }}</button>
-                <button class="btn btn-outline-danger" style="float: right;" (click)="reject_match_invite(friend.username);">Reject Invite</button>
-                <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="accept_match_invite(friend.username);">Accept Invite</button>
-            </li>
-        </ul>
-    </div>
-</div>
-
-<div class="panel panel-primary" id="mod_chats" [hidden]="!(tabs===4)" style="padding-top: 2%">
-    <div class="panel-heading"><h3 class="panel-title">Messages Received from Moderators</h3>
-    </div>
-    <div class="panel-body">
-        <ul class="list-group">
-            <li class="list-group-item" *ngFor="let chat of moderator_chats">
-                <button class="btn bg-transparent text-start w-100" (click)="open_moderator_chat(chat._id);">Moderator: {{ moderators[chat._id] }}</button>
-            </li>
-        </ul>
-    </div>
-</div>
+<app-chat [chat_id]="chat_id" *ngIf="chat_id && section === 2" style="display: block;"></app-chat>

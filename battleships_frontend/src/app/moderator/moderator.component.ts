@@ -19,9 +19,14 @@ export class ModeratorComponent implements OnInit {
   public delete_target = {username: ''};
   public chats:Chat[] = [];
   public usernames:{[k: string]: any} = {};
+  public section = 1;
+  public chat_id = "";
   constructor(private uss: UsersHttpService, private us: UserHttpService, private c: ChatHttpService, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
+    if (!this.us.is_moderator()) {
+      this.router.navigate(['/play']);
+    }
     this.load_chats();
   }
 
@@ -103,7 +108,9 @@ export class ModeratorComponent implements OnInit {
   }
 
   open_chat(chat_id:string) {
-    this.router.navigate(['/chat', {chat_id: chat_id}]);
+    this.section = 2;
+    this.chat_id = chat_id;
+    // this.router.navigate(['/chat', {chat_id: chat_id}]);
   }
 
   message_user(username:string) {
@@ -113,7 +120,9 @@ export class ModeratorComponent implements OnInit {
         for (let chat of this.chats) {
           if (chat.participants.includes(d._id)) {
             console.log('chat already exists');
-            this.router.navigate(['/chat', {chat_id: chat._id}]);
+            this.section = 2;
+            this.chat_id = chat._id;
+            // this.router.navigate(['/chat', {chat_id: chat._id}]);
             exists = true;
           }
         }
@@ -123,7 +132,9 @@ export class ModeratorComponent implements OnInit {
             next: (ch) => {
               this.chats.push(ch);
               console.log('Routing to newly created chat');
-              this.router.navigate(['/chat', {chat_id: ch._id}]);
+              this.section = 2;
+              this.chat_id = ch._id;
+              // this.router.navigate(['/chat', {chat_id: ch._id}]);
             },
             error: (err) => {
               console.log('Login error: ' + JSON.stringify(err));

@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { UserHttpService } from '../user-http.service';
 import { User, UsersHttpService } from '../users-http.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 import { Chat, ChatHttpService } from '../chat-http.service';
 import { DOCUMENT } from '@angular/common';
@@ -21,6 +21,8 @@ export class FriendsComponent implements OnInit, OnDestroy {
   public moderator_chats:Chat[] = [];
   public tabs = 1;
   public moderators:{[k: string]: any} = {};
+  public section = 1;
+  public chat_id = "";
   constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private c: ChatHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
@@ -257,13 +259,17 @@ export class FriendsComponent implements OnInit, OnDestroy {
       next: (d) => {
         if (d) {
           console.log('Routing to chat');
-          this.router.navigate(['/chat', {chat_id: d._id}]);
+          this.section = 2;
+          this.chat_id = d._id;
+          // this.router.navigate(['/chat', {chat_id: d._id}]);
         } else {
           let body:Chat = {_id: "", participants: [friend_id], messages: [], type: "friend"};
           this.c.post_chat(body).subscribe({
             next: (d) => {
               console.log('Routing to newly created chat');
-              this.router.navigate(['/chat', {chat_id: d._id}]);
+              this.section = 2;
+              this.chat_id = d._id;
+              // this.router.navigate(['/chat', {chat_id: d._id}]);
             },
             error: (err) => {
               console.log('Login error: ' + JSON.stringify(err));
@@ -343,7 +349,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
 
   open_moderator_chat(chat_id:string) {
     console.log('Routing to chat');
-    this.router.navigate(['/chat', {chat_id: chat_id}]);
+    this.section = 2;
+    this.chat_id = chat_id;
+    // this.router.navigate(['/chat', {chat_id: chat_id}]);
   }
 
   open_stats(friend_id:string, friend_username:string) {

@@ -15,7 +15,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link position-relative" routerLink="/friends">
+          <a class="nav-link position-relative" href="#" (click)="load('/friends', $event);">
             Friends
             <span class="position-absolute top-25 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!friends_notification">
               <span class="visually-hidden">New alerts</span>
@@ -26,7 +26,7 @@
           <a class="nav-link" routerLink="/profile">My Stats</a>
         </li>
         <li class="nav-item" *ngIf="moderator">
-          <a class="nav-link" routerLink="/moderator">Moderator</a>
+          <a class="nav-link" href="#" (click)="load('/moderator', $event);">Moderator</a>
         </li>
       </ul>
       <form class="form-inline ms-auto">

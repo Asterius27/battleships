@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Match, MatchHttpService } from '../match-http.service';
+import { MatchHttpService } from '../match-http.service';
 import { SocketioService } from '../socketio.service';
 import { UserHttpService } from '../user-http.service';
 
@@ -20,25 +20,12 @@ export class NavbarComponent implements OnInit {
     if (this.us.is_moderator()) {
       this.moderator = true;
     }
-    this.load_my_ongoing_matches();
   }
 
-  load_my_ongoing_matches() {
-    this.m.get_user_matches().subscribe({
-      next: (d) => {
-        for (let match of d) {
-          if (match.result === "0-0") {
-            this.sio.connect(match._id).subscribe((d) => {
-              if (this.router.url != '/play') {}
-            });
-          }
-        }
-        console.log("Loaded my ongoing matches");
-      },
-      error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.logout();
-      }
+  load(link:string, event:any) {
+    event.preventDefault();
+    this.router.navigateByUrl('/play', {skipLocationChange: true}).then(() => {
+      this.router.navigate([link]);
     });
   }
 

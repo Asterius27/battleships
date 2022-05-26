@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 
 // TODO move global sio connect here so that they are application wide, add notification system
 // TODO alerts and errors handling
-// TODO kick unauthorized users (check if user forces a link)
 
 @Component({
   selector: 'app-root',

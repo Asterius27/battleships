@@ -33,6 +33,9 @@ export class GameComponent implements OnInit {
     this.m.get_match(this.match_id).subscribe({
       next: (d) => {
         this.match = d;
+        if ((this.section === 1 || this.section === 2) && (this.match.playerOne !== this.us.get_id() && this.match.playerTwo !== this.us.get_id())) {
+          this.router.navigate(['/play']);
+        }
         console.log("Match loaded");
       },
       error: (err) => {

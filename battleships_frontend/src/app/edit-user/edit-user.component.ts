@@ -14,7 +14,20 @@ export class EditUserComponent implements OnInit {
   public user = {username: '', name: '', surname: '', mail: '', password: ''};
   constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.uss.get_user_id(this.us.get_id()).subscribe({
+      next: (d) => {
+        if (!d.temporary) {
+          this.router.navigate(['/play']);
+        }
+      },
+      error: (err) => {
+        console.log('Login error: ' + JSON.stringify(err));
+        this.errmessage = err.message;
+        this.logout();
+      }
+    });
+  }
 
   post_user() {
     this.uss.patch_user(this.us.get_username(), this.user).subscribe({

@@ -54,7 +54,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
         this.errmessage = err.message;
-        this.logout();
+        // this.logout();
       }
     });
     this.sio.removeListener("newmatch");
