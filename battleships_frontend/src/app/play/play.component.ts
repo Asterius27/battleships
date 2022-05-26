@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { UserHttpService } from '../user-http.service';
 import { Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
@@ -11,7 +11,7 @@ import { UsersHttpService } from '../users-http.service';
   templateUrl: './play.component.html',
   styleUrls: ['./play.component.css']
 })
-export class PlayComponent implements OnInit {
+export class PlayComponent implements OnInit, OnDestroy {
 
   public errmessage = undefined;
   public match_making_button = "Find Match";
@@ -41,6 +41,12 @@ export class PlayComponent implements OnInit {
       this.load_my_matches();
       this.load_ongoing_matches();
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.timeout !== null) {
+      clearTimeout(this.timeout);
+    }
   }
 
   load_ongoing_matches() {

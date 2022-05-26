@@ -139,7 +139,10 @@ mongoose.connect(process.env.DATABASE_URL).then(() => {
     origin: "http://localhost:4200"
   }});
   ios.on("connection", (client) => {
-    console.log("Socket.io client connected" + client);
+    console.log("Socket.io client connected " + client.id);
+    client.on("disconnect", (r) => {
+      console.log(client.id + " has disconnected");
+    })
   });
   ios.on("connect_error", (err) => {
     console.log(err);

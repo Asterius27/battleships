@@ -58,7 +58,6 @@ export class GamePhaseTwoComponent implements OnInit {
         this.match = d;
         if (this.match.playerOne !== this.us.get_id() && this.match.playerTwo !== this.us.get_id()) {
           this.sectionChange.emit(3);
-          // this.router.navigate(['/play/match/observe', {match_id: this.match_id}]);
         }
         if (this.match.result !== "0-0") {
           this.doc.getElementById("post-game")?.click();

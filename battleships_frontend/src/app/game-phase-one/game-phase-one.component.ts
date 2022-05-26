@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output, Renderer2 } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
 import { SocketioService } from '../socketio.service';
@@ -11,7 +11,7 @@ import { DOCUMENT } from '@angular/common';
   templateUrl: './game-phase-one.component.html',
   styleUrls: ['./game-phase-one.component.css']
 })
-export class GamePhaseOneComponent implements OnInit {
+export class GamePhaseOneComponent implements OnInit, OnDestroy {
 
   @Output() sectionChange = new EventEmitter<number>();
   public errmessage = undefined;
@@ -59,7 +59,6 @@ export class GamePhaseOneComponent implements OnInit {
       if (this.ready && this.opponent_ready) {
         console.log("Starting game");
         this.sectionChange.emit(2);
-        // this.router.navigate(['/play/match/two', {match_id: this.match_id}]);
       }
     });
     interact('.dropzone').dropzone({
@@ -132,6 +131,13 @@ export class GamePhaseOneComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    interact('.dropzone').unset();
+    for (let i = 0; i < this.ships.length; i++) {
+      interact('.drop' + i).unset();
+    }
+  }
+
   load_match() {
     this.m.get_match(this.match_id).subscribe({
       next: (d) => {
@@ -194,7 +200,6 @@ export class GamePhaseOneComponent implements OnInit {
         if (this.opponent_ready) {
           console.log("Starting game");
           this.sectionChange.emit(2);
-          // this.router.navigate(['/play/match/two', {match_id: this.match_id}]);
         }
       },
       error: (err) => {
