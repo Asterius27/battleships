@@ -33,6 +33,7 @@ export class EditUserComponent implements OnInit {
     this.uss.patch_user(this.us.get_username(), this.user).subscribe({
       next: (d) => {
         console.log("User updated");
+        this.us.logout();
         this.router.navigate(['/login']);
       },
       error: (err) => {

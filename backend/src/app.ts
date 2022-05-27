@@ -74,7 +74,7 @@ app.post('/signup', (req, res, next) => {
     surname: req.body.surname,
     username: req.body.username,
     mail: req.body.mail,
-    role: "UTENTE",
+    role: "USER",
     friends_list: [],
     friend_requests: [],
     match_invites: [],
@@ -118,7 +118,8 @@ app.get('/login', passport.authenticate('basic', {session: false}), (req, res, n
     surname: req.user.surname,
     mail: req.user.mail,
     role: req.user.role,
-    id: req.user.id
+    id: req.user.id,
+    temporary: req.user.temporary
   };
   let token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, {expiresIn: '5h'});
   return res.status(200).json({error: false, errormessage: "", token: token_signed, temporary: req.user.temporary});

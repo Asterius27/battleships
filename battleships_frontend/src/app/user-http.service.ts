@@ -12,6 +12,7 @@ interface TokenData {
   mail: string,
   role: string,
   id: string,
+  temporary: boolean,
   exp: number
 }
 
@@ -32,9 +33,15 @@ export class UserHttpService {
     } else {
       this.token = localStorage.getItem('battleships_token') || "";
       console.log("JWT loaded from local storage: " + this.token);
-      if (!(Date.now() >= this.get_exp() * 1000) && this.router.url === '/login') {
+      if (!(Date.now() >= this.get_exp() * 1000)) {
         console.log("Already logged in");
-        this.router.navigate(['/play']);
+        if (this.get_temporary() === false) {
+          if (this.router.url === '/login') {
+            this.router.navigate(['/play']);
+          }
+        } else {
+          this.router.navigate(['/profile/edit']);
+        }
       }
       if (Date.now() >= this.get_exp() * 1000) {
         console.log("Token has expired");
@@ -105,6 +112,10 @@ export class UserHttpService {
 
   get_id() {
     return (jwtdecode(this.token) as TokenData).id;
+  }
+
+  get_temporary() {
+    return (jwtdecode(this.token) as TokenData).temporary;
   }
 
   get_exp() {
