@@ -32,5 +32,7 @@
   </div>
 </div>
 
-<button type="button" class="btn btn-danger" style="margin-right: 1%; margin-top: 2%;" (click)="forfeit();">Forfeit</button>
-<button type="button" class="btn btn-success" style="float: right; margin-right: 1%; margin-top: 2%;" (click)="post_move();" [disabled]="!turn">Make Move</button>
+<p>Light blue: sea, Black: ship, Red: hit, Indigo: miss, Pink: destroyed</p>
+
+<button type="button" class="btn btn-danger" style="margin-right: 1%;" (click)="forfeit();">Forfeit</button>
+<button type="button" class="btn btn-success" style="float: right; margin-right: 1%;" (click)="post_move();" [disabled]="!turn">Make Move</button>

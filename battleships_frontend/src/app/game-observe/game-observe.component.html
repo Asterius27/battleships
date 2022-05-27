@@ -32,3 +32,5 @@
     <div [ngClass]="{'cell': true, 'boat': cell === 'b', 'hit': cell === 'h', 'miss': cell === 'm', 'destroyed': cell === 'd'}" *ngFor="let cell of gridPlayerTwo; let i=index" [attr.id]="i"></div>
   </div>
 </div>
+
+<p>Light blue: sea, Black: ship, Red: hit, Indigo: miss, Pink: destroyed</p>
