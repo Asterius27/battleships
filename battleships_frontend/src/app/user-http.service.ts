@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import jwtdecode from 'jwt-decode';
+import { Router } from '@angular/router';
 
 interface TokenData {
   username: string,
@@ -10,7 +11,8 @@ interface TokenData {
   surname: string,
   mail: string,
   role: string,
-  id: string
+  id: string,
+  exp: number
 }
 
 @Injectable({
@@ -21,14 +23,23 @@ export class UserHttpService {
   private token = '';
   public url = 'http://localhost:8000';
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     console.log('User service instantiated');
     if (!localStorage.getItem('battleships_token')) {
       console.log("No token found in local storage");
       this.token = "";
+      this.router.navigate(['/login']);
     } else {
       this.token = localStorage.getItem('battleships_token') || "";
       console.log("JWT loaded from local storage: " + this.token);
+      if (!(Date.now() >= this.get_exp() * 1000) && this.router.url === '/login') {
+        console.log("Already logged in");
+        this.router.navigate(['/play']);
+      }
+      if (Date.now() >= this.get_exp() * 1000) {
+        console.log("Token has expired");
+        this.router.navigate(['/login']);
+      }
     }
   }
 
@@ -94,6 +105,10 @@ export class UserHttpService {
 
   get_id() {
     return (jwtdecode(this.token) as TokenData).id;
+  }
+
+  get_exp() {
+    return (jwtdecode(this.token) as TokenData).exp;
   }
 
   is_moderator() : boolean {
