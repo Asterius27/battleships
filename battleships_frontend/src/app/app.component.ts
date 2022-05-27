@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-// TODO move global sio connect here so that they are application wide, add notification system
-// TODO leaderboards and afk timer (?)
+// TODO notifications on navbar, notification for new message in friend chat, notification for something happened in one of your games
 
 @Component({
   selector: 'app-root',

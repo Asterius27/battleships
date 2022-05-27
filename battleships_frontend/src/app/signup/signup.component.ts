@@ -24,7 +24,6 @@ export class SignupComponent implements OnInit {
       },
       error: (err) => {
         console.log('Signup error: ' + JSON.stringify(err.error.errormessage));
-        // this.errmessage = err.error.errormessage || err.error.message;
         this.errmessage = "Error, please try again (could be that username is already taken)"
         setTimeout(() => {this.errmessage = "";}, 3000);
       }
