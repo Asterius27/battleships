@@ -23,6 +23,7 @@ export class PlayComponent implements OnInit, OnDestroy {
   public flag = true;
   public timeout:null|ReturnType<typeof setTimeout> = null;
   public usernames:{[k: string]: any} = {};
+  public my_match_alerts:{[k: string]: any} = {};
   constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private m: MatchHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
@@ -65,6 +66,7 @@ export class PlayComponent implements OnInit, OnDestroy {
     this.sio.removeListener("newmatch");
     this.sio.removeListener("matchfinished");
     this.sio.removeListener("matchinviteaccepted" + this.us.get_username());
+    this.remove_my_matches_listeners();
   }
 
   load_ongoing_matches() {
@@ -87,14 +89,20 @@ export class PlayComponent implements OnInit, OnDestroy {
   }
 
   load_my_matches() {
+    this.remove_my_matches_listeners();
     this.my_ongoing_matches = [];
     this.m.get_user_matches().subscribe({
       next: (d) => {
         for (let match of d) {
           if (match.result === "0-0") {
             this.my_ongoing_matches.push(match);
+            this.my_match_alerts[match._id] = false;
             this.load_usernames(match.playerOne);
             this.load_usernames(match.playerTwo);
+            this.sio.connect(match._id).subscribe((d) => {
+              console.log("New match alert: " + match._id);
+              this.my_match_alerts[match._id] = true;
+            });
           }
         }
         console.log("Loaded my ongoing matches");
@@ -105,6 +113,12 @@ export class PlayComponent implements OnInit, OnDestroy {
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
+  }
+
+  remove_my_matches_listeners() {
+    for (let match of this.my_ongoing_matches) {
+      this.sio.removeListener(match._id);
+    }
   }
 
   open_match(match:Match) {

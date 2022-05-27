@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-// TODO notifications on navbar, notification for new message in friend chat, notification for something happened in one of your games
+// TODO notifications on navbar (use it also to make notifications persistent)
 
 @Component({
   selector: 'app-root',

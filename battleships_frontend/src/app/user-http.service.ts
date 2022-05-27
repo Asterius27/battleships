@@ -70,7 +70,7 @@ export class UserHttpService {
     );
   }
 
-  logout() {
+  logout() { // TODO error when logging out from /play
     console.log('Logging out');
     this.token = '';
     localStorage.setItem('battleships_token', this.token);

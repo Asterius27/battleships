@@ -55,7 +55,12 @@
                     <button class="btn bg-transparent text-start w-25" (click)="open_stats(friend._id, friend.username);">{{ friend.username }}</button>
                     <button class="btn btn-outline-danger" style="float: right;" (click)="delete_friend(friend.username);">Delete Friend</button>
                     <button class="btn btn-outline-success" style="float: right; margin-right: 2%;" (click)="invite_friend(friend.username);">Invite to Play</button>
-                    <button class="btn btn-outline-primary" style="float: right; margin-right: 2%;" (click)="open_chat(friend._id);">Chat</button>
+                    <button class="btn btn-outline-primary position-relative" style="float: right; margin-right: 2%;" (click)="open_chat(friend._id);">
+                        Chat
+                        <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle" [hidden]="!my_friend_chat_alerts[friend._id]">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    </button>
                 </li>
             </ul>
         </div>
@@ -89,7 +94,12 @@
         <div class="panel-body">
             <ul class="list-group">
                 <li class="list-group-item" *ngFor="let chat of moderator_chats">
-                    <button class="btn bg-transparent text-start w-100" (click)="open_moderator_chat(chat._id);">Moderator: {{ moderators[chat._id] }}</button>
+                    <button class="btn bg-transparent text-start w-100 position-relative" (click)="open_moderator_chat(chat._id);">
+                        Moderator: {{ moderators[chat._id] }}
+                        <span class="position-absolute top-25 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!my_moderator_chat_alerts[chat._id]">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    </button>
                 </li>
             </ul>
         </div>

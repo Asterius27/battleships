@@ -57,6 +57,15 @@ export class ChatHttpService {
     );
   }
 
+  get_friends_chat() : Observable<Chat[]> {
+    return this.http.get<Chat[]>(this.us.url + '/chats/friends', this.create_options()).pipe(
+      tap({
+        next: (data) => {console.log(JSON.stringify(data));},
+        error: catchError(this.handleError)
+      })
+    );
+  }
+
   get_friend_chat(friend_id:string) : Observable<Chat> {
     return this.http.get<Chat>(this.us.url + '/chats/friends/' + friend_id, this.create_options()).pipe(
       tap({

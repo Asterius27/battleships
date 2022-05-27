@@ -45,12 +45,20 @@ router.get('/moderator/:participantid', (req, res, next) => {
     });
 });
 
+router.get('/friends', (req, res, next) => {
+    chat.getModel().find({participants: req.auth.id, type: "friend"}).then((cs) => {
+        return res.status(200).json(cs);
+    }).catch((err) => {
+        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+});
+
 router.get('/friends/:friendid', (req, res, next) => {
     chat.getModel().findOne({participants: {$all: [req.auth.id, req.params.friendid]}, type: "friend"}).then((c) => {
         return res.status(200).json(c);
     }).catch((err) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
     });
-})
+});
 
 module.exports = router;

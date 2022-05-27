@@ -19,6 +19,7 @@ export class FriendsComponent implements OnInit, OnDestroy {
   public friend_requests:User[] = [];
   public match_invites:User[] = [];
   public moderator_chats:Chat[] = [];
+  public friend_chats:Chat[] = [];
   public tabs = 1;
   public moderators:{[k: string]: any} = {};
   public section = 1;
@@ -27,9 +28,12 @@ export class FriendsComponent implements OnInit, OnDestroy {
   public friend_list_alert = false;
   public match_invite_alert = false;
   public mod_message_alert = false;
+  public my_moderator_chat_alerts:{[k: string]: any} = {};
+  public my_friend_chat_alerts:{[k: string]: any} = {};
   constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private c: ChatHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
+    this.load_my_friend_chats();
     this.load_friends_list();
     this.load_friend_requests();
     this.load_match_invites();
@@ -76,16 +80,23 @@ export class FriendsComponent implements OnInit, OnDestroy {
     this.sio.removeListener("newmatchinvite" + this.us.get_username());
     this.sio.removeListener("matchinviteaccepted" + this.us.get_username());
     this.sio.removeListener("newchat" + this.us.get_id());
+    this.remove_my_moderator_chat_listeners();
+    this.remove_my_friend_chat_listeners();
   }
 
   load_moderator_chats() {
     this.c.get_moderator_chats(this.us.get_id()).subscribe({
       next: (d) => {
+        this.remove_my_moderator_chat_listeners();
         this.moderator_chats = d;
         for (let chat of this.moderator_chats) {
           for (let participant of chat.participants) {
             this.load_moderators(participant, chat._id);
           }
+          this.my_moderator_chat_alerts[chat._id] = false;
+          this.sio.connect("newmessage" + chat._id).subscribe((d) => {
+            this.my_moderator_chat_alerts[chat._id] = true;
+          });
         }
         console.log("Chats loaded");
       },
@@ -95,6 +106,41 @@ export class FriendsComponent implements OnInit, OnDestroy {
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
+  }
+
+  remove_my_moderator_chat_listeners() {
+    for (let chat of this.moderator_chats) {
+      this.sio.removeListener("newmessage" + chat._id);
+    }
+  }
+
+  load_my_friend_chats() {
+    this.remove_my_friend_chat_listeners();
+    this.friend_chats = [];
+    this.c.get_friends_chat().subscribe({
+      next: (d) => {
+        this.friend_chats = d;
+        for (let chat of this.friend_chats) {
+          for (let participant of chat.participants) {
+            if (participant !== this.us.get_id()) {
+              this.my_friend_chat_alerts[participant] = false;
+              this.sio.connect("newmessage" + chat._id).subscribe((d) => {
+                this.my_friend_chat_alerts[participant] = true;
+              });
+            }
+          }
+        }
+      },
+      error: (err) => {
+        console.log('Error: ' + JSON.stringify(err));
+      }
+    });
+  }
+
+  remove_my_friend_chat_listeners() {
+    for (let chat of this.friend_chats) {
+      this.sio.removeListener("newmessage" + chat._id);
+    }
   }
 
   load_moderators(participant_id:string, chat_id:string) {
@@ -280,6 +326,7 @@ export class FriendsComponent implements OnInit, OnDestroy {
           this.c.post_chat(body).subscribe({
             next: (d) => {
               console.log('Routing to newly created chat');
+              this.load_my_friend_chats();
               this.section = 2;
               this.chat_id = d._id;
             },
