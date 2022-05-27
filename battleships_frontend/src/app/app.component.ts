@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-// TODO notifications on navbar (use it also to make notifications persistent)
+// TODO notifications on navbar (use it also to make notifications persistent) create a service (?)
 
 @Component({
   selector: 'app-root',
