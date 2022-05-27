@@ -1,5 +1,4 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { UserHttpService } from '../user-http.service';
 import { Router } from '@angular/router';
 import { Message, MessageHttpService } from '../message-http.service';
 
@@ -10,12 +9,10 @@ import { Message, MessageHttpService } from '../message-http.service';
 })
 export class MessageEditorComponent implements OnInit {
 
-  public errmessage = undefined;
-  public notification = "";
   @Output() posted = new EventEmitter<Message>();
   @Input() chat_id = "";
   @Input() observer_id = "";
-  constructor(private us: UserHttpService, private m: MessageHttpService, private router: Router) {}
+  constructor(private m: MessageHttpService, private router: Router) {}
 
   ngOnInit(): void {}
 
@@ -32,16 +29,8 @@ export class MessageEditorComponent implements OnInit {
         this.posted.emit(d);
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
       }
     });
   }
-
-  logout() {
-    this.us.logout();
-    this.router.navigate(['/login']);
-  }
-
 }

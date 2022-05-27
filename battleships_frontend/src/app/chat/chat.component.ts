@@ -14,8 +14,7 @@ import { DOCUMENT } from '@angular/common';
 })
 export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
 
-  public errmessage = undefined;
-  public notification = "";
+  public errmessage = "";
   public chat = {} as Chat;
   @Input() chat_id = "";
   @Input() participant_id = "";
@@ -50,9 +49,9 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.get_messages();
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -70,9 +69,9 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.doc.getElementById("chat-container")!.scrollTop = this.doc.getElementById("chat-container")!.scrollHeight;
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -89,9 +88,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
         username = d.username;
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
       }
     });
     return username;
@@ -103,9 +100,9 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
         console.log('Participant added');
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -124,10 +121,4 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
       return "left";
     }
   }
-
-  logout() {
-    this.us.logout();
-    this.router.navigate(['/login']);
-  }
-
 }

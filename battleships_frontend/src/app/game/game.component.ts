@@ -10,8 +10,7 @@ import { UserHttpService } from '../user-http.service';
 })
 export class GameComponent implements OnInit {
 
-  public errmessage = undefined;
-  public notification = "";
+  public errmessage = "";
   public match = {} as Match;
   public match_id = "";
   public section = 1;
@@ -37,9 +36,9 @@ export class GameComponent implements OnInit {
         console.log("Match loaded");
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -47,10 +46,4 @@ export class GameComponent implements OnInit {
   setSection(s:number) {
     this.section = s;
   }
-
-  logout() {
-    this.us.logout();
-    this.router.navigate(['/login']);
-  }
-
 }

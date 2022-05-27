@@ -13,7 +13,7 @@ import { UsersHttpService } from '../users-http.service';
 })
 export class PlayComponent implements OnInit, OnDestroy {
 
-  public errmessage = undefined;
+  public errmessage = "";
   public match_making_button = "Find Match";
   public my_ongoing_matches:Match[] = [];
   public ongoing_matches:Match[] = [];
@@ -56,9 +56,7 @@ export class PlayComponent implements OnInit, OnDestroy {
         console.log("Player removed from queued");
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        // this.logout();
+        console.log('Error: ' + JSON.stringify(err));
       }
     });
     this.sio.removeListener("newmatch");
@@ -77,9 +75,9 @@ export class PlayComponent implements OnInit, OnDestroy {
         console.log("Loaded ongoing matches");
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -98,9 +96,9 @@ export class PlayComponent implements OnInit, OnDestroy {
         console.log("Loaded my ongoing matches");
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -127,9 +125,9 @@ export class PlayComponent implements OnInit, OnDestroy {
           console.log("Player queued");
         },
         error: (err) => {
-          console.log('Login error: ' + JSON.stringify(err));
-          this.errmessage = err.message;
-          this.logout();
+          console.log('Error: ' + JSON.stringify(err));
+          this.errmessage = "Something went wrong, please try again";
+          setTimeout(() => {this.errmessage = ""}, 3000);
         }
       });
     } else {
@@ -147,9 +145,9 @@ export class PlayComponent implements OnInit, OnDestroy {
             console.log("Player removed from queued");
           },
           error: (err) => {
-            console.log('Login error: ' + JSON.stringify(err));
-            this.errmessage = err.message;
-            this.logout();
+            console.log('Error: ' + JSON.stringify(err));
+            this.errmessage = "Something went wrong, please try again";
+            setTimeout(() => {this.errmessage = ""}, 3000);
           }
         });
       }
@@ -167,9 +165,7 @@ export class PlayComponent implements OnInit, OnDestroy {
         console.log("Widened the search");
       },
       error: (err:any) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        self.errmessage = err.message;
-        self.logout();
+        console.log('Error: ' + JSON.stringify(err));
       }
     });
   }
@@ -185,9 +181,7 @@ export class PlayComponent implements OnInit, OnDestroy {
           this.usernames[id] = d.username;
         },
         error: (err:any) => {
-          console.log('Login error: ' + JSON.stringify(err));
-          this.errmessage = err.message;
-          this.logout();
+          console.log('Error: ' + JSON.stringify(err));
         }
       });
     }
@@ -209,15 +203,10 @@ export class PlayComponent implements OnInit, OnDestroy {
         console.log("Match forfeited");
       },
       error: (err:any) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     })
-  }
-
-  logout() {
-    this.us.logout();
-    this.router.navigate(['/login']);
   }
 }

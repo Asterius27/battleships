@@ -1,4 +1,8 @@
 <div *ngIf="section === 1">
+  <div *ngIf="errmessage" class="alert alert-danger" style="margin-top: 1%;" role="alert">{{errmessage}}</div>
+
+  <div *ngIf="alert" class="alert alert-success" style="margin-top: 1%;" role="alert">{{ alert }}</div>
+  
   <div style="padding-top: 2%">
     <ul class="nav nav-tabs">
       <li class="nav-item">
@@ -39,12 +43,6 @@
         <input type="password" #password="ngModel" required name="password" [(ngModel)]="user.password" class="form-control" id="inputPassword" placeholder="Password">
       </div>
     
-      <div *ngIf="errmessage" class="alert alert-danger" role="alert">
-        New moderator error: {{errmessage}}
-      </div>
-
-      <div *ngIf="alert" class="alert alert-success" role="alert">{{ alert }}</div>
-    
       <div class="text-center">
         <button class="btn btn-primary btn-block" [disabled]="!password.valid || !username.valid" (click)="post_moderator();">Add New Moderator</button>
       </div>
@@ -64,12 +62,6 @@
         <label for="inputdeleteUsername">Username</label>
         <input type="text" #usernamed="ngModel" required name="username" [(ngModel)]="delete_target.username" class="form-control" id="inputdeleteUsername" placeholder="Enter Username">
       </div>
-    
-      <div *ngIf="errmessage" class="alert alert-danger" role="alert">
-        Deleting error: {{errmessage}}
-      </div>
-
-      <div *ngIf="alert" class="alert alert-success" role="alert">{{ alert }}</div>
     
       <div class="text-center">
         <button class="btn btn-danger btn-block" [disabled]="!usernamed.valid" (click)="delete_user();">Delete User</button>

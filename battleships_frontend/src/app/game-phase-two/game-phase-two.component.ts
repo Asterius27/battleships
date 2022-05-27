@@ -12,7 +12,7 @@ import { UserHttpService } from '../user-http.service';
 })
 export class GamePhaseTwoComponent implements OnInit, OnDestroy {
 
-  public errmessage = undefined;
+  public errmessage = "";
   public turn = false;
   @Input() match_id = "";
   public match = {} as Match;
@@ -72,9 +72,9 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
         this.load_linear_grid_opponent();
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -139,9 +139,9 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
           console.log("Move posted");
         },
         error: (err) => {
-          console.log('Login error: ' + JSON.stringify(err));
-          this.errmessage = err.message;
-          this.logout();
+          console.log('Error: ' + JSON.stringify(err));
+          this.errmessage = "Something went wrong, please try again";
+          setTimeout(() => {this.errmessage = ""}, 3000);
         }
       });
     }
@@ -202,16 +202,10 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
         console.log("Match forfeited");
       },
       error: (err:any) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     })
   }
-
-  logout() {
-    this.us.logout();
-    this.router.navigate(['/login']);
-  }
-
 }

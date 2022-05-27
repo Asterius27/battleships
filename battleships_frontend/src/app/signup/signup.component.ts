@@ -9,7 +9,7 @@ import { UserHttpService } from '../user-http.service';
 })
 export class SignupComponent implements OnInit {
 
-  public errmessage = undefined;
+  public errmessage = "";
   public user = {username: '', name: '', surname: '', mail: '', password: ''};
 
   constructor(private us: UserHttpService, private router: Router) {}
@@ -20,12 +20,13 @@ export class SignupComponent implements OnInit {
     this.us.signup(this.user).subscribe({
       next: (d) => {
         console.log('Registration ok: ' + JSON.stringify(d));
-        this.errmessage = undefined;
         this.router.navigate(['/login']);
       },
       error: (err) => {
         console.log('Signup error: ' + JSON.stringify(err.error.errormessage));
-        this.errmessage = err.error.errormessage || err.error.message;
+        // this.errmessage = err.error.errormessage || err.error.message;
+        this.errmessage = "Error, please try again (could be that username is already taken)"
+        setTimeout(() => {this.errmessage = "";}, 3000);
       }
     });
   }

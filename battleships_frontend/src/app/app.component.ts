@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 // TODO move global sio connect here so that they are application wide, add notification system
-// TODO alerts and errors handling
+// TODO leaderboards and afk timer (?)
 
 @Component({
   selector: 'app-root',

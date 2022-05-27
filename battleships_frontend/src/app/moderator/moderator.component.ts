@@ -13,7 +13,7 @@ import { DOCUMENT } from '@angular/common';
 export class ModeratorComponent implements OnInit {
 
   public alert = "";
-  public errmessage = undefined;
+  public errmessage = "";
   public tabs = 1;
   public user = {username: '', password: ''};
   public delete_target = {username: ''};
@@ -42,9 +42,9 @@ export class ModeratorComponent implements OnInit {
         console.log("Chats loaded");
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -56,9 +56,9 @@ export class ModeratorComponent implements OnInit {
           this.usernames[chat_id] = d.username;
         },
         error: (err:any) => {
-          console.log('Login error: ' + JSON.stringify(err));
-          this.errmessage = err.message;
-          this.logout();
+          console.log('Error: ' + JSON.stringify(err));
+          this.errmessage = "Something went wrong, please try again";
+          setTimeout(() => {this.errmessage = ""}, 3000);
         }
       });
     }
@@ -84,9 +84,9 @@ export class ModeratorComponent implements OnInit {
         console.log("New moderator added");
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -100,9 +100,9 @@ export class ModeratorComponent implements OnInit {
         console.log("User deleted");
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     })
   }
@@ -110,7 +110,6 @@ export class ModeratorComponent implements OnInit {
   open_chat(chat_id:string) {
     this.section = 2;
     this.chat_id = chat_id;
-    // this.router.navigate(['/chat', {chat_id: chat_id}]);
   }
 
   message_user(username:string) {
@@ -122,7 +121,6 @@ export class ModeratorComponent implements OnInit {
             console.log('chat already exists');
             this.section = 2;
             this.chat_id = chat._id;
-            // this.router.navigate(['/chat', {chat_id: chat._id}]);
             exists = true;
           }
         }
@@ -134,20 +132,19 @@ export class ModeratorComponent implements OnInit {
               console.log('Routing to newly created chat');
               this.section = 2;
               this.chat_id = ch._id;
-              // this.router.navigate(['/chat', {chat_id: ch._id}]);
             },
             error: (err) => {
-              console.log('Login error: ' + JSON.stringify(err));
-              this.errmessage = err.message;
-              this.logout();
+              console.log('Error: ' + JSON.stringify(err));
+              this.errmessage = "Something went wrong, please try again";
+              setTimeout(() => {this.errmessage = ""}, 3000);
             }
           });
         }
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -159,16 +156,10 @@ export class ModeratorComponent implements OnInit {
         this.router.navigate(['/profile', {user_id: d._id, username: username}]);
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
-
-  logout() {
-    this.us.logout();
-    this.router.navigate(['/login']);
-  }
-
 }

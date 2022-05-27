@@ -11,7 +11,7 @@ import { ChartType, ChartData, ChartOptions } from 'chart.js';
 })
 export class ProfileComponent implements OnInit {
 
-  public errmessage = undefined;
+  public errmessage = "";
   public username:string = "";
   public user_id:string = "";
   public doughnutChartLabels:string[] = ['Wins', 'Losses'];
@@ -59,16 +59,10 @@ export class ProfileComponent implements OnInit {
         this.doughnutChartData.datasets.push({data: [d.wins, d.losses]});
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     })
   }
-
-  logout() {
-    this.us.logout();
-    this.router.navigate(['/login']);
-  }
-
 }

@@ -13,7 +13,7 @@ import { DOCUMENT } from '@angular/common';
 })
 export class FriendsComponent implements OnInit, OnDestroy {
 
-  public errmessage = undefined;
+  public errmessage = "";
   public alert = "";
   public friends:User[] = [];
   public friend_requests:User[] = [];
@@ -74,9 +74,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
         console.log("Chats loaded");
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -92,9 +92,7 @@ export class FriendsComponent implements OnInit, OnDestroy {
           }
         },
         error: (err:any) => {
-          console.log('Login error: ' + JSON.stringify(err));
-          this.errmessage = err.message;
-          this.logout();
+          console.log('Error: ' + JSON.stringify(err));
         }
       });
     }
@@ -110,17 +108,17 @@ export class FriendsComponent implements OnInit, OnDestroy {
               this.match_invites.push(u);
             },
             error: (err) => {
-              console.log('Login error: ' + JSON.stringify(err));
-              this.errmessage = err.message;
-              this.logout();
+              console.log('Error: ' + JSON.stringify(err));
+              this.errmessage = "Something went wrong, please try again";
+              setTimeout(() => {this.errmessage = ""}, 3000);
             }
           });
         }
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     })
   }
@@ -135,18 +133,18 @@ export class FriendsComponent implements OnInit, OnDestroy {
               this.friends.push(u);
             },
             error: (err) => {
-              console.log('Login error: ' + JSON.stringify(err));
-              this.errmessage = err.message;
-              this.logout();
+              console.log('Error: ' + JSON.stringify(err));
+              this.errmessage = "Something went wrong, please try again";
+              setTimeout(() => {this.errmessage = ""}, 3000);
             }
           });
         }
         console.log('Friends list loaded');
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -161,18 +159,18 @@ export class FriendsComponent implements OnInit, OnDestroy {
               this.friend_requests.push(u);
             },
             error: (err) => {
-              console.log('Login error: ' + JSON.stringify(err));
-              this.errmessage = err.message;
-              this.logout();
+              console.log('Error: ' + JSON.stringify(err));
+              this.errmessage = "Something went wrong, please try again";
+              setTimeout(() => {this.errmessage = ""}, 3000);
             }
           });
         }
         console.log('Friend requests loaded');
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -189,9 +187,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
         setTimeout(() => {this.alert = "";}, 3000);
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -210,9 +208,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
         this.load_friends_list();
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -230,9 +228,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
         this.load_friend_requests();
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -247,9 +245,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
         this.load_match_invites();
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     })
   }
@@ -261,7 +259,6 @@ export class FriendsComponent implements OnInit, OnDestroy {
           console.log('Routing to chat');
           this.section = 2;
           this.chat_id = d._id;
-          // this.router.navigate(['/chat', {chat_id: d._id}]);
         } else {
           let body:Chat = {_id: "", participants: [friend_id], messages: [], type: "friend"};
           this.c.post_chat(body).subscribe({
@@ -269,20 +266,19 @@ export class FriendsComponent implements OnInit, OnDestroy {
               console.log('Routing to newly created chat');
               this.section = 2;
               this.chat_id = d._id;
-              // this.router.navigate(['/chat', {chat_id: d._id}]);
             },
             error: (err) => {
-              console.log('Login error: ' + JSON.stringify(err));
-              this.errmessage = err.message;
-              this.logout();
+              console.log('Error: ' + JSON.stringify(err));
+              this.errmessage = "Something went wrong, please try again";
+              setTimeout(() => {this.errmessage = ""}, 3000);
             }
           });
         }
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -299,9 +295,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
         setTimeout(() => {this.alert = "";}, 3000);
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -314,15 +310,13 @@ export class FriendsComponent implements OnInit, OnDestroy {
     this.uss.post_friend_match(body).subscribe({
       next: (d) => {
         console.log('Invite accepted');
-        this.alert = "Invite Accepted";
-        setTimeout(() => {this.alert = "";}, 3000);
         this.load_match_invites();
         this.router.navigate(['/play/match', {match_id: d.id, section: "1"}]);
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -340,9 +334,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
         this.load_match_invites();
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -351,7 +345,6 @@ export class FriendsComponent implements OnInit, OnDestroy {
     console.log('Routing to chat');
     this.section = 2;
     this.chat_id = chat_id;
-    // this.router.navigate(['/chat', {chat_id: chat_id}]);
   }
 
   open_stats(friend_id:string, friend_username:string) {
@@ -367,10 +360,5 @@ export class FriendsComponent implements OnInit, OnDestroy {
     this.renderer.addClass(event.target, "previous-tab");
     this.tabs = value;
     event.preventDefault();
-  }
-
-  logout() {
-    this.us.logout();
-    this.router.navigate(['/login']);
   }
 }

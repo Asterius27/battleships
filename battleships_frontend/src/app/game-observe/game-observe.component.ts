@@ -18,7 +18,7 @@ export class GameObserveComponent implements OnInit, OnDestroy {
   public playerOne:string = "";
   public playerTwo:string = "";
   @Input() match_id = "";
-  public errmessage = undefined;
+  public errmessage = "";
   public match = {} as Match;
   public display:string = "none";
   constructor(private us: UserHttpService, private uss: UsersHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, @Inject(DOCUMENT) private doc: Document) {}
@@ -56,9 +56,9 @@ export class GameObserveComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -93,9 +93,7 @@ export class GameObserveComponent implements OnInit, OnDestroy {
         this.playerOne = d.username;
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
       }
     });
     this.uss.get_user_id(this.match.playerTwo).subscribe({
@@ -103,9 +101,7 @@ export class GameObserveComponent implements OnInit, OnDestroy {
         this.playerTwo = d.username;
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
       }
     });
   }
@@ -117,10 +113,4 @@ export class GameObserveComponent implements OnInit, OnDestroy {
   open_modal() {
     this.display = "block";
   }
-
-  logout() {
-    this.us.logout();
-    this.router.navigate(['/login']);
-  }
-
 }

@@ -10,7 +10,7 @@ import { UsersHttpService } from '../users-http.service';
 })
 export class EditUserComponent implements OnInit {
 
-  public errmessage = undefined;
+  public errmessage = "";
   public user = {username: '', name: '', surname: '', mail: '', password: ''};
   constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router) {}
 
@@ -22,9 +22,9 @@ export class EditUserComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -36,15 +36,10 @@ export class EditUserComponent implements OnInit {
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
-  }
-
-  logout() {
-    this.us.logout();
-    this.router.navigate(['/login']);
   }
 }

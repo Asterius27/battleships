@@ -14,8 +14,7 @@ import { DOCUMENT } from '@angular/common';
 export class GamePhaseOneComponent implements OnInit, OnDestroy {
 
   @Output() sectionChange = new EventEmitter<number>();
-  public errmessage = undefined;
-  public notification = "";
+  public errmessage = "";
   public match = {} as Match;
   @Input() match_id = "";
   public ready = false;
@@ -202,9 +201,9 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     });
   }
@@ -223,9 +222,9 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.post = false;
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     })
   }
@@ -434,9 +433,9 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
         this.placed = 0;
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     })
   }
@@ -447,9 +446,9 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
         console.log("Match forfeited");
       },
       error: (err:any) => {
-        console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
-        this.logout();
+        console.log('Error: ' + JSON.stringify(err));
+        this.errmessage = "Something went wrong, please try again";
+        setTimeout(() => {this.errmessage = ""}, 3000);
       }
     })
   }
@@ -461,10 +460,4 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
   open_modal() {
     this.display = "block";
   }
-
-  logout() {
-    this.us.logout();
-    this.router.navigate(['/login']);
-  }
-
 }

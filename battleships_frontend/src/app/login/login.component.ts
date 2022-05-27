@@ -9,7 +9,7 @@ import { UserHttpService } from '../user-http.service';
 })
 export class LoginComponent implements OnInit {
 
-  public errmessage = undefined;
+  public errmessage = "";
   constructor(private us: UserHttpService, private router: Router) {}
 
   ngOnInit(): void {}
@@ -19,7 +19,6 @@ export class LoginComponent implements OnInit {
       next: (d) => {
         console.log('Login granted: ' + JSON.stringify(d));
         console.log('User service token: ' + this.us.get_token());
-        this.errmessage = undefined;
         if (d.temporary) {
           this.router.navigate(['/profile/edit']);
         } else {
@@ -28,7 +27,8 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         console.log('Login error: ' + JSON.stringify(err));
-        this.errmessage = err.message;
+        this.errmessage = "Invalid username or password";
+        setTimeout(() => {this.errmessage = "";}, 3000);
       }
     });
   }
