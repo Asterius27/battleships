@@ -1,16 +1,17 @@
-import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { UsersHttpService } from '../users-http.service';
 import { UserHttpService } from '../user-http.service';
 import { Router } from '@angular/router';
 import { Chat, ChatHttpService } from '../chat-http.service';
 import { DOCUMENT } from '@angular/common';
+import { SocketioService } from '../socketio.service';
 
 @Component({
   selector: 'app-moderator',
   templateUrl: './moderator.component.html',
   styleUrls: ['./moderator.component.css']
 })
-export class ModeratorComponent implements OnInit {
+export class ModeratorComponent implements OnInit, OnDestroy {
 
   public alert = "";
   public errmessage = "";
@@ -21,13 +22,20 @@ export class ModeratorComponent implements OnInit {
   public usernames:{[k: string]: any} = {};
   public section = 1;
   public chat_id = "";
-  constructor(private uss: UsersHttpService, private us: UserHttpService, private c: ChatHttpService, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
+  constructor(private uss: UsersHttpService, private us: UserHttpService, private c: ChatHttpService, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document, private sio: SocketioService) {}
 
   ngOnInit(): void {
     if (!this.us.is_moderator()) {
       this.router.navigate(['/play']);
     }
     this.load_chats();
+    this.sio.connect("matchinviteaccepted" + this.us.get_username()).subscribe((d) => {
+      this.router.navigate(['/play/match', {match_id: d, section: "1"}]);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.sio.removeListener("matchinviteaccepted" + this.us.get_username());
   }
 
   load_chats() {

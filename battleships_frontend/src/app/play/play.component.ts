@@ -44,7 +44,10 @@ export class PlayComponent implements OnInit, OnDestroy {
     this.sio.connect("matchfinished").subscribe((d) => {
       this.load_my_matches();
       this.load_ongoing_matches();
-    })
+    });
+    this.sio.connect("matchinviteaccepted" + this.us.get_username()).subscribe((d) => {
+      this.router.navigate(['/play/match', {match_id: d, section: "1"}]);
+    });
   }
 
   ngOnDestroy(): void {
@@ -61,6 +64,7 @@ export class PlayComponent implements OnInit, OnDestroy {
     });
     this.sio.removeListener("newmatch");
     this.sio.removeListener("matchfinished");
+    this.sio.removeListener("matchinviteaccepted" + this.us.get_username());
   }
 
   load_ongoing_matches() {

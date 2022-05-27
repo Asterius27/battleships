@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserHttpService } from '../user-http.service';
 import { UsersHttpService } from '../users-http.service';
 import { ChartType, ChartData, ChartOptions } from 'chart.js';
+import { SocketioService } from '../socketio.service';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
 
   public errmessage = "";
   public username:string = "";
@@ -37,7 +38,7 @@ export class ProfileComponent implements OnInit {
       }
     }
   };
-  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private route: ActivatedRoute) {}
+  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private route: ActivatedRoute, private sio: SocketioService) {}
 
   ngOnInit(): void {
     this.username = this.route.snapshot.paramMap.get('username') || "";
@@ -49,6 +50,13 @@ export class ProfileComponent implements OnInit {
       this.user_id = this.us.get_id();
     }
     this.load_stats();
+    this.sio.connect("matchinviteaccepted" + this.us.get_username()).subscribe((d) => {
+      this.router.navigate(['/play/match', {match_id: d, section: "1"}]);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.sio.removeListener("matchinviteaccepted" + this.us.get_username());
   }
 
   load_stats() {

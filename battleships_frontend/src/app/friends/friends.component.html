@@ -6,16 +6,36 @@
     <div style="padding-top: 2%">
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link active previous-tab" aria-current="page" href="#" (click)="setTabs(1, $event);">Friends List</a>
+                <a class="nav-link active previous-tab" aria-current="page" href="#" (click)="setTabs(1, $event);">
+                    Friends List
+                    <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!friend_list_alert">
+                        <span class="visually-hidden">New alerts</span>
+                    </span>
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" (click)="setTabs(2, $event);">Friend Requests</a>
+                <a class="nav-link position-relative" href="#" (click)="setTabs(2, $event);">
+                    Friend Requests
+                    <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!friend_request_alert">
+                        <span class="visually-hidden">New alerts</span>
+                    </span>
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" (click)="setTabs(3, $event);">Match Invites</a>
+                <a class="nav-link" href="#" (click)="setTabs(3, $event);">
+                    Match Invites
+                    <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!match_invite_alert">
+                        <span class="visually-hidden">New alerts</span>
+                    </span>
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" (click)="setTabs(4, $event);">Mods Messages</a>
+                <a class="nav-link" href="#" (click)="setTabs(4, $event);">
+                    Mods Messages
+                    <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!mod_message_alert">
+                        <span class="visually-hidden">New alerts</span>
+                    </span>
+                </a>
             </li>
             <li class="nav-item ms-auto">
                 <form class="form-inline">
@@ -29,8 +49,6 @@
     </div>
     
     <div class="panel panel-primary" id="friends_list" [hidden]="!(tabs===1)" style="padding-top: 2%">
-        <div class="panel-heading"><h3 class="panel-title">Friends List</h3>
-        </div>
         <div class="panel-body">
             <ul class="list-group">
                 <li class="list-group-item" *ngFor="let friend of friends">
@@ -44,8 +62,6 @@
     </div>
     
     <div class="panel panel-primary" id="friend_requests" [hidden]="!(tabs===2)" style="padding-top: 2%">
-        <div class="panel-heading"><h3 class="panel-title">Friend Requests</h3>
-        </div>
         <div class="panel-body">
             <ul class="list-group">
                 <li class="list-group-item" *ngFor="let friend of friend_requests">
@@ -58,8 +74,6 @@
     </div>
     
     <div class="panel panel-primary" id="friend_requests" [hidden]="!(tabs===3)" style="padding-top: 2%">
-        <div class="panel-heading"><h3 class="panel-title">Match Invites</h3>
-        </div>
         <div class="panel-body">
             <ul class="list-group">
                 <li class="list-group-item" *ngFor="let friend of match_invites">
@@ -72,8 +86,6 @@
     </div>
     
     <div class="panel panel-primary" id="mod_chats" [hidden]="!(tabs===4)" style="padding-top: 2%">
-        <div class="panel-heading"><h3 class="panel-title">Messages Received from Moderators</h3>
-        </div>
         <div class="panel-body">
             <ul class="list-group">
                 <li class="list-group-item" *ngFor="let chat of moderator_chats">

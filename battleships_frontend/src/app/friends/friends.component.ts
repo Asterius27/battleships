@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { UserHttpService } from '../user-http.service';
 import { User, UsersHttpService } from '../users-http.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 import { Chat, ChatHttpService } from '../chat-http.service';
 import { DOCUMENT } from '@angular/common';
@@ -23,6 +23,10 @@ export class FriendsComponent implements OnInit, OnDestroy {
   public moderators:{[k: string]: any} = {};
   public section = 1;
   public chat_id = "";
+  public friend_request_alert = false;
+  public friend_list_alert = false;
+  public match_invite_alert = false;
+  public mod_message_alert = false;
   constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private c: ChatHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
@@ -31,9 +35,15 @@ export class FriendsComponent implements OnInit, OnDestroy {
     this.load_match_invites();
     this.load_moderator_chats();
     this.sio.connect("newfriendrequest" + this.us.get_username()).subscribe((d) => {
+      if (this.tabs !== 2) {
+        this.friend_request_alert = true;
+      }
       this.load_friend_requests();
     });
     this.sio.connect("friendrequestaccepted" + this.us.get_username()).subscribe((d) => {
+      if (this.tabs !== 1) {
+        this.friend_list_alert = true;
+      }
       this.load_friends_list();
     });
     this.sio.connect("deletedfriend" + this.us.get_username()).subscribe((d) => {
@@ -41,6 +51,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
       this.load_match_invites();
     });
     this.sio.connect("newmatchinvite" + this.us.get_username()).subscribe((d) => {
+      if (this.tabs !== 3) {
+        this.match_invite_alert = true;
+      }
       this.load_match_invites();
     });
     this.sio.connect("matchinviteaccepted" + this.us.get_username()).subscribe((d) => {
@@ -48,6 +61,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
     });
     this.sio.connect("newchat" + this.us.get_id()).subscribe((d) => {
       if (d.type === "moderator") {
+        if (this.tabs !== 4) {
+          this.mod_message_alert = true;
+        }
         this.load_moderator_chats();
       }
     });
@@ -353,6 +369,18 @@ export class FriendsComponent implements OnInit, OnDestroy {
   }
 
   setTabs(value:number, event:any) {
+    if (value === 1) {
+      this.friend_list_alert = false;
+    }
+    if (value === 2) {
+      this.friend_request_alert = false;
+    }
+    if (value === 3) {
+      this.match_invite_alert = false;
+    }
+    if (value === 4) {
+      this.mod_message_alert = false;
+    }
     let prev = this.doc.getElementsByClassName("previous-tab");
     this.renderer.removeClass(prev[0], "active");
     this.renderer.removeClass(prev[0], "previous-tab");
