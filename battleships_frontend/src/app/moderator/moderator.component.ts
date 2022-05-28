@@ -22,6 +22,8 @@ export class ModeratorComponent implements OnInit, OnDestroy {
   public usernames:{[k: string]: any} = {};
   public section = 1;
   public chat_id = "";
+  public my_chat_alerts:{[k: string]: any} = {};
+  public message_alert = false;
   constructor(private uss: UsersHttpService, private us: UserHttpService, private c: ChatHttpService, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document, private sio: SocketioService) {}
 
   ngOnInit(): void {
@@ -36,16 +38,25 @@ export class ModeratorComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sio.removeListener("matchinviteaccepted" + this.us.get_username());
+    this.remove_chat_listeners();
   }
 
   load_chats() {
     this.c.get_moderator_chats(this.us.get_id()).subscribe({
       next: (d) => {
+        this.remove_chat_listeners();
         this.chats = d;
         for (let chat of this.chats) {
           for (let participant of chat.participants) {
             this.load_moderators(participant, chat._id);
           }
+          this.my_chat_alerts[chat._id] = false;
+          this.sio.connect("newmessage" + chat._id).subscribe((d) => {
+            this.my_chat_alerts[chat._id] = true;
+            if (this.tabs !== 3) {
+              this.message_alert = true;
+            }
+          });
         }
         console.log("Chats loaded");
       },
@@ -72,7 +83,16 @@ export class ModeratorComponent implements OnInit, OnDestroy {
     }
   }
 
+  remove_chat_listeners() {
+    for (let chat of this.chats) {
+      this.sio.removeListener("newmessage" + chat._id);
+    }
+  }
+
   setTabs(value:number, event:any) {
+    if (value === 3) {
+      this.message_alert = false;
+    }
     let prev = this.doc.getElementsByClassName("previous-tab");
     this.renderer.removeClass(prev[0], "active");
     this.renderer.removeClass(prev[0], "previous-tab");

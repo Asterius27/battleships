@@ -6,6 +6,8 @@ import { UserHttpService } from '../user-http.service';
 import interact from 'interactjs';
 import { DOCUMENT } from '@angular/common';
 
+// TODO check grid size on laptop
+
 @Component({
   selector: 'app-game-phase-one',
   templateUrl: './game-phase-one.component.html',

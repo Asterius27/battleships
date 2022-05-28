@@ -96,6 +96,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
           this.my_moderator_chat_alerts[chat._id] = false;
           this.sio.connect("newmessage" + chat._id).subscribe((d) => {
             this.my_moderator_chat_alerts[chat._id] = true;
+            if (this.tabs !== 4) {
+              this.mod_message_alert = true;
+            }
           });
         }
         console.log("Chats loaded");
@@ -126,6 +129,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
               this.my_friend_chat_alerts[participant] = false;
               this.sio.connect("newmessage" + chat._id).subscribe((d) => {
                 this.my_friend_chat_alerts[participant] = true;
+                if (this.tabs !== 1) {
+                  this.friend_list_alert = true;
+                }
               });
             }
           }

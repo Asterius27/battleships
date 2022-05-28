@@ -12,7 +12,12 @@
         <a class="nav-link" href="#" (click)="setTabs(2, $event);">Delete User</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" (click)="setTabs(3, $event);">Message User</a>
+        <a class="nav-link position-relative" href="#" (click)="setTabs(3, $event);">
+          Message User
+          <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!message_alert">
+            <span class="visually-hidden">New alerts</span>
+          </span>
+        </a>
       </li>
       <li class="nav-item ms-auto">
         <form class="form-inline">
@@ -83,7 +88,12 @@
       <div class="panel-body">
         <ul class="list-group">
           <li class="list-group-item" *ngFor="let chat of chats">
-            <button class="btn bg-transparent text-start w-100" (click)="open_chat(chat._id);">With: {{ usernames[chat._id] }}</button>
+            <button class="btn bg-transparent text-start w-100 position-relative" (click)="open_chat(chat._id);">
+              With: {{ usernames[chat._id] }}
+              <span class="position-absolute top-25 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!my_chat_alerts[chat._id]">
+                <span class="visually-hidden">New alerts</span>
+              </span>
+            </button>
           </li>
         </ul>
       </div>

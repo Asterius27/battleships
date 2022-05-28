@@ -24,6 +24,7 @@ export class PlayComponent implements OnInit, OnDestroy {
   public timeout:null|ReturnType<typeof setTimeout> = null;
   public usernames:{[k: string]: any} = {};
   public my_match_alerts:{[k: string]: any} = {};
+  public match_alerts = false;
   constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private m: MatchHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
@@ -102,6 +103,9 @@ export class PlayComponent implements OnInit, OnDestroy {
             this.sio.connect(match._id).subscribe((d) => {
               console.log("New match alert: " + match._id);
               this.my_match_alerts[match._id] = true;
+              if (this.tabs !== 1) {
+                this.match_alerts = true;
+              }
             });
           }
         }
@@ -206,6 +210,9 @@ export class PlayComponent implements OnInit, OnDestroy {
   }
 
   setTabs(value:number, event:any) {
+    if (value === 1) {
+      this.match_alerts = false;
+    }
     let prev = this.doc.getElementsByClassName("previous-tab");
     this.renderer.removeClass(prev[0], "active");
     this.renderer.removeClass(prev[0], "previous-tab");
