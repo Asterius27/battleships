@@ -70,6 +70,12 @@ export class FriendsComponent implements OnInit, OnDestroy {
         }
         this.load_moderator_chats();
       }
+      if (d.type === "friend") {
+        if (this.tabs !== 1) {
+          this.friend_list_alert = true;
+        }
+        this.load_my_friend_chats();
+      }
     });
   }
 
@@ -332,7 +338,6 @@ export class FriendsComponent implements OnInit, OnDestroy {
           this.c.post_chat(body).subscribe({
             next: (d) => {
               console.log('Routing to newly created chat');
-              this.load_my_friend_chats();
               this.section = 2;
               this.chat_id = d._id;
             },

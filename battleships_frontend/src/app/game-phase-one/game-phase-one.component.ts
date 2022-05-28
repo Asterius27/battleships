@@ -413,7 +413,7 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
       this.grid[i] = "s";
     }
     interact('.dropzone').unset();
-    this.router.navigateByUrl('/play', {skipLocationChange: true}).then(() => {
+    this.router.navigateByUrl('/profile', {skipLocationChange: true}).then(() => {
       this.router.navigate(['/play/match', {match_id: this.match_id, section: "1"}]);
     });
   }
