@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-// TODO notifications on navbar (use it also to make notifications persistent) create a service (?)
+// TODO make notifications persistent (create a service?), check remove listener between components (it's broken because it removes also the navbar listeners)
+// TODO check backend json responses (check for leakage of sensitive data)
 
 @Component({
   selector: 'app-root',

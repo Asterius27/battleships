@@ -9,7 +9,7 @@
         <li class="nav-item active">
           <a class="nav-link position-relative" routerLink="/play">
             Play
-            <span class="position-absolute top-25 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!play_alert">
+            <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!play_alert">
               <span class="visually-hidden">New alerts</span>
             </span>
           </a>
@@ -17,7 +17,7 @@
         <li class="nav-item">
           <a class="nav-link position-relative" href="#" (click)="load('/friends', $event);">
             Friends
-            <span class="position-absolute top-25 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!friends_alert">
+            <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!friends_alert">
               <span class="visually-hidden">New alerts</span>
             </span>
           </a>
@@ -28,7 +28,7 @@
         <li class="nav-item" *ngIf="moderator">
           <a class="nav-link position-relative" href="#" (click)="load('/moderator', $event);">
             Moderator
-            <span class="position-absolute top-25 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!moderator_alert">
+            <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!moderator_alert">
               <span class="visually-hidden">New alerts</span>
             </span>
           </a>
