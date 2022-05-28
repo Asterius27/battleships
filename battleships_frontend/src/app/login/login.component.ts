@@ -12,7 +12,11 @@ export class LoginComponent implements OnInit {
   public errmessage = "";
   constructor(private us: UserHttpService, private router: Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (localStorage.getItem('battleships_token')) {
+      this.router.navigate(['/play']);
+    }
+  }
 
   login(username: string, password: string, remember: boolean) {
     this.us.login(username, password, remember).subscribe({

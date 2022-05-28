@@ -35,11 +35,7 @@ export class UserHttpService {
       console.log("JWT loaded from local storage: " + this.token);
       if (!(Date.now() >= this.get_exp() * 1000)) {
         console.log("Already logged in");
-        if (this.get_temporary() === false) {
-          if (this.router.url === '/login') {
-            this.router.navigate(['/play']);
-          }
-        } else {
+        if (this.get_temporary() === true) {
           this.router.navigate(['/profile/edit']);
         }
       }
@@ -70,10 +66,9 @@ export class UserHttpService {
     );
   }
 
-  logout() { // TODO error when logging out from /play
+  logout() {
     console.log('Logging out');
-    this.token = '';
-    localStorage.setItem('battleships_token', this.token);
+    localStorage.setItem('battleships_token', "");
   }
 
   signup(user:any) : Observable<any> {

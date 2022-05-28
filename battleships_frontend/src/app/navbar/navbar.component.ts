@@ -177,6 +177,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   logout() {
+    this.sio.removeListener("newmatch");
+    this.removePlayAlertListeners();
+    this.sio.removeListener("newchat" + this.us.get_id());
+    this.removeModeratorAlertListeners();
+    this.sio.removeListener("newfriendrequest" + this.us.get_username());
+    this.sio.removeListener("friendrequestaccepted" + this.us.get_username());
+    this.sio.removeListener("newmatchinvite" + this.us.get_username());
+    this.removeFriendAlertListeners();
     this.us.logout();
     this.router.navigate(['/login']);
   }
