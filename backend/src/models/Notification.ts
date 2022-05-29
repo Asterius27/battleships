@@ -47,9 +47,15 @@ const notificationSchema = new Schema({
 });
 
 notificationSchema.methods.deleteNotifications = function(data:any) {
-    this.friend_request = data.friend_request || this.friend_request;
-    this.match_invite = data.match_invite || this.match_invite;
-    this.friend_request_accepted = data.friend_request_accepted || this.friend_request_accepted;
+    if (data.friend_request !== undefined) {
+        this.friend_request = data.friend_request
+    }
+    if (data.match_invite !== undefined) {
+        this.match_invite = data.match_invite;
+    }
+    if (data.friend_request_accepted !== undefined) {
+        this.friend_request_accepted = data.friend_request_accepted;
+    }
     if (data.friend_messages) {
         for (let i = 0; i < data.friend_messages.length; i++) {
             let index = this.friend_messages.indexOf(data.friend_messages[i]);

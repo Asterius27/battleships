@@ -13,7 +13,7 @@ router.post('/request', (req, res, next) => {
                 user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friend_requests: req.auth.id}}).then(async (us) => {
                     ios.emit("newfriendrequest" + req.body.username, req.auth.id);
                     ios.emit("nnewfriendrequest" + req.body.username, req.auth.id);
-                    await notification.getModel().findOneAndUpdate({user: req.body.username}, {friend_request: true}).catch((err) => {
+                    await notification.getModel().findOneAndUpdate({user: us._id}, {friend_request: true}).catch((err) => {
                         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
                     });
                     return res.status(200).json(us);
@@ -31,7 +31,7 @@ router.post('/request', (req, res, next) => {
         user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friends_list: req.auth.id}}).then(async (u) => {
             ios.emit("friendrequestaccepted" + req.body.username, req.auth.id);
             ios.emit("nfriendrequestaccepted" + req.body.username, req.auth.id);
-            await notification.getModel().findOneAndUpdate({user: req.body.username}, {friend_request_accepted: true}).catch((err) => {
+            await notification.getModel().findOneAndUpdate({user: u._id}, {friend_request_accepted: true}).catch((err) => {
                 return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
             });
             user.getModel().findOneAndUpdate({username: req.auth.username}, {$push: {friends_list: u._id}, $pull: {friend_requests: u._id}}).then((us) => {
@@ -68,7 +68,7 @@ router.post('/play', (req, res, next) => {
                     user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {match_invites: req.auth.id}}).then(async (us) => {
                         ios.emit("newmatchinvite" + req.body.username, req.auth.id);
                         ios.emit("nnewmatchinvite" + req.body.username, req.auth.id);
-                        await notification.getModel().findOneAndUpdate({user: req.body.username}, {match_invite: true}).catch((err) => {
+                        await notification.getModel().findOneAndUpdate({user: us._id}, {match_invite: true}).catch((err) => {
                             return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
                         });
                         return res.status(200).json(us);

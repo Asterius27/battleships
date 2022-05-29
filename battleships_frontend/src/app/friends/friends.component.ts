@@ -43,12 +43,28 @@ export class FriendsComponent implements OnInit, OnDestroy {
     this.sio.connect("newfriendrequest" + this.us.get_username()).subscribe((d) => {
       if (this.tabs !== 2) {
         this.friend_request_alert = true;
+      } else {
+        let body = {friend_request: false};
+        this.n.delete_notification(body).subscribe({
+          next: (data) => {},
+          error: (err) => {
+            console.log('Error: ' + JSON.stringify(err));
+          }
+        });
       }
       this.load_friend_requests();
     });
     this.sio.connect("friendrequestaccepted" + this.us.get_username()).subscribe((d) => {
       if (this.tabs !== 1) {
         this.friend_list_alert = true;
+      } else {
+        let body = {friend_request_accepted: false};
+        this.n.delete_notification(body).subscribe({
+          next: (data) => {},
+          error: (err) => {
+            console.log('Error: ' + JSON.stringify(err));
+          }
+        });
       }
       this.load_friends_list();
     });
@@ -59,6 +75,14 @@ export class FriendsComponent implements OnInit, OnDestroy {
     this.sio.connect("newmatchinvite" + this.us.get_username()).subscribe((d) => {
       if (this.tabs !== 3) {
         this.match_invite_alert = true;
+      } else {
+        let body = {match_invite: false};
+        this.n.delete_notification(body).subscribe({
+          next: (data) => {},
+          error: (err) => {
+            console.log('Error: ' + JSON.stringify(err));
+          }
+        });
       }
       this.load_match_invites();
     });
@@ -109,12 +133,36 @@ export class FriendsComponent implements OnInit, OnDestroy {
         }
         if (this.tabs !== 3) {
           this.match_invite_alert = d.match_invite;
+        } else {
+          let body = {match_invite: false};
+          this.n.delete_notification(body).subscribe({
+            next: (data) => {},
+            error: (err) => {
+              console.log('Error: ' + JSON.stringify(err));
+            }
+          });
         }
         if (this.tabs !== 2) {
           this.friend_request_alert = d.friend_request;
+        } else {
+          let body = {friend_request: false};
+          this.n.delete_notification(body).subscribe({
+            next: (data) => {},
+            error: (err) => {
+              console.log('Error: ' + JSON.stringify(err));
+            }
+          });
         }
         if (this.tabs !== 1) {
           this.friend_list_alert = d.friend_request_accepted;
+        } else {
+          let body = {friend_request_accepted: false};
+          this.n.delete_notification(body).subscribe({
+            next: (data) => {},
+            error: (err) => {
+              console.log('Error: ' + JSON.stringify(err));
+            }
+          });
         }
         console.log("Alerts loaded");
       },
@@ -483,13 +531,13 @@ export class FriendsComponent implements OnInit, OnDestroy {
   setTabs(value:number, event:any) {
     if (value === 1) {
       let body = {friend_request_accepted: false};
-      this.friend_list_alert = false;
       this.n.delete_notification(body).subscribe({
         next: (data) => {},
         error: (err) => {
           console.log('Error: ' + JSON.stringify(err));
         }
       });
+      this.friend_list_alert = false;
     }
     if (value === 2) {
       let body = {friend_request: false};
