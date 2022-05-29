@@ -11,6 +11,7 @@ router.post('/request', (req, res, next) => {
             if (!u) {
                 user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friend_requests: req.auth.id}}).then((us) => {
                     ios.emit("newfriendrequest" + req.body.username, req.auth.id);
+                    ios.emit("nnewfriendrequest" + req.body.username, req.auth.id);
                     return res.status(200).json(us);
                 }).catch((err) => {
                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -25,6 +26,7 @@ router.post('/request', (req, res, next) => {
     if (req.body.action === 'accept') {
         user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friends_list: req.auth.id}}).then((u) => {
             ios.emit("friendrequestaccepted" + req.body.username, req.auth.id);
+            ios.emit("nfriendrequestaccepted" + req.body.username, req.auth.id);
             user.getModel().findOneAndUpdate({username: req.auth.username}, {$push: {friends_list: u._id}, $pull: {friend_requests: u._id}}).then((us) => {
                 return res.status(200).json(us);
             }).catch((err) => {
@@ -58,6 +60,7 @@ router.post('/play', (req, res, next) => {
                 if (!u) {
                     user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {match_invites: req.auth.id}}).then((us) => {
                         ios.emit("newmatchinvite" + req.body.username, req.auth.id);
+                        ios.emit("nnewmatchinvite" + req.body.username, req.auth.id);
                         return res.status(200).json(us);
                     }).catch((err) => {
                         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -95,6 +98,7 @@ router.post('/play', (req, res, next) => {
                     m.setStartingPlayer();
                     m.save().then((m) => {
                         ios.emit("newmatch", m);
+                        ios.emit("nnewmatch", m);
                         ios.emit("matchinviteaccepted" + req.body.username, m._id);
                         return res.status(200).json({error: false, errormessage: "", id: m._id});
                     }).catch((err) => {

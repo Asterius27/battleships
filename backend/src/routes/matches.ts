@@ -17,6 +17,7 @@ router.post('/', (req, res, next) => {
     m.setStartingPlayer();
     m.save().then((m) => {
         ios.emit("newmatch", m);
+        ios.emit("nnewmatch", m);
         return res.status(200).json({error: false, errormessage: "", id: m._id});
     }).catch((err) => {
         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -29,6 +30,7 @@ router.post('/grid/:matchid', (req, res, next) => {
             if (match.isValidGrid(req.body.grid)) {
                 match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: req.body.grid}, {new: true}).then(() => {
                     ios.emit(m._id, "player one submitted his grid");
+                    ios.emit("n" + m._id, "player one submitted his grid");
                     return res.status(200).json(m);
                 }).catch((err) => {
                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -41,6 +43,7 @@ router.post('/grid/:matchid', (req, res, next) => {
             if (match.isValidGrid(req.body.grid)) {
                 match.getModel().findOneAndUpdate({_id: m._id}, {gridTwo: req.body.grid}, {new: true}).then(() => {
                     ios.emit(m._id, "player two submitted his grid");
+                    ios.emit("n" + m._id, "player two submitted his grid");
                     return res.status(200).json(m);
                 }).catch((err) => {
                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -69,6 +72,7 @@ router.post('/move/:matchid', (req, res, next) => {
                             if (m.isMatchFinished()) {
                                 match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: m.gridOne, gridTwo: m.gridTwo, moves: m.moves, result: m.result}, {new: true}).then((data) => {
                                     ios.emit(m._id, "matchisfinished " + m.result);
+                                    ios.emit("n" + m._id, "matchisfinished " + m.result);
                                     ios.emit("matchfinished", + m._id);
                                     return res.status(200).json(data);
                                 }).catch((err) => {
@@ -77,6 +81,7 @@ router.post('/move/:matchid', (req, res, next) => {
                             } else {
                                 match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: m.gridOne, gridTwo: m.gridTwo, moves: m.moves, result: m.result}, {new: true}).then((data) => {
                                     ios.emit(m._id, req.auth.id + " madehismove");
+                                    ios.emit("n" + m._id, req.auth.id + " madehismove");
                                     return res.status(200).json(data);
                                 }).catch((err) => {
                                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -93,6 +98,7 @@ router.post('/move/:matchid', (req, res, next) => {
                             if (m.isMatchFinished()) {
                                 match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: m.gridOne, gridTwo: m.gridTwo, moves: m.moves, result: m.result}, {new: true}).then((data) => {
                                     ios.emit(m._id, "matchisfinished " + m.result);
+                                    ios.emit("n" + m._id, "matchisfinished " + m.result);
                                     ios.emit("matchfinished", + m._id);
                                     return res.status(200).json(data);
                                 }).catch((err) => {
@@ -101,6 +107,7 @@ router.post('/move/:matchid', (req, res, next) => {
                             } else {
                                 match.getModel().findOneAndUpdate({_id: m._id}, {gridOne: m.gridOne, gridTwo: m.gridTwo, moves: m.moves, result: m.result}, {new: true}).then((data) => {
                                     ios.emit(m._id, req.auth.id + " madehismove");
+                                    ios.emit("n" + m._id, req.auth.id + " madehismove");
                                     return res.status(200).json(data);
                                 }).catch((err) => {
                                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -170,6 +177,7 @@ router.delete('/retire/:matchid', (req, res, next) => {
         d.save().then((m) => {
             if (m.result !== "0-0") {
                 ios.emit(m._id, "matchisfinished " + m.result);
+                ios.emit("n" + m._id, "matchisfinished " + m.result);
                 ios.emit("matchfinished", + m._id);
                 return res.status(200).json(m);
             } else {

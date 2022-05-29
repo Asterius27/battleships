@@ -41,12 +41,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
         }
       }
     });
-    this.sio.connect("newmatch").subscribe((d) => {
+    this.sio.connect("nnewmatch").subscribe((d) => {
       if (d.playerOne === this.us.get_id() || d.playerTwo === this.us.get_id()) {
         this.setPlayAlertListeners();
       }
     });
-    this.sio.connect("newchat" + this.us.get_id()).subscribe((d) => {
+    this.sio.connect("nnewchat" + this.us.get_id()).subscribe((d) => {
       if (d.type === "moderator") {
         this.setModeratorAlertListeners();
       }
@@ -54,17 +54,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.setFriendAlertListeners();
       }
     });
-    this.sio.connect("newfriendrequest" + this.us.get_username()).subscribe((d) => {
+    this.sio.connect("nnewfriendrequest" + this.us.get_username()).subscribe((d) => {
       if (this.router.url !== '/friends') {
         this.friends_alert = true;
       }
     });
-    this.sio.connect("friendrequestaccepted" + this.us.get_username()).subscribe((d) => {
+    this.sio.connect("nfriendrequestaccepted" + this.us.get_username()).subscribe((d) => {
       if (this.router.url !== '/friends') {
         this.friends_alert = true;
       }
     });
-    this.sio.connect("newmatchinvite" + this.us.get_username()).subscribe((d) => {
+    this.sio.connect("nnewmatchinvite" + this.us.get_username()).subscribe((d) => {
       if (this.router.url !== '/friends') {
         this.friends_alert = true;
       }
@@ -72,13 +72,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.sio.removeListener("newmatch");
+    this.sio.removeListener("nnewmatch");
     this.removePlayAlertListeners();
-    this.sio.removeListener("newchat" + this.us.get_id());
+    this.sio.removeListener("nnewchat" + this.us.get_id());
     this.removeModeratorAlertListeners();
-    this.sio.removeListener("newfriendrequest" + this.us.get_username());
-    this.sio.removeListener("friendrequestaccepted" + this.us.get_username());
-    this.sio.removeListener("newmatchinvite" + this.us.get_username());
+    this.sio.removeListener("nnewfriendrequest" + this.us.get_username());
+    this.sio.removeListener("nfriendrequestaccepted" + this.us.get_username());
+    this.sio.removeListener("nnewmatchinvite" + this.us.get_username());
     this.removeFriendAlertListeners();
   }
 
@@ -89,7 +89,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       next: (d) => {
         for (let chat of d) {
           this.friend_alert_listeners.push(chat._id);
-          this.sio.connect("newmessage" + chat._id).subscribe((d) => {
+          this.sio.connect("nnewmessage" + chat._id).subscribe((d) => {
             if (this.router.url !== '/friends') {
               this.friends_alert = true;
             }
@@ -105,7 +105,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   removeFriendAlertListeners() {
     for (let id of this.friend_alert_listeners) {
-      this.sio.removeListener("newmessage" + id);
+      this.sio.removeListener("nnewmessage" + id);
     }
   }
 
@@ -116,7 +116,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       next: (d) => {
         for (let chat of d) {
           this.moderator_alert_listeners.push(chat._id);
-          this.sio.connect("newmessage" + chat._id).subscribe((d) => {
+          this.sio.connect("nnewmessage" + chat._id).subscribe((d) => {
             if (this.router.url !== '/moderator') {
               if (this.moderator) {
                 this.moderator_alert = true;
@@ -136,7 +136,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   removeModeratorAlertListeners() {
     for (let id of this.moderator_alert_listeners) {
-      this.sio.removeListener("newmessage" + id);
+      this.sio.removeListener("nnewmessage" + id);
     }
   }
 
@@ -148,7 +148,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         for (let match of d) {
           if (match.result === "0-0") {
             this.play_alert_listeners.push(match._id);
-            this.sio.connect(match._id).subscribe((d) => {
+            this.sio.connect("n" + match._id).subscribe((d) => {
               if (this.router.url !== '/play') {
                 this.play_alert = true;
               }
@@ -165,7 +165,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   removePlayAlertListeners() {
     for (let id of this.play_alert_listeners) {
-      this.sio.removeListener(id);
+      this.sio.removeListener("n" + id);
     }
   }
 
@@ -177,13 +177,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.sio.removeListener("newmatch");
+    this.sio.removeListener("nnewmatch");
     this.removePlayAlertListeners();
-    this.sio.removeListener("newchat" + this.us.get_id());
+    this.sio.removeListener("nnewchat" + this.us.get_id());
     this.removeModeratorAlertListeners();
-    this.sio.removeListener("newfriendrequest" + this.us.get_username());
-    this.sio.removeListener("friendrequestaccepted" + this.us.get_username());
-    this.sio.removeListener("newmatchinvite" + this.us.get_username());
+    this.sio.removeListener("nnewfriendrequest" + this.us.get_username());
+    this.sio.removeListener("nfriendrequestaccepted" + this.us.get_username());
+    this.sio.removeListener("nnewmatchinvite" + this.us.get_username());
     this.removeFriendAlertListeners();
     this.us.logout();
     this.router.navigate(['/login']);

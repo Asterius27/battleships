@@ -130,6 +130,7 @@ router.post('/queue', (req, res, next) => {
                 m.setStartingPlayer();
                 m.save().then((m) => {
                     ios.emit("newmatch", m);
+                    ios.emit("nnewmatch", m);
                     return res.status(200).json({error: false, errormessage: "", id: m._id});
                 }).catch((err) => {
                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});

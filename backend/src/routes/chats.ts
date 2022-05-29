@@ -14,6 +14,7 @@ router.post('/', (req, res, next) => {
     c.save().then((c) => {
         for (let p of array) {
             ios.emit("newchat" + p, c);
+            ios.emit("nnewchat" + p, c);
         }
         return res.status(200).json(c);
     }).catch((err) => {
