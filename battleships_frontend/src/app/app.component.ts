@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserHttpService } from './user-http.service';
 
-// TODO make notifications persistent (create a service?)
 // TODO check backend json responses (check for leakage of sensitive data)
 
 @Component({

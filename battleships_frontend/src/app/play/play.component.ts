@@ -5,6 +5,7 @@ import { SocketioService } from '../socketio.service';
 import { Match, MatchHttpService } from '../match-http.service';
 import { DOCUMENT } from '@angular/common';
 import { UsersHttpService } from '../users-http.service';
+import { NotificationHttpService } from '../notification-http.service';
 
 @Component({
   selector: 'app-play',
@@ -25,11 +26,12 @@ export class PlayComponent implements OnInit, OnDestroy {
   public usernames:{[k: string]: any} = {};
   public my_match_alerts:{[k: string]: any} = {};
   public match_alerts = false;
-  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private m: MatchHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
+  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private m: MatchHttpService, private n: NotificationHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     this.load_my_matches();
     this.load_ongoing_matches();
+    this.load_notifications();
     this.sio.connect("newmatch").subscribe((d) => {
       if (d.playerOne === this.us.get_id() || d.playerTwo === this.us.get_id()) {
         if (this.timeout !== null) {
@@ -70,6 +72,23 @@ export class PlayComponent implements OnInit, OnDestroy {
     this.remove_my_matches_listeners();
   }
 
+  load_notifications() {
+    this.n.get_notifications().subscribe({
+      next: (d) => {
+        for (let i = 0; i < d.match_alerts.length; i++) {
+          this.my_match_alerts[d.match_alerts[i]] = true;
+          if (this.tabs !== 1) {
+            this.match_alerts = true;
+          }
+        }
+        console.log("Alerts loaded");
+      },
+      error: (err) => {
+        console.log('Error: ' + JSON.stringify(err));
+      }
+    });
+  }
+
   load_ongoing_matches() {
     this.ongoing_matches = [];
     this.m.get_ongoing_matches().subscribe({
@@ -97,7 +116,9 @@ export class PlayComponent implements OnInit, OnDestroy {
         for (let match of d) {
           if (match.result === "0-0") {
             this.my_ongoing_matches.push(match);
-            this.my_match_alerts[match._id] = false;
+            if (!(match._id in this.my_match_alerts)) {
+              this.my_match_alerts[match._id] = false;
+            }
             this.load_usernames(match.playerOne);
             this.load_usernames(match.playerTwo);
             this.sio.connect(match._id).subscribe((d) => {
@@ -126,11 +147,19 @@ export class PlayComponent implements OnInit, OnDestroy {
   }
 
   open_match(match:Match) {
-    if (match.gridOne[0].length !== 0 && match.gridTwo[0].length !== 0) {
-      this.router.navigate(['/play/match', {match_id: match._id, section: "2"}]);
-    } else {
-      this.router.navigate(['/play/match', {match_id: match._id, section: "1"}]);
-    }
+    let body = {match_alerts: [match._id]};
+    this.n.delete_notification(body).subscribe({
+      next: (d) => {
+        if (match.gridOne[0].length !== 0 && match.gridTwo[0].length !== 0) {
+          this.router.navigate(['/play/match', {match_id: match._id, section: "2"}]);
+        } else {
+          this.router.navigate(['/play/match', {match_id: match._id, section: "1"}]);
+        }
+      },
+      error: (err) => {
+        console.log('Error: ' + JSON.stringify(err));
+      }
+    });
   }
 
   match_making(event:any) {

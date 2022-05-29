@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Match, MatchHttpService } from '../match-http.service';
+import { NotificationHttpService } from '../notification-http.service';
 import { SocketioService } from '../socketio.service';
 import { UserHttpService } from '../user-http.service';
 
@@ -22,7 +23,7 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
   public display:string = "none";
   public user_id = "";
   public result = "";
-  constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
+  constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private n: NotificationHttpService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     if (this.match_id === "") {
@@ -30,6 +31,13 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
     }
     this.load_match();
     this.sio.connect(this.match_id).subscribe((d) => {
+      let body = {match_alerts: [this.match._id]};
+      this.n.delete_notification(body).subscribe({
+        next: (d) => {},
+        error: (err) => {
+          console.log('Error: ' + JSON.stringify(err));
+        }
+      });
       let arr = d.split(" ");
       if (arr[0] !== this.us.get_id() && arr[1] === "madehismove") {
         this.turn = true;

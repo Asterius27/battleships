@@ -46,27 +46,6 @@ const notificationSchema = new Schema({
     }
 });
 
-notificationSchema.methods.setNotifications = function(data:any) {
-    this.friend_request = data.friend_request || this.friend_request;
-    this.match_invite = data.match_invite || this.match_invite;
-    this.friend_request_accepted = data.friend_request_accepted || this.friend_request_accepted;
-    if (data.friend_messages) {
-        for (let i = 0; i < data.friend_messages.length; i++) {
-            this.friend_messages.push(data.friend_messages[i]);
-        }
-    }
-    if (data.moderator_messages) {
-        for (let i = 0; i < data.moderator_messages.length; i++) {
-            this.moderator_messages.push(data.moderator_messages[i]);
-        }
-    }
-    if (data.match_alerts) {
-        for (let i = 0; i < data.match_alerts.length; i++) {
-            this.match_alerts.push(data.match_alerts[i]);
-        }
-    }
-}
-
 notificationSchema.methods.deleteNotifications = function(data:any) {
     this.friend_request = data.friend_request || this.friend_request;
     this.match_invite = data.match_invite || this.match_invite;

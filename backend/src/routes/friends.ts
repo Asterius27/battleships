@@ -3,15 +3,19 @@ import { ios } from '../app';
 import * as user from '../models/User';
 import * as match from '../models/Match';
 import * as chat from '../models/Chat';
+import * as notification from '../models/Notification';
 const router = express.Router();
 
 router.post('/request', (req, res, next) => {
     if (req.body.action === 'send') {
         user.getModel().findOne({$and: [{username: req.body.username}, {$or: [{friend_requests: req.auth.id}, {friends_list: req.auth.id}]}]}).then((u) => {
             if (!u) {
-                user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friend_requests: req.auth.id}}).then((us) => {
+                user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friend_requests: req.auth.id}}).then(async (us) => {
                     ios.emit("newfriendrequest" + req.body.username, req.auth.id);
                     ios.emit("nnewfriendrequest" + req.body.username, req.auth.id);
+                    await notification.getModel().findOneAndUpdate({user: req.body.username}, {friend_request: true}).catch((err) => {
+                        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+                    });
                     return res.status(200).json(us);
                 }).catch((err) => {
                     return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -24,9 +28,12 @@ router.post('/request', (req, res, next) => {
         });
     }
     if (req.body.action === 'accept') {
-        user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friends_list: req.auth.id}}).then((u) => {
+        user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friends_list: req.auth.id}}).then(async (u) => {
             ios.emit("friendrequestaccepted" + req.body.username, req.auth.id);
             ios.emit("nfriendrequestaccepted" + req.body.username, req.auth.id);
+            await notification.getModel().findOneAndUpdate({user: req.body.username}, {friend_request_accepted: true}).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
             user.getModel().findOneAndUpdate({username: req.auth.username}, {$push: {friends_list: u._id}, $pull: {friend_requests: u._id}}).then((us) => {
                 return res.status(200).json(us);
             }).catch((err) => {
@@ -58,9 +65,12 @@ router.post('/play', (req, res, next) => {
         user.getModel().findOne({username: req.body.username}).then((temp) => {
             user.getModel().findOne({$or: [{$and: [{username: req.auth.username}, {match_invites: temp._id}]}, {$and: [{username: req.body.username}, {match_invites: req.auth.id}]}]}).then((u) => {
                 if (!u) {
-                    user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {match_invites: req.auth.id}}).then((us) => {
+                    user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {match_invites: req.auth.id}}).then(async (us) => {
                         ios.emit("newmatchinvite" + req.body.username, req.auth.id);
                         ios.emit("nnewmatchinvite" + req.body.username, req.auth.id);
+                        await notification.getModel().findOneAndUpdate({user: req.body.username}, {match_invite: true}).catch((err) => {
+                            return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+                        });
                         return res.status(200).json(us);
                     }).catch((err) => {
                         return next({statusCode: 404, error: true, errormessage: "DB error: " + err});

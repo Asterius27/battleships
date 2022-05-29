@@ -6,6 +6,7 @@ import { Chat, ChatHttpService } from '../chat-http.service';
 import { Message, MessageHttpService } from '../message-http.service';
 import { UsersHttpService } from '../users-http.service';
 import { DOCUMENT } from '@angular/common';
+import { NotificationHttpService } from '../notification-http.service';
 
 @Component({
   selector: 'app-chat',
@@ -19,7 +20,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   @Input() chat_id = "";
   @Input() participant_id = "";
   public messages:Message[] = [];
-  constructor(private us: UserHttpService, private c: ChatHttpService, private m: MessageHttpService, private router: Router, private sio: SocketioService, private route: ActivatedRoute, private uss: UsersHttpService, @Inject(DOCUMENT) private doc: Document) {}
+  constructor(private us: UserHttpService, private c: ChatHttpService, private m: MessageHttpService, private n: NotificationHttpService, private router: Router, private sio: SocketioService, private route: ActivatedRoute, private uss: UsersHttpService, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     if (this.chat_id === "") {
@@ -28,6 +29,23 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.load_chat();
     this.sio.connect("newmessage" + this.chat_id).subscribe((d) => {
       this.load_chat();
+      let body = {};
+      if (this.chat.type === "friend") {
+        for (let participant of this.chat.participants) {
+          if (participant !== this.us.get_id()) {
+            body = {friend_messages: [participant]};
+          }
+        }
+      }
+      if (this.chat.type === "moderator") {
+        body = {moderator_messages: [this.chat_id]};
+      }
+      this.n.delete_notification(body).subscribe({
+        next: (d) => {},
+        error: (err) => {
+          console.log('Error: ' + JSON.stringify(err));
+        }
+      });
     });
   }
 

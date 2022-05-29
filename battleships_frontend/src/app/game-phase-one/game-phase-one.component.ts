@@ -5,6 +5,7 @@ import { SocketioService } from '../socketio.service';
 import { UserHttpService } from '../user-http.service';
 import interact from 'interactjs';
 import { DOCUMENT } from '@angular/common';
+import { NotificationHttpService } from '../notification-http.service';
 
 // TODO check grid size on laptop
 
@@ -40,7 +41,7 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
   public placed = 11;
   public result = "";
   public display:string = "none";
-  constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
+  constructor(private us: UserHttpService, private m: MatchHttpService, private sio: SocketioService, private n: NotificationHttpService, private route: ActivatedRoute, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     interact('.dropzone').unset();
@@ -53,6 +54,13 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
     }
     this.load_match();
     this.sio.connect(this.match_id).subscribe((d) => {
+      let body = {match_alerts: [this.match._id]};
+      this.n.delete_notification(body).subscribe({
+        next: (d) => {},
+        error: (err) => {
+          console.log('Error: ' + JSON.stringify(err));
+        }
+      });
       if (d === 'player one submitted his grid' && this.match.playerTwo === this.us.get_id()) {
         this.opponent_ready = true;
       }

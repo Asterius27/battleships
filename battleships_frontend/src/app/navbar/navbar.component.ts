@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, Event, RouterEvent } from '@angular/router';
 import { ChatHttpService } from '../chat-http.service';
 import { MatchHttpService } from '../match-http.service';
+import { NotificationHttpService } from '../notification-http.service';
 import { SocketioService } from '../socketio.service';
 import { UserHttpService } from '../user-http.service';
 
@@ -19,15 +20,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public play_alert_listeners:string[] = [];
   public moderator_alert_listeners:string[] = [];
   public friend_alert_listeners:string[] = [];
-  constructor(private us: UserHttpService, private sio: SocketioService, private router: Router, private m: MatchHttpService, private c: ChatHttpService) {}
+  constructor(private us: UserHttpService, private sio: SocketioService, private router: Router, private m: MatchHttpService, private c: ChatHttpService, private n: NotificationHttpService) {}
 
   ngOnInit(): void {
-    this.setPlayAlertListeners();
-    this.setFriendAlertListeners();
-    this.setModeratorAlertListeners();
     if (this.us.is_moderator()) {
       this.moderator = true;
     }
+    this.loadNotifications();
+    this.setPlayAlertListeners();
+    this.setFriendAlertListeners();
+    this.setModeratorAlertListeners();
     this.router.events.subscribe((e: Event) => {
       if (e instanceof RouterEvent) {
         if (e.url === '/play') {
@@ -80,6 +82,35 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.sio.removeListener("nfriendrequestaccepted" + this.us.get_username());
     this.sio.removeListener("nnewmatchinvite" + this.us.get_username());
     this.removeFriendAlertListeners();
+  }
+
+  loadNotifications(): void {
+    this.n.get_notifications().subscribe({
+      next: (d) => {
+        if (this.router.url !== '/friends') {
+          this.friends_alert = d.friend_request || d.friend_request_accepted || d.match_invite;
+        }
+        if (d.friend_messages.length > 0 && this.router.url !== '/friends') {
+          this.friends_alert = true;
+        }
+        if (this.moderator) {
+          if (d.moderator_messages.length > 0 && this.router.url !== '/moderator') {
+            this.moderator_alert = true;
+          }
+        } else {
+          if (d.moderator_messages.length > 0 && this.router.url !== '/friends') {
+            this.friends_alert = true;
+          }
+        }
+        if (d.match_alerts.length > 0 && this.router.url !== '/play') {
+          this.play_alert = true;
+        }
+        console.log("Alerts loaded");
+      },
+      error: (err) => {
+        console.log('Error: ' + JSON.stringify(err));
+      }
+    });
   }
 
   setFriendAlertListeners() {

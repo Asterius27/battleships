@@ -3,6 +3,7 @@ import * as user from '../models/User';
 import * as message from '../models/Message';
 import * as chat from '../models/Chat';
 import * as match from '../models/Match';
+import * as notification from '../models/Notification';
 import mongoose from 'mongoose';
 const router = express.Router();
 
@@ -77,8 +78,22 @@ router.post('/moderator', (req, res, next) => {
             return next({statusCode: 404, error: true, errormessage: "Password field missing"});
         }
         u.setPassword(req.body.password);
-        u.save().then((data) => {
-            return res.status(200).json({error: false, errormessage: "", id: data._id});
+        u.save().then((d) => {
+            let data = {
+                user: d._id, 
+                friend_request: false,
+                match_invite: false,
+                friend_request_accepted: false,
+                friend_messages: [],
+                moderator_messages: [],
+                match_alerts: []
+            }
+            let n = notification.newNotification(data);
+            n.save().then((noti) => {
+                return res.status(200).json({error: false, errormessage: "", id: d._id});
+            }).catch((err) => {
+                return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+            });
         }).catch((err) => {
             return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });

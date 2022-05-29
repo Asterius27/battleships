@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 import { Chat, ChatHttpService } from '../chat-http.service';
 import { DOCUMENT } from '@angular/common';
+import { NotificationHttpService } from '../notification-http.service';
 
 @Component({
   selector: 'app-friends',
@@ -30,7 +31,7 @@ export class FriendsComponent implements OnInit, OnDestroy {
   public mod_message_alert = false;
   public my_moderator_chat_alerts:{[k: string]: any} = {};
   public my_friend_chat_alerts:{[k: string]: any} = {};
-  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private c: ChatHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
+  constructor(private us: UserHttpService, private uss: UsersHttpService, private router: Router, private sio: SocketioService, private c: ChatHttpService, private n: NotificationHttpService, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document) {}
 
   ngOnInit(): void {
     this.load_my_friend_chats();
@@ -38,6 +39,7 @@ export class FriendsComponent implements OnInit, OnDestroy {
     this.load_friend_requests();
     this.load_match_invites();
     this.load_moderator_chats();
+    this.load_notifications();
     this.sio.connect("newfriendrequest" + this.us.get_username()).subscribe((d) => {
       if (this.tabs !== 2) {
         this.friend_request_alert = true;
@@ -90,6 +92,38 @@ export class FriendsComponent implements OnInit, OnDestroy {
     this.remove_my_friend_chat_listeners();
   }
 
+  load_notifications() {
+    this.n.get_notifications().subscribe({
+      next: (d) => {
+        for (let i = 0; i < d.friend_messages.length; i++) {
+          this.my_friend_chat_alerts[d.friend_messages[i]] = true;
+          if (this.tabs !== 1) {
+            this.friend_list_alert = true;
+          }
+        }
+        for (let i = 0; i < d.moderator_messages.length; i++) {
+          this.my_moderator_chat_alerts[d.moderator_messages[i]] = true;
+          if (this.tabs !== 4) {
+            this.mod_message_alert = true;
+          }
+        }
+        if (this.tabs !== 3) {
+          this.match_invite_alert = d.match_invite;
+        }
+        if (this.tabs !== 2) {
+          this.friend_request_alert = d.friend_request;
+        }
+        if (this.tabs !== 1) {
+          this.friend_list_alert = d.friend_request_accepted;
+        }
+        console.log("Alerts loaded");
+      },
+      error: (err) => {
+        console.log('Error: ' + JSON.stringify(err));
+      }
+    });
+  }
+
   load_moderator_chats() {
     this.c.get_moderator_chats(this.us.get_id()).subscribe({
       next: (d) => {
@@ -99,7 +133,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
           for (let participant of chat.participants) {
             this.load_moderators(participant, chat._id);
           }
-          this.my_moderator_chat_alerts[chat._id] = false;
+          if (!(chat._id in this.my_moderator_chat_alerts)) {
+            this.my_moderator_chat_alerts[chat._id] = false;
+          }
           this.sio.connect("newmessage" + chat._id).subscribe((d) => {
             this.my_moderator_chat_alerts[chat._id] = true;
             if (this.tabs !== 4) {
@@ -132,7 +168,9 @@ export class FriendsComponent implements OnInit, OnDestroy {
         for (let chat of this.friend_chats) {
           for (let participant of chat.participants) {
             if (participant !== this.us.get_id()) {
-              this.my_friend_chat_alerts[participant] = false;
+              if (!(participant in this.my_friend_chat_alerts)) {
+                this.my_friend_chat_alerts[participant] = false;
+              }
               this.sio.connect("newmessage" + chat._id).subscribe((d) => {
                 this.my_friend_chat_alerts[participant] = true;
                 if (this.tabs !== 1) {
@@ -331,8 +369,16 @@ export class FriendsComponent implements OnInit, OnDestroy {
       next: (d) => {
         if (d) {
           console.log('Routing to chat');
-          this.section = 2;
-          this.chat_id = d._id;
+          let body = {friend_messages: [friend_id]};
+          this.n.delete_notification(body).subscribe({
+            next: (data) => {
+              this.section = 2;
+              this.chat_id = d._id;
+            },
+            error: (err) => {
+              console.log('Error: ' + JSON.stringify(err));
+            }
+          });
         } else {
           let body:Chat = {_id: "", participants: [friend_id], messages: [], type: "friend"};
           this.c.post_chat(body).subscribe({
@@ -417,8 +463,16 @@ export class FriendsComponent implements OnInit, OnDestroy {
 
   open_moderator_chat(chat_id:string) {
     console.log('Routing to chat');
-    this.section = 2;
-    this.chat_id = chat_id;
+    let body = {moderator_messages: [chat_id]};
+    this.n.delete_notification(body).subscribe({
+      next: (data) => {
+        this.section = 2;
+        this.chat_id = chat_id;
+      },
+      error: (err) => {
+        console.log('Error: ' + JSON.stringify(err));
+      }
+    });
   }
 
   open_stats(friend_id:string, friend_username:string) {
@@ -428,12 +482,33 @@ export class FriendsComponent implements OnInit, OnDestroy {
 
   setTabs(value:number, event:any) {
     if (value === 1) {
+      let body = {friend_request_accepted: false};
       this.friend_list_alert = false;
+      this.n.delete_notification(body).subscribe({
+        next: (data) => {},
+        error: (err) => {
+          console.log('Error: ' + JSON.stringify(err));
+        }
+      });
     }
     if (value === 2) {
+      let body = {friend_request: false};
+      this.n.delete_notification(body).subscribe({
+        next: (data) => {},
+        error: (err) => {
+          console.log('Error: ' + JSON.stringify(err));
+        }
+      });
       this.friend_request_alert = false;
     }
     if (value === 3) {
+      let body = {match_invite: false};
+      this.n.delete_notification(body).subscribe({
+        next: (data) => {},
+        error: (err) => {
+          console.log('Error: ' + JSON.stringify(err));
+        }
+      });
       this.match_invite_alert = false;
     }
     if (value === 4) {

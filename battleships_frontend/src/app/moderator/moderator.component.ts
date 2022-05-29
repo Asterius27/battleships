@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Chat, ChatHttpService } from '../chat-http.service';
 import { DOCUMENT } from '@angular/common';
 import { SocketioService } from '../socketio.service';
+import { NotificationHttpService } from '../notification-http.service';
 
 @Component({
   selector: 'app-moderator',
@@ -24,13 +25,14 @@ export class ModeratorComponent implements OnInit, OnDestroy {
   public chat_id = "";
   public my_chat_alerts:{[k: string]: any} = {};
   public message_alert = false;
-  constructor(private uss: UsersHttpService, private us: UserHttpService, private c: ChatHttpService, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document, private sio: SocketioService) {}
+  constructor(private uss: UsersHttpService, private us: UserHttpService, private c: ChatHttpService, private n: NotificationHttpService, private router: Router, private renderer: Renderer2, @Inject(DOCUMENT) private doc: Document, private sio: SocketioService) {}
 
   ngOnInit(): void {
     if (!this.us.is_moderator()) {
       this.router.navigate(['/play']);
     }
     this.load_chats();
+    this.load_notifications();
     this.sio.connect("matchinviteaccepted" + this.us.get_username()).subscribe((d) => {
       this.router.navigate(['/play/match', {match_id: d, section: "1"}]);
     });
@@ -39,6 +41,23 @@ export class ModeratorComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sio.removeListener("matchinviteaccepted" + this.us.get_username());
     this.remove_chat_listeners();
+  }
+
+  load_notifications() {
+    this.n.get_notifications().subscribe({
+      next: (d) => {
+        for (let i = 0; i < d.moderator_messages.length; i++) {
+          this.my_chat_alerts[d.moderator_messages[i]] = true;
+          if (this.tabs !== 3) {
+            this.message_alert = true;
+          } 
+        }
+        console.log("Alerts loaded");
+      },
+      error: (err) => {
+        console.log('Error: ' + JSON.stringify(err));
+      }
+    });
   }
 
   load_chats() {
@@ -50,7 +69,9 @@ export class ModeratorComponent implements OnInit, OnDestroy {
           for (let participant of chat.participants) {
             this.load_moderators(participant, chat._id);
           }
-          this.my_chat_alerts[chat._id] = false;
+          if (!(chat._id in this.my_chat_alerts)) {
+            this.my_chat_alerts[chat._id] = false;
+          }
           this.sio.connect("newmessage" + chat._id).subscribe((d) => {
             this.my_chat_alerts[chat._id] = true;
             if (this.tabs !== 3) {
@@ -136,8 +157,16 @@ export class ModeratorComponent implements OnInit, OnDestroy {
   }
 
   open_chat(chat_id:string) {
-    this.section = 2;
-    this.chat_id = chat_id;
+    let body = {moderator_messages: [chat_id]};
+    this.n.delete_notification(body).subscribe({
+      next: (d) => {
+        this.section = 2;
+        this.chat_id = chat_id;
+      },
+      error: (err) => {
+        console.log('Error: ' + JSON.stringify(err));
+      }
+    }); 
   }
 
   message_user(username:string) {
@@ -147,8 +176,7 @@ export class ModeratorComponent implements OnInit, OnDestroy {
         for (let chat of this.chats) {
           if (chat.participants.includes(d._id)) {
             console.log('chat already exists');
-            this.section = 2;
-            this.chat_id = chat._id;
+            this.open_chat(chat._id);
             exists = true;
           }
         }
