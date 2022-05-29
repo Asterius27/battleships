@@ -26,6 +26,7 @@ import { EditUserComponent } from './edit-user/edit-user.component';
 import { ModeratorComponent } from './moderator/moderator.component';
 import { ProfileComponent } from './profile/profile.component';
 import { NgChartsModule } from 'ng2-charts';
+import { NotificationHttpService } from './notification-http.service';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { NgChartsModule } from 'ng2-charts';
     {provide: ChatHttpService, useClass: ChatHttpService},
     {provide: MessageHttpService, useClass: MessageHttpService},
     {provide: UsersHttpService, useClass: UsersHttpService},
-    {provide: MatchHttpService, useClass: MatchHttpService}
+    {provide: MatchHttpService, useClass: MatchHttpService},
+    {provide: NotificationHttpService, useClass: NotificationHttpService}
   ],
   bootstrap: [AppComponent]
 })

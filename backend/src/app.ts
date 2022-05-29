@@ -67,6 +67,7 @@ app.use('/chats', auth, require('./routes/chats'));
 app.use('/messages', auth, require('./routes/messages'));
 app.use('/matches', auth, require('./routes/matches'));
 app.use('/matchmaking', auth, require('./routes/matchmaking'));
+app.use('/notifications', auth, require('./routes/notifications'));
 
 app.post('/signup', (req, res, next) => {
   let data = {
