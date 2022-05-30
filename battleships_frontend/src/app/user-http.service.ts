@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import jwtdecode from 'jwt-decode';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 interface TokenData {
   username: string,
@@ -22,7 +23,7 @@ interface TokenData {
 export class UserHttpService {
 
   private token = '';
-  public url = 'http://localhost:8000';
+  public url = environment.backend_url;
 
   constructor(private http: HttpClient, private router: Router) {
     console.log('User service instantiated');

@@ -44,7 +44,7 @@ declare global {
 
 const result = require('dotenv').config()
 const app = express();
-const port = 8000;
+const port = process.env.PORT;
 const auth = expressjwt({secret: process.env.JWT_SECRET, algorithms: ["HS256"]});
 export let ios = undefined;
 
@@ -153,7 +153,7 @@ app.use((req, res, next) => {
 mongoose.connect(process.env.DATABASE_URL).then(() => {
   let server = http.createServer(app);
   ios = new Server(server, {cors: {
-    origin: "http://localhost:4200"
+    origin: process.env.FRONTEND_URL
   }});
   ios.on("connection", (client) => {
     console.log("Socket.io client connected " + client.id);

@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserHttpService } from './user-http.service';
 
+// TODO comment out console.log
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
