@@ -23,12 +23,12 @@
     {{ ship[0] }} ({{ ship[1] }})
   </div>
 
-  <div id="grid" style="display: grid; grid-gap: 1em; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 7em);">
+  <div id="grid" style="display: grid; grid-gap: 1%; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 7em);">
     <div [ngClass]="{'boat': cell === 'b', 'dropzone': true}" class="dropzone" *ngFor="let cell of grid; let i=index" [attr.id]="i">
     </div>
   </div>
 
-  <p>Drag and drop the boats (the item you drop represents the lower/left end of the boat (depending on whether the boat is verical or horizonotal))<br>
+  <p style="margin-top: 2em;">Drag and drop the boats (the item you drop represents the lower/left end of the boat (depending on whether the boat is verical or horizonotal))<br>
     Right click to change it's direction (red = vertical, blue = horizonotal)<br>
     The number between the parenthesis is the length of the boat
   </p>

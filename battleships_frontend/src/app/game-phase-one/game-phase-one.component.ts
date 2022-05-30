@@ -7,8 +7,6 @@ import interact from 'interactjs';
 import { DOCUMENT } from '@angular/common';
 import { NotificationHttpService } from '../notification-http.service';
 
-// TODO check grid size on laptop
-
 @Component({
   selector: 'app-game-phase-one',
   templateUrl: './game-phase-one.component.html',
