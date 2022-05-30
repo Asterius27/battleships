@@ -45,13 +45,6 @@ export class MatchHttpService {
     };
   }
 
-  // never used
-  post_match(m:Match) : Observable<any> {
-    return this.http.post<any>(this.us.url + '/matches', m, this.create_options()).pipe(
-      catchError(this.handleError)
-    );
-  }
-
   post_grid(id:string, body:any) : Observable<Match> {
     return this.http.post<Match>(this.us.url + '/matches/grid/' + id, body, this.create_options()).pipe(
       tap({

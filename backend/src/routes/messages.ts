@@ -33,14 +33,6 @@ router.post('/', (req, res, next) => {
     });
 });
 
-router.get('/:messageid', (req, res, next) => {
-    message.getModel().findOne({_id: req.params.messageid}).then((m) => {
-        return res.status(200).json(m);
-    }).catch((err) => {
-        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-});
-
 router.get('/', (req, res, next) => {
     if (req.query.visibility === "true") {
         message.getModel().find({_id: {$in: req.query.ids}, visibility: true}).sort({createdAt: -1}).then((ms) => {

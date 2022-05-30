@@ -13,7 +13,7 @@ export class LoginComponent implements OnInit {
   constructor(private us: UserHttpService, private router: Router) {}
 
   ngOnInit(): void {
-    if (localStorage.getItem('battleships_token')) {
+    if (localStorage.getItem('battleships_token') && !(Date.now() >= this.us.get_exp() * 1000)) {
       this.router.navigate(['/play']);
     }
   }

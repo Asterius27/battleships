@@ -4,27 +4,6 @@ import * as match from '../models/Match';
 import * as notification from '../models/Notification';
 const router = express.Router();
 
-router.post('/', (req, res, next) => {
-    let data = {
-        playerOne: req.auth.id,
-        playerTwo: req.body.opponent,
-        gridOne: [[]],
-        gridTwo: [[]],
-        moves: [],
-        result: "0-0",
-        chat: req.body.chat
-    };
-    let m = match.newMatch(data);
-    m.setStartingPlayer();
-    m.save().then((m) => {
-        ios.emit("newmatch", m);
-        ios.emit("nnewmatch", m);
-        return res.status(200).json({error: false, errormessage: "", id: m._id});
-    }).catch((err) => {
-        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
-});
-
 router.post('/grid/:matchid', (req, res, next) => {
     match.getModel().findOne({_id: req.params.matchid}).then((m) => {
         if (req.auth.id === String(m.playerOne)) {

@@ -10,7 +10,7 @@ router.post('/request', (req, res, next) => {
     if (req.body.action === 'send') {
         user.getModel().findOne({$and: [{username: req.body.username}, {$or: [{friend_requests: req.auth.id}, {friends_list: req.auth.id}]}]}).then((u) => {
             if (!u) {
-                user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friend_requests: req.auth.id}}).then(async (us) => {
+                user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {friend_requests: req.auth.id}}, {projection: {digest: 0, salt: 0}}).then(async (us) => {
                     ios.emit("newfriendrequest" + req.body.username, req.auth.id);
                     ios.emit("nnewfriendrequest" + req.body.username, req.auth.id);
                     await notification.getModel().findOneAndUpdate({user: us._id}, {friend_request: true}).catch((err) => {
@@ -34,7 +34,7 @@ router.post('/request', (req, res, next) => {
             await notification.getModel().findOneAndUpdate({user: u._id}, {friend_request_accepted: true}).catch((err) => {
                 return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
             });
-            user.getModel().findOneAndUpdate({username: req.auth.username}, {$push: {friends_list: u._id}, $pull: {friend_requests: u._id}}).then((us) => {
+            user.getModel().findOneAndUpdate({username: req.auth.username}, {$push: {friends_list: u._id}, $pull: {friend_requests: u._id}}, {projection: {digest: 0, salt: 0}}).then((us) => {
                 return res.status(200).json(us);
             }).catch((err) => {
                 return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
@@ -45,7 +45,7 @@ router.post('/request', (req, res, next) => {
     }
     if (req.body.action === 'reject') {
         user.getModel().findOne({username: req.body.username}).then((u) => {
-            user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {friend_requests: u._id}}).then((us) => {
+            user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {friend_requests: u._id}}, {projection: {digest: 0, salt: 0}}).then((us) => {
                 ios.emit("friendrequestrejected" + req.body.username, req.auth.id);
                 return res.status(200).json(us);
             }).catch((err) => {
@@ -65,7 +65,7 @@ router.post('/play', (req, res, next) => {
         user.getModel().findOne({username: req.body.username}).then((temp) => {
             user.getModel().findOne({$or: [{$and: [{username: req.auth.username}, {match_invites: temp._id}]}, {$and: [{username: req.body.username}, {match_invites: req.auth.id}]}]}).then((u) => {
                 if (!u) {
-                    user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {match_invites: req.auth.id}}).then(async (us) => {
+                    user.getModel().findOneAndUpdate({username: req.body.username}, {$push: {match_invites: req.auth.id}}, {projection: {digest: 0, salt: 0}}).then(async (us) => {
                         ios.emit("newmatchinvite" + req.body.username, req.auth.id);
                         ios.emit("nnewmatchinvite" + req.body.username, req.auth.id);
                         await notification.getModel().findOneAndUpdate({user: us._id}, {match_invite: true}).catch((err) => {
@@ -126,7 +126,7 @@ router.post('/play', (req, res, next) => {
     }
     if (req.body.action === 'reject') {
         user.getModel().findOne({username: req.body.username}).then((u) => {
-            user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {match_invites: u._id}}).then((us) => {
+            user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {match_invites: u._id}}, {projection: {digest: 0, salt: 0}}).then((us) => {
                 ios.emit("matchinviterejected" + req.body.username, req.auth.id);
                 return res.status(200).json(us);
             }).catch((err) => {
@@ -144,8 +144,8 @@ router.post('/play', (req, res, next) => {
 router.delete('/:username', (req, res, next) => {
     user.getModel().findOneAndUpdate({username: req.params.username}, {$pull: {friends_list: req.auth.id, match_invites: req.auth.id}}).then((u) => {
         ios.emit("deletedfriend" + req.params.username, req.auth.id);
-        user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {friends_list: u._id, match_invites: u._id}}).then((u) => {
-            return res.status(200).json(u);
+        user.getModel().findOneAndUpdate({username: req.auth.username}, {$pull: {friends_list: u._id, match_invites: u._id}}, {projection: {digest: 0, salt: 0}}).then((us) => {
+            return res.status(200).json(us);
         }).catch((err) => {
             return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
         });

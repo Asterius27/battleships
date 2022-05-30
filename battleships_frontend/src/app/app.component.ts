@@ -2,8 +2,6 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserHttpService } from './user-http.service';
 
-// TODO check backend json responses (check for leakage of sensitive data)
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
