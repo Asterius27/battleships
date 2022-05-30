@@ -180,7 +180,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
           if (match.result === "0-0") {
             this.play_alert_listeners.push(match._id);
             this.sio.connect("n" + match._id).subscribe((d) => {
-              if (this.router.url !== '/play') {
+              if (this.router.url !== '/play' && !this.router.url.startsWith('/play/match')) {
                 this.play_alert = true;
               }
             });
