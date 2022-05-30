@@ -17,10 +17,10 @@ npm install
 ```
 Inside the backend folder and inside the battleships_frontend folder to install all of the dependencies
 
-Rename .env.sample file inside the backend directory to .env and fill out its fields:
-JWT_SECRET is the secret key used to sign the json web token
-DATABASE_URL is the url of the mongodb database
-FRONTEND_URL is the url of the angular frontend
+Rename .env.sample file inside the backend directory to .env and fill out its fields:<br/>
+JWT_SECRET is the secret key used to sign the json web token<br/>
+DATABASE_URL is the url of the mongodb database<br/>
+FRONTEND_URL is the url of the angular frontend<br/>
 PORT is the port where you want to run the backend
 
 Inside battleships_frontend/src/environments put your backend url in both files:
