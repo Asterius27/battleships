@@ -19,11 +19,11 @@ export class SignupComponent implements OnInit {
   signup() {
     this.us.signup(this.user).subscribe({
       next: (d) => {
-        console.log('Registration ok: ' + JSON.stringify(d));
+        // console.log('Registration ok: ' + JSON.stringify(d));
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.log('Signup error: ' + JSON.stringify(err.error.errormessage));
+        // console.log('Signup error: ' + JSON.stringify(err.error.errormessage));
         this.errmessage = "Error, please try again (could be that username is already taken)"
         setTimeout(() => {this.errmessage = "";}, 3000);
       }

@@ -44,7 +44,7 @@ export class GameObserveComponent implements OnInit, OnDestroy {
   load_match() {
     this.m.get_match(this.match_id).subscribe({
       next: (d) => {
-        console.log("Match loaded");
+        // console.log("Match loaded");
         this.match = d;
         if (d.result === "0-0") {
           this.load_linear_grid_player_one();
@@ -56,7 +56,7 @@ export class GameObserveComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -93,7 +93,7 @@ export class GameObserveComponent implements OnInit, OnDestroy {
         this.playerOne = d.username;
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
     this.uss.get_user_id(this.match.playerTwo).subscribe({
@@ -101,7 +101,7 @@ export class GameObserveComponent implements OnInit, OnDestroy {
         this.playerTwo = d.username;
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
   }

@@ -52,10 +52,10 @@ export class ModeratorComponent implements OnInit, OnDestroy {
             this.message_alert = true;
           } 
         }
-        console.log("Alerts loaded");
+        // console.log("Alerts loaded");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
   }
@@ -79,10 +79,10 @@ export class ModeratorComponent implements OnInit, OnDestroy {
             }
           });
         }
-        console.log("Chats loaded");
+        // console.log("Chats loaded");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -96,7 +96,7 @@ export class ModeratorComponent implements OnInit, OnDestroy {
           this.usernames[chat_id] = d.username;
         },
         error: (err:any) => {
-          console.log('Error: ' + JSON.stringify(err));
+          // console.log('Error: ' + JSON.stringify(err));
           this.errmessage = "Something went wrong, please try again";
           setTimeout(() => {this.errmessage = ""}, 3000);
         }
@@ -130,10 +130,10 @@ export class ModeratorComponent implements OnInit, OnDestroy {
         this.user.password = '';
         this.alert = "New moderator added";
         setTimeout(() => {this.alert = "";}, 3000);
-        console.log("New moderator added");
+        // console.log("New moderator added");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -146,10 +146,10 @@ export class ModeratorComponent implements OnInit, OnDestroy {
         this.delete_target.username = '';
         this.alert = "User deleted";
         setTimeout(() => {this.alert = "";}, 3000);
-        console.log("User deleted");
+        // console.log("User deleted");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -164,7 +164,7 @@ export class ModeratorComponent implements OnInit, OnDestroy {
         this.chat_id = chat_id;
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     }); 
   }
@@ -175,7 +175,7 @@ export class ModeratorComponent implements OnInit, OnDestroy {
         let exists = false;
         for (let chat of this.chats) {
           if (chat.participants.includes(d._id)) {
-            console.log('chat already exists');
+            // console.log('chat already exists');
             this.open_chat(chat._id);
             exists = true;
           }
@@ -185,12 +185,12 @@ export class ModeratorComponent implements OnInit, OnDestroy {
           this.c.post_chat(body).subscribe({
             next: (ch) => {
               this.chats.push(ch);
-              console.log('Routing to newly created chat');
+              // console.log('Routing to newly created chat');
               this.section = 2;
               this.chat_id = ch._id;
             },
             error: (err) => {
-              console.log('Error: ' + JSON.stringify(err));
+              // console.log('Error: ' + JSON.stringify(err));
               this.errmessage = "Something went wrong, please try again";
               setTimeout(() => {this.errmessage = ""}, 3000);
             }
@@ -198,7 +198,7 @@ export class ModeratorComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -208,11 +208,11 @@ export class ModeratorComponent implements OnInit, OnDestroy {
   open_stats(username:string) {
     this.uss.get_user_username(username).subscribe({
       next: (d) => {
-        console.log('Routing to stats');
+        // console.log('Routing to stats');
         this.router.navigate(['/profile', {user_id: d._id, username: username}]);
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }

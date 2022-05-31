@@ -56,7 +56,7 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
       this.n.delete_notification(body).subscribe({
         next: (d) => {},
         error: (err) => {
-          console.log('Error: ' + JSON.stringify(err));
+          // console.log('Error: ' + JSON.stringify(err));
         }
       });
       if (d === 'player one submitted his grid' && this.match.playerTwo === this.us.get_id()) {
@@ -69,16 +69,16 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
       if (arr[0] === "matchisfinished") {
         if ((this.match.playerOne === this.us.get_id() && arr[1] === "1-0") || (this.match.playerTwo === this.us.get_id() && arr[1] === "0-1")) {
           this.result = "won!";
-          console.log("You have won!");
+          // console.log("You have won!");
         }
         if ((this.match.playerOne === this.us.get_id() && arr[1] === "0-1") || (this.match.playerTwo === this.us.get_id() && arr[1] === "1-0")) {
           this.result = "lost";
-          console.log("You have lost!");
+          // console.log("You have lost!");
         }
         this.doc.getElementById("post-game")?.click();
       }
       if (this.ready && this.opponent_ready) {
-        console.log("Starting game");
+        // console.log("Starting game");
         this.sectionChange.emit(2);
       }
     });
@@ -105,18 +105,18 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
         if (event.relatedTarget.classList.contains("horizontal-boat")) {
           direction = true;
         }
-        console.log("Dropped ship at: " + event.target.id + " direction: " + direction);
+        // console.log("Dropped ship at: " + event.target.id + " direction: " + direction);
         if (this.cellIsAvailable(event.relatedTarget.id, event.target.id, direction)) {
           let boat_id = event.relatedTarget.id.slice(0, -1);
-          console.log("Cell available true");
+          // console.log("Cell available true");
           this.update_grid(event.relatedTarget.id, event.target.id, direction);
           this.renderer.addClass(event.relatedTarget, 'boat-dropped');
           interact('.drop' + boat_id).unset();
           this.placed = this.placed - 1;
         } else {
           if (!(event.relatedTarget.classList.contains("boat-dropped"))) {
-            console.log("classes: " + event.relatedTarget.classList);
-            console.log("Cell available false");
+            // console.log("classes: " + event.relatedTarget.classList);
+            // console.log("Cell available false");
             event.relatedTarget.removeAttribute('data-x');
             event.relatedTarget.removeAttribute('data-y');
             event.relatedTarget.style.transform = 'translate(0px, 0px)';
@@ -128,7 +128,7 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
         this.renderer.addClass(event.target, 'dropzone');
         this.renderer.removeClass(event.target, 'drop-target');
         if (!this.drop) {
-          console.log("Item should now reset");
+          // console.log("Item should now reset");
           event.relatedTarget.removeAttribute('data-x');
           event.relatedTarget.removeAttribute('data-y');
           event.relatedTarget.style.transform = 'translate(0px, 0px)';
@@ -163,7 +163,7 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
   load_match() {
     this.m.get_match(this.match_id).subscribe({
       next: (d) => {
-        console.log("Match loaded");
+        // console.log("Match loaded");
         this.match = d;
         if (this.match.gridOne[0].length !== 0 && this.match.playerOne === this.us.get_id()) {
           this.post = true;
@@ -204,12 +204,12 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
           this.opponent_ready = true;
         }
         if (this.ready && this.opponent_ready) {
-          console.log("Starting game");
+          // console.log("Starting game");
           this.sectionChange.emit(2);
         }
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -224,13 +224,13 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
         this.ready = true;
         interact('.dropzone').unset();
         if (this.opponent_ready) {
-          console.log("Starting game");
+          // console.log("Starting game");
           this.sectionChange.emit(2);
         }
       },
       error: (err) => {
         this.post = false;
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -351,7 +351,7 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
     let boat_id = boat.slice(0, -1);
     let length = parseInt(this.ships[boat_id][1]);
     let cell_id = parseInt(cell);
-    console.log("position: " + cell_id + " boat length: " + length + " direction: " + direction);
+    // console.log("position: " + cell_id + " boat length: " + length + " direction: " + direction);
     if (direction) {
       if (cell_id + (length - 1) > this.grid.length - 1 || Math.floor(cell_id / 10) !== Math.floor((cell_id + (length - 1)) / 10)) {
         return false;
@@ -409,7 +409,7 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
         direction = false;
       }
     }
-    console.log("Changed boat direction: " + direction);
+    // console.log("Changed boat direction: " + direction);
     event.preventDefault();
   }
 
@@ -441,7 +441,7 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
         this.placed = 0;
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -451,10 +451,10 @@ export class GamePhaseOneComponent implements OnInit, OnDestroy {
   forfeit() {
     this.m.forfeit_match(this.match_id).subscribe({
       next: (d) => {
-        console.log("Match forfeited");
+        // console.log("Match forfeited");
       },
       error: (err:any) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }

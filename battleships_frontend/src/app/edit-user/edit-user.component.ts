@@ -22,7 +22,7 @@ export class EditUserComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -32,12 +32,12 @@ export class EditUserComponent implements OnInit {
   post_user() {
     this.uss.patch_user(this.us.get_username(), this.user).subscribe({
       next: (d) => {
-        console.log("User updated");
+        // console.log("User updated");
         this.us.logout();
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }

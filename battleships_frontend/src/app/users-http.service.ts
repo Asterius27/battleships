@@ -22,7 +22,7 @@ export interface User {
 export class UsersHttpService {
 
   constructor(private http: HttpClient, private us: UserHttpService) {
-    console.log('Users service instantiated');
+    // console.log('Users service instantiated');
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -48,7 +48,9 @@ export class UsersHttpService {
   get_user_username(username:string) : Observable<User> {
     return this.http.get<User>(this.us.url + '/users/username/' + username, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -57,7 +59,9 @@ export class UsersHttpService {
   get_user_id(id:string) : Observable<User> {
     return this.http.get<User>(this.us.url + '/users/id/' + id, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -66,7 +70,9 @@ export class UsersHttpService {
   get_user_stats(id:string) : Observable<any> {
     return this.http.get<any>(this.us.url + '/users/stats/' + id, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -81,7 +87,9 @@ export class UsersHttpService {
   patch_user(username:string, u:any) : Observable<any> {
     return this.http.patch<any>(this.us.url + '/users/' + username, u, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -96,7 +104,9 @@ export class UsersHttpService {
   post_friend(body:any) : Observable<User> {
     return this.http.post<User>(this.us.url + '/friends/request', body, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -105,7 +115,9 @@ export class UsersHttpService {
   post_friend_match(body:any) : Observable<any> {
     return this.http.post<any>(this.us.url + '/friends/play', body, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -114,7 +126,9 @@ export class UsersHttpService {
   delete_friend(username:string) : Observable<User> {
     return this.http.delete<User>(this.us.url + '/friends/' + username, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );

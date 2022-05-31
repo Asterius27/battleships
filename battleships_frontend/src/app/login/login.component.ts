@@ -21,8 +21,8 @@ export class LoginComponent implements OnInit {
   login(username: string, password: string, remember: boolean) {
     this.us.login(username, password, remember).subscribe({
       next: (d) => {
-        console.log('Login granted: ' + JSON.stringify(d));
-        console.log('User service token: ' + this.us.get_token());
+        // console.log('Login granted: ' + JSON.stringify(d));
+        // console.log('User service token: ' + this.us.get_token());
         if (d.temporary) {
           this.router.navigate(['/profile/edit']);
         } else {
@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.log('Login error: ' + JSON.stringify(err));
+        // console.log('Login error: ' + JSON.stringify(err));
         this.errmessage = "Invalid username or password";
         setTimeout(() => {this.errmessage = "";}, 3000);
       }

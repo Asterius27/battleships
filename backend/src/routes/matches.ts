@@ -129,6 +129,14 @@ router.post('/move/:matchid', (req, res, next) => {
     }
 });
 
+router.get('/', (req, res, next) => {
+    match.getModel().find({playerOne: {$ne: req.auth.id}, playerTwo: {$ne: req.auth.id}, result: req.query.result}).then((ms) => {
+        return res.status(200).json(ms);
+    }).catch((err) => {
+        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
+    });
+});
+
 router.get('/id/:matchid', (req, res, next) => {
     match.getModel().findById(req.params.matchid).then((m) => {
         return res.status(200).json(m);
@@ -154,14 +162,6 @@ router.get('/grid', (req, res, next) => {
         grid: grid
     };
     return res.status(200).json(data);
-});
-
-router.get('/ongoing', (req, res, next) => {
-    match.getModel().find({playerOne: {$ne: req.auth.id}, playerTwo: {$ne: req.auth.id}, result: "0-0"}).then((ms) => {
-        return res.status(200).json(ms);
-    }).catch((err) => {
-        return next({statusCode: 404, error: true, errormessage: "DB error: " + err});
-    });
 });
 
 router.delete('/retire/:matchid', (req, res, next) => {

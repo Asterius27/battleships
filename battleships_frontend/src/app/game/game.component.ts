@@ -33,10 +33,10 @@ export class GameComponent implements OnInit {
         if ((this.section === 1 || this.section === 2) && (this.match.playerOne !== this.us.get_id() && this.match.playerTwo !== this.us.get_id())) {
           this.router.navigate(['/play']);
         }
-        console.log("Match loaded");
+        // console.log("Match loaded");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }

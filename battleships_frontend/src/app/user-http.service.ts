@@ -26,29 +26,29 @@ export class UserHttpService {
   public url = environment.backend_url;
 
   constructor(private http: HttpClient, private router: Router) {
-    console.log('User service instantiated');
+    // console.log('User service instantiated');
     if (!localStorage.getItem('battleships_token')) {
-      console.log("No token found in local storage");
+      // console.log("No token found in local storage");
       this.token = "";
       this.router.navigate(['/login']);
     } else {
       this.token = localStorage.getItem('battleships_token') || "";
-      console.log("JWT loaded from local storage: " + this.token);
+      // console.log("JWT loaded from local storage: " + this.token);
       if (!(Date.now() >= this.get_exp() * 1000)) {
-        console.log("Already logged in");
+        // console.log("Already logged in");
         if (this.get_temporary() === true) {
           this.router.navigate(['/profile/edit']);
         }
       }
       if (Date.now() >= this.get_exp() * 1000) {
-        console.log("Token has expired");
+        // console.log("Token has expired");
         this.router.navigate(['/login']);
       }
     }
   }
 
   login(username: string, password: string, remember: boolean): Observable<any> {
-    console.log('Login: ' + username + ' ' + password);
+    // console.log('Login: ' + username + ' ' + password);
     const options = {
       headers: new HttpHeaders({
         authorization: 'Basic ' + btoa(username + ':' + password),
@@ -58,7 +58,7 @@ export class UserHttpService {
     };
     return this.http.get(this.url + '/login', options).pipe(
       tap((data:any) => {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
         this.token = data.token;
         if (remember) {
           localStorage.setItem('battleships_token', this.token);
@@ -68,7 +68,7 @@ export class UserHttpService {
   }
 
   logout() {
-    console.log('Logging out');
+    // console.log('Logging out');
     localStorage.setItem('battleships_token', "");
   }
 
@@ -79,9 +79,9 @@ export class UserHttpService {
         'Content-Type':  'application/json',
       })
     };
-    return this.http.post(this.url + '/signup', user, options).pipe(
+    return this.http.post(this.url + '/user', user, options).pipe(
       tap((data) => {
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
       })
     );
   }

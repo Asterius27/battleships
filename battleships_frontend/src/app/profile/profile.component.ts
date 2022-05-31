@@ -62,12 +62,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
   load_stats() {
     this.uss.get_user_stats(this.user_id).subscribe({
       next: (d) => {
-        console.log("Stats loaded");
+        // console.log("Stats loaded");
         this.doughnutChartData.datasets = [];
         this.doughnutChartData.datasets.push({data: [d.wins, d.losses]});
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }

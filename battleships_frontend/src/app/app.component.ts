@@ -2,8 +2,6 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserHttpService } from './user-http.service';
 
-// TODO comment out console.log, fix endpoint (example ongoing should be a filter)
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

@@ -59,7 +59,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res, next) => {
-  return res.status(200).json({api_version: "1.0", endpoints: ["/users", "/login"]});
+  return res.status(200).json({api_version: "1.0", endpoints: ["/user", "/login", "/users", "/friends", "/chats", "/messages", "/matches", "/matchmaking", "/notifications"]});
 });
 
 app.use('/users', auth, require('./routes/users'));
@@ -70,7 +70,7 @@ app.use('/matches', auth, require('./routes/matches'));
 app.use('/matchmaking', auth, require('./routes/matchmaking'));
 app.use('/notifications', auth, require('./routes/notifications'));
 
-app.post('/signup', (req, res, next) => {
+app.post('/user', (req, res, next) => {
   let data = {
     name: req.body.name,
     surname: req.body.surname,
@@ -111,7 +111,7 @@ app.post('/signup', (req, res, next) => {
 
 passport.use(new passportHTTP.BasicStrategy(
   function(username, password, done) {
-    console.log("New login attempt from " + username);
+    // console.log("New login attempt from " + username);
     user.getModel().findOne({username: username}, (err, user) => {
       if (err) {
         return done({statusCode: 500, error: true, errormessage:err});

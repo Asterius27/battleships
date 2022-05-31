@@ -105,10 +105,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
         if (d.match_alerts.length > 0 && this.router.url !== '/play') {
           this.play_alert = true;
         }
-        console.log("Alerts loaded");
+        // console.log("Alerts loaded");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
   }
@@ -126,10 +126,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
             }
           });
         }
-        console.log("Friend alerts loaded");
+        // console.log("Friend alerts loaded");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
   }
@@ -157,10 +157,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
             }
           });
         }
-        console.log("Moderator alerts loaded");
+        // console.log("Moderator alerts loaded");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
   }
@@ -186,10 +186,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
             });
           }
         }
-        console.log("Play alerts loaded");
+        // console.log("Play alerts loaded");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
   }

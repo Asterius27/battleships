@@ -35,7 +35,7 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
       this.n.delete_notification(body).subscribe({
         next: (d) => {},
         error: (err) => {
-          console.log('Error: ' + JSON.stringify(err));
+          // console.log('Error: ' + JSON.stringify(err));
         }
       });
       let arr = d.split(" ");
@@ -46,11 +46,11 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
       if (arr[0] === "matchisfinished") {
         if ((this.match.playerOne === this.us.get_id() && arr[1] === "1-0") || (this.match.playerTwo === this.us.get_id() && arr[1] === "0-1")) {
           this.result = "won!";
-          console.log("You have won!");
+          // console.log("You have won!");
         }
         if ((this.match.playerOne === this.us.get_id() && arr[1] === "0-1") || (this.match.playerTwo === this.us.get_id() && arr[1] === "1-0")) {
           this.result = "lost";
-          console.log("You have lost!");
+          // console.log("You have lost!");
         }
         this.doc.getElementById("post-game")?.click();
       }
@@ -65,7 +65,7 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
     this.user_id = this.us.get_id();
     this.m.get_match(this.match_id).subscribe({
       next: (d) => {
-        console.log("Match loaded");
+        // console.log("Match loaded");
         this.match = d;
         if (this.match.result !== "0-0") {
           this.doc.getElementById("post-game")?.click();
@@ -80,7 +80,7 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
         this.load_linear_grid_opponent();
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -144,10 +144,10 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
           this.match = d;
           this.load_linear_grid();
           this.load_linear_grid_opponent();
-          console.log("Move posted");
+          // console.log("Move posted");
         },
         error: (err) => {
-          console.log('Error: ' + JSON.stringify(err));
+          // console.log('Error: ' + JSON.stringify(err));
           this.errmessage = "Something went wrong, please try again";
           setTimeout(() => {this.errmessage = ""}, 3000);
         }
@@ -199,7 +199,7 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
         letter = 'J';
         break;
       default:
-        console.log("Parse move error");
+        // console.log("Parse move error");
     }
     return letter + num;
   }
@@ -207,10 +207,10 @@ export class GamePhaseTwoComponent implements OnInit, OnDestroy {
   forfeit() {
     this.m.forfeit_match(this.match_id).subscribe({
       next: (d) => {
-        console.log("Match forfeited");
+        // console.log("Match forfeited");
       },
       error: (err:any) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }

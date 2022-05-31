@@ -17,11 +17,11 @@ export class SocketioService {
     }
     return new Observable((observer) => {
       this.socket.on(event, (arg:any) => {
-        console.log('Socket.io message received: ' + event);
+        // console.log('Socket.io message received: ' + event);
         observer.next(arg);
       });
       this.socket.on('error', (err:any) => {
-        console.log('Socket.io error: ' + err);
+        // console.log('Socket.io error: ' + err);
         observer.error(err);
       });
     });

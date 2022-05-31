@@ -60,10 +60,10 @@ export class PlayComponent implements OnInit, OnDestroy {
     }
     this.m.delete_queue().subscribe({
       next: (d) => {
-        console.log("Player removed from queued");
+        // console.log("Player removed from queued");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
     this.sio.removeListener("newmatch");
@@ -81,10 +81,10 @@ export class PlayComponent implements OnInit, OnDestroy {
             this.match_alerts = true;
           }
         }
-        console.log("Alerts loaded");
+        // console.log("Alerts loaded");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
   }
@@ -98,10 +98,10 @@ export class PlayComponent implements OnInit, OnDestroy {
           this.load_usernames(m.playerOne);
           this.load_usernames(m.playerTwo);
         }
-        console.log("Loaded ongoing matches");
+        // console.log("Loaded ongoing matches");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -122,7 +122,7 @@ export class PlayComponent implements OnInit, OnDestroy {
             this.load_usernames(match.playerOne);
             this.load_usernames(match.playerTwo);
             this.sio.connect(match._id).subscribe((d) => {
-              console.log("New match alert: " + match._id);
+              // console.log("New match alert: " + match._id);
               this.my_match_alerts[match._id] = true;
               if (this.tabs !== 1) {
                 this.match_alerts = true;
@@ -130,10 +130,10 @@ export class PlayComponent implements OnInit, OnDestroy {
             });
           }
         }
-        console.log("Loaded my ongoing matches");
+        // console.log("Loaded my ongoing matches");
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -157,7 +157,7 @@ export class PlayComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
   }
@@ -173,10 +173,10 @@ export class PlayComponent implements OnInit, OnDestroy {
             let self = this;
             this.timeout = setTimeout(this.match_making_callback, 5000, self);
           }
-          console.log("Player queued");
+          // console.log("Player queued");
         },
         error: (err) => {
-          console.log('Error: ' + JSON.stringify(err));
+          // console.log('Error: ' + JSON.stringify(err));
           this.errmessage = "Something went wrong, please try again";
           setTimeout(() => {this.errmessage = ""}, 3000);
         }
@@ -193,10 +193,10 @@ export class PlayComponent implements OnInit, OnDestroy {
             }
             this.match_range = 50;
             this.win_range = 25;
-            console.log("Player removed from queued");
+            // console.log("Player removed from queued");
           },
           error: (err) => {
-            console.log('Error: ' + JSON.stringify(err));
+            // console.log('Error: ' + JSON.stringify(err));
             this.errmessage = "Something went wrong, please try again";
             setTimeout(() => {this.errmessage = ""}, 3000);
           }
@@ -213,10 +213,10 @@ export class PlayComponent implements OnInit, OnDestroy {
         if (self.flag) {
           self.timeout = setTimeout(self.match_making_callback, 5000, self);
         }
-        console.log("Widened the search");
+        // console.log("Widened the search");
       },
       error: (err:any) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
   }
@@ -232,7 +232,7 @@ export class PlayComponent implements OnInit, OnDestroy {
           this.usernames[id] = d.username;
         },
         error: (err:any) => {
-          console.log('Error: ' + JSON.stringify(err));
+          // console.log('Error: ' + JSON.stringify(err));
         }
       });
     }
@@ -254,10 +254,10 @@ export class PlayComponent implements OnInit, OnDestroy {
   forfeit(match_id:string) {
     this.m.forfeit_match(match_id).subscribe({
       next: (d) => {
-        console.log("Match forfeited");
+        // console.log("Match forfeited");
       },
       error: (err:any) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }

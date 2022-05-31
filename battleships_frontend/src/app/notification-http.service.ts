@@ -20,7 +20,7 @@ export interface Notification {
 export class NotificationHttpService {
 
   constructor(private http: HttpClient, private us: UserHttpService) {
-    console.log("Notification service instantiated");
+    // console.log("Notification service instantiated");
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -50,7 +50,9 @@ export class NotificationHttpService {
   get_notifications() : Observable<Notification> {
     return this.http.get<Notification>(this.us.url + '/notifications', this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -59,7 +61,9 @@ export class NotificationHttpService {
   delete_notification(body:any) : Observable<any> {
     return this.http.patch<any>(this.us.url + '/notifications', body, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );

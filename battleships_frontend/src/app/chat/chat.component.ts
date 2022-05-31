@@ -43,7 +43,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.n.delete_notification(body).subscribe({
         next: (d) => {},
         error: (err) => {
-          console.log('Error: ' + JSON.stringify(err));
+          // console.log('Error: ' + JSON.stringify(err));
         }
       });
     });
@@ -67,7 +67,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.get_messages();
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -81,13 +81,13 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
     this.m.get_messages(this.chat.messages, visibility).subscribe({
       next: (d) => {
-        console.log('Messages loaded');
+        // console.log('Messages loaded');
         this.messages = d;
         this.messages.reverse();
         this.doc.getElementById("chat-container")!.scrollTop = this.doc.getElementById("chat-container")!.scrollHeight;
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }
@@ -106,7 +106,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
         username = d.username;
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
     return username;
@@ -115,10 +115,10 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   post_participant() {
     this.c.post_chat_participant(this.chat_id).subscribe({
       next: (d) => {
-        console.log('Participant added');
+        // console.log('Participant added');
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
         this.errmessage = "Something went wrong, please try again";
         setTimeout(() => {this.errmessage = ""}, 3000);
       }

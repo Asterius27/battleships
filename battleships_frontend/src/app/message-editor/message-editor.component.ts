@@ -25,11 +25,11 @@ export class MessageEditorComponent implements OnInit {
     }
     this.m.post_message(body).subscribe({
       next: (d) => {
-        console.log('Message posted');
+        // console.log('Message posted');
         this.posted.emit(d);
       },
       error: (err) => {
-        console.log('Error: ' + JSON.stringify(err));
+        // console.log('Error: ' + JSON.stringify(err));
       }
     });
   }

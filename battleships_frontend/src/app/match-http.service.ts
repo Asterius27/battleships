@@ -22,7 +22,7 @@ export interface Match {
 export class MatchHttpService {
 
   constructor(private http: HttpClient, private us: UserHttpService) {
-    console.log('Match service instantiated');
+    // console.log('Match service instantiated');
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -48,7 +48,9 @@ export class MatchHttpService {
   post_grid(id:string, body:any) : Observable<Match> {
     return this.http.post<Match>(this.us.url + '/matches/grid/' + id, body, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -57,7 +59,9 @@ export class MatchHttpService {
   post_move(id:string, body:any) : Observable<Match> {
     return this.http.post<Match>(this.us.url + '/matches/move/' + id, body, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -66,7 +70,9 @@ export class MatchHttpService {
   get_match(id:string) : Observable<Match> {
     return this.http.get<Match>(this.us.url + '/matches/id/' + id, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -75,7 +81,9 @@ export class MatchHttpService {
   get_user_matches() : Observable<Match[]> {
     return this.http.get<Match[]>(this.us.url + '/matches/mymatches', this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -84,16 +92,20 @@ export class MatchHttpService {
   get_random_grid() : Observable<any> {
     return this.http.get<any>(this.us.url + '/matches/grid', this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
   }
 
   get_ongoing_matches() : Observable<Match[]> {
-    return this.http.get<Match[]>(this.us.url + '/matches/ongoing', this.create_options()).pipe(
+    return this.http.get<Match[]>(this.us.url + '/matches', this.create_options({result: "0-0"})).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -102,7 +114,9 @@ export class MatchHttpService {
   forfeit_match(match_id:string) : Observable<any> {
     return this.http.delete<any>(this.us.url + "/matches/retire/" + match_id, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -112,7 +126,9 @@ export class MatchHttpService {
     let body = {match_range: match_range, win_range: win_range};
     return this.http.post<any>(this.us.url + '/matchmaking/queue', body, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -121,7 +137,9 @@ export class MatchHttpService {
   delete_queue() : Observable<any> {
     return this.http.delete<any>(this.us.url + '/matchmaking/queue', this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );

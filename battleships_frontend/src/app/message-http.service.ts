@@ -17,7 +17,7 @@ export interface Message {
 export class MessageHttpService {
 
   constructor(private http: HttpClient, private us: UserHttpService) {
-    console.log('Message service instantiated');
+    // console.log('Message service instantiated');
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -47,14 +47,16 @@ export class MessageHttpService {
   get_messages(ids:string[], visibility:string) : Observable<Message[]> {
     return this.http.get<Message[]>(this.us.url + '/messages', this.create_options({ids: ids}, visibility)).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
   }
 
   post_message(body:any) : Observable<Message> {
-    console.log('Posting ' + JSON.stringify(body));
+    // console.log('Posting ' + JSON.stringify(body));
     return this.http.post<Message>(this.us.url + '/messages', body, this.create_options()).pipe(
       catchError(this.handleError)
     );

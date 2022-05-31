@@ -16,7 +16,7 @@ export interface Chat {
 export class ChatHttpService {
 
   constructor(private http: HttpClient, private us: UserHttpService) {
-    console.log('Chat service instantiated');
+    // console.log('Chat service instantiated');
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -42,7 +42,9 @@ export class ChatHttpService {
   get_chat(id:string) : Observable<Chat> {
     return this.http.get<Chat>(this.us.url + '/chats/chat/' + id, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -51,7 +53,9 @@ export class ChatHttpService {
   get_moderator_chats(id:string) : Observable<Chat[]> {
     return this.http.get<Chat[]>(this.us.url + '/chats/moderator/' + id, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -60,7 +64,9 @@ export class ChatHttpService {
   get_friends_chat() : Observable<Chat[]> {
     return this.http.get<Chat[]>(this.us.url + '/chats/friends', this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
@@ -69,21 +75,23 @@ export class ChatHttpService {
   get_friend_chat(friend_id:string) : Observable<Chat> {
     return this.http.get<Chat>(this.us.url + '/chats/friends/' + friend_id, this.create_options()).pipe(
       tap({
-        next: (data) => {console.log(JSON.stringify(data));},
+        next: (data) => {
+          // console.log(JSON.stringify(data));
+        },
         error: catchError(this.handleError)
       })
     );
   }
 
   post_chat(c:Chat) : Observable<Chat> {
-    console.log('Posting ' + JSON.stringify(c));
+    // console.log('Posting ' + JSON.stringify(c));
     return this.http.post<Chat>(this.us.url + '/chats', c, this.create_options()).pipe(
       catchError(this.handleError)
     );
   }
 
   post_chat_participant(id:string) : Observable<Chat> {
-    console.log('Posting...');
+    // console.log('Posting...');
     return this.http.post<Chat>(this.us.url + '/chats/' + id + '/participants', {}, this.create_options()).pipe(
       catchError(this.handleError)
     );
