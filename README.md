@@ -46,8 +46,26 @@ To run the mobile application you need to have cordova, gradle, the android sdk,
 
 Then change put the backend url in the environment.ts and environment.prod.ts files located at \battleships_mobile_frontend\src\environments (don't use localhost, use the ip adress)
 
-Then put your backend url in the network_security_config.xml file located at \battleships_mobile\platforms\android\app\src\main\res\xml
-
+Then run the following commands inside the battleships_mobile folder:
+```
+cordova platform add android
+```
+```
+cordova plugin add cordova-plugin-device
+```
+Then modify the AndroidManifest.xml file inside \battleships_mobile\platforms\android\app\src\main to add the following attribute in the application tag:
+```
+android:networkSecurityConfig="@xml/network_security_config"
+```
+Then create a network_security_config.xml file inside \battleships_mobile\platforms\android\app\src\main\res\xml as follows:
+```
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">your-backend-url</domain>
+    </domain-config>
+</network-security-config>
+```
 Then run the following command inside the battleships_mobile_frontend folder:
 ```
 npm install
