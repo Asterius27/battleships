@@ -1,0 +1,10 @@
+<div *ngIf="errmessage" class="alert alert-danger" style="margin-top: 1%;" role="alert">{{errmessage}}</div>
+
+<div style="display: block; width: 50%; margin: auto; margin-top: 1%;" *ngIf="doughnutChartData.datasets.length !== 0">
+  <h5>{{ username }}'s Stats</h5>
+  <canvas baseChart
+    [data]="doughnutChartData"
+    [type]="doughnutChartType"
+    [options]="doughnutChartOptions">
+  </canvas>
+</div>

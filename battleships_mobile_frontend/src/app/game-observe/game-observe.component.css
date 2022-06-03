@@ -1,0 +1,20 @@
+.boat {
+    background-color: black !important;
+}
+
+.cell {
+    background-color: #bfe4ff;
+    height: 2em;
+}
+
+.hit {
+    background-color: red !important;
+}
+
+.miss {
+    background-color: indigo !important;
+}
+
+.destroyed {
+    background-color: hotpink !important;
+}

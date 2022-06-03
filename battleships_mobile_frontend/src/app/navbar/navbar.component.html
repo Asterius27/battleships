@@ -1,0 +1,42 @@
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand">Battleship</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link position-relative" routerLink="/play">
+            Play
+            <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!play_alert">
+              <span class="visually-hidden">New alerts</span>
+            </span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link position-relative" href="#" (click)="load('/friends', $event);">
+            Friends
+            <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!friends_alert">
+              <span class="visually-hidden">New alerts</span>
+            </span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/profile">My Stats</a>
+        </li>
+        <li class="nav-item" *ngIf="moderator">
+          <a class="nav-link position-relative" href="#" (click)="load('/moderator', $event);">
+            Moderator
+            <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!moderator_alert">
+              <span class="visually-hidden">New alerts</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+      <form class="form-inline ms-auto">
+        <button class="btn btn-sm btn-outline-secondary" type="button" (click)="logout();">Logout</button>
+      </form>
+    </div>
+  </div>
+</nav>

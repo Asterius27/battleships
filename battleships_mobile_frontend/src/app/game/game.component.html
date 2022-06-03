@@ -1,0 +1,9 @@
+<div *ngIf="errmessage" class="alert alert-danger" style="margin-top: 1%;" role="alert">{{errmessage}}</div>
+
+<app-game-phase-one [match_id]="match_id" (sectionChange)="setSection($event)" *ngIf="section === 1 && match_id" style="display: inline-block; width: 100%; margin-top: 1%;"></app-game-phase-one>
+
+<app-game-phase-two [match_id]="match_id" *ngIf="section === 2 && match_id" style="display: inline-block; width: 50%;"></app-game-phase-two>
+
+<app-game-observe [match_id]="match_id" *ngIf="section === 3 && match_id" style="display: inline-block; width: 50%;"></app-game-observe>
+
+<app-chat [chat_id]="match.chat" [participant_id]="participant_id" *ngIf="match.chat && section !== 1" style="display: block; width: 48%; float: right;"></app-chat>

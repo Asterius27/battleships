@@ -1,0 +1,44 @@
+<div *ngIf="errmessage" class="alert alert-danger" style="margin-top: 1%;" role="alert">{{errmessage}}</div>
+
+<div style="padding-top: 2%">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active previous-tab" aria-current="page" href="#" (click)="setTabs(1, $event);">My Ongoing Matches</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" (click)="setTabs(2, $event);">Ongoing Matches</a>
+        </li>
+        <li class="nav-item ms-auto" style="padding-right: 1%">
+            <div class="spinner-border" role="status" [hidden]="match_making_button === 'Find Match'"></div>
+        </li>
+        <li class="nav-item" style="padding-right: 1%">
+            <button class="btn btn-success btn-block" (click)="match_making($event);">{{ match_making_button }}</button>
+        </li>
+    </ul>
+</div>
+
+<div class="panel panel-primary" id="my_ongoing_matches" [hidden]="!(tabs===1)" style="padding-top: 2%">
+    <div class="panel-body">
+        <ul class="list-group">
+            <li class="list-group-item" *ngFor="let match of my_ongoing_matches">
+                <button class="btn bg-transparent text-start w-75 position-relative" (click)="open_match(match);">
+                    {{ usernames[match.playerOne] }} VS. {{ usernames[match.playerTwo] }}
+                    <span class="position-absolute top-25 translate-middle p-1 bg-danger border border-light rounded-circle" [hidden]="!my_match_alerts[match._id]">
+                        <span class="visually-hidden">New alerts</span>
+                    </span>
+                </button>
+                <button class="btn btn-outline-danger" style="float: right;" (click)="forfeit(match._id);">Forfeit</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="panel panel-primary" id="ongoing_matches" [hidden]="!(tabs===2)" style="padding-top: 2%">
+    <div class="panel-body">
+        <ul class="list-group">
+            <li class="list-group-item" *ngFor="let match of ongoing_matches">
+                <button class="btn bg-transparent text-start w-100" (click)="observe_match(match);">{{ usernames[match.playerOne] }} VS. {{ usernames[match.playerTwo] }}</button>
+            </li>
+        </ul>
+    </div>
+</div>

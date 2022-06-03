@@ -1,0 +1,38 @@
+<div *ngIf="errmessage" class="alert alert-danger" style="margin-top: 1%;" role="alert">{{errmessage}}</div>
+
+<button type="button" class="btn btn-primary" style="display: none;" id="post-game" (click)="open_modal()"></button>
+
+<div class="modal" tabindex="-1" role="dialog" [ngStyle]="{'display': display}">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">You have {{ result }}</h5>
+      </div>
+      <div class="modal-body">
+        Thank you for playing, we hope you had fun!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="close_game();">Close Game</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display: block; margin-left: 2px; margin-right: 2px; margin-top: 2px;">
+  <h5>Your Grid</h5>
+  <div id="grid" style="display: grid; grid-gap: 1%; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
+    <div [ngClass]="{'cell': true, 'boat': cell === 'b', 'hit': cell === 'h', 'miss': cell === 'm', 'destroyed': cell === 'd'}" *ngFor="let cell of grid; let i=index" [attr.id]="i + 'y'"></div>
+  </div>
+</div>
+
+<div style="display: block; margin-left: 2px; margin-right: 2px; margin-top: 2em; margin-bottom: 2em;">
+  <h5>Opponent's Grid</h5>
+  <div id="gridopponent" style="display: grid; grid-gap: 1%; grid-template-rows: repeat(10, 1fr); grid-template-columns: repeat(10, 1fr);">
+    <div [ngClass]="{'cell': true, 'hit': cell === 'h', 'miss': cell === 'm', 'destroyed': cell === 'd'}" *ngFor="let cell of opponent_grid; let i=index" [attr.id]="i" (click)="setMove($event);"></div>
+  </div>
+</div>
+
+<p>Light blue: sea, Black: ship, Red: hit, Indigo: miss, Pink: destroyed</p>
+
+<button type="button" class="btn btn-danger" style="margin-right: 1%;" (click)="forfeit();">Forfeit</button>
+<button type="button" class="btn btn-success" style="float: right; margin-right: 1%;" (click)="post_move();" [disabled]="!turn">Make Move</button>

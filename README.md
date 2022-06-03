@@ -41,3 +41,26 @@ Inside the backend folder and:
 ng serve --open
 ```
 Inside the battleships_frontend folder.
+
+To run the mobile application you need to have cordova, gradle, the android sdk, the android emulator and the jdk installed.
+
+Then change put the backend url in the environment.ts and environment.prod.ts files located at \battleships_mobile_frontend\src\environments (don't use localhost, use the ip adress)
+
+Then put your backend url in the network_security_config.xml file located at \battleships_mobile\platforms\android\app\src\main\res\xml
+
+Then run the following command inside the battleships_mobile_frontend folder:
+```
+npm install
+```
+```
+ng build
+```
+Then run the following command inside the battleships_mobile folder:
+```
+cordova build
+```
+Then to install the mobile app in the android emulator run:
+```
+adb install <build.apk>
+```
+And the app should appear in your emulator ready to be used.
